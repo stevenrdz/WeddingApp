@@ -224,7 +224,14 @@
         </div>
       </div>
 
-      <div class="flex flex-wrap gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <button
+          class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
+          type="button"
+          @click="saveDraft"
+        >
+          Guardar borrador
+        </button>
         <button
           class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
           type="button"
@@ -232,6 +239,22 @@
         >
           Descargar JSON
         </button>
+        <button
+          class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
+          type="button"
+          :disabled="!draftShareUrl"
+          @click="copyLink"
+        >
+          {{ copyStatus }}
+        </button>
+        <span v-if="toastMessage" class="text-xs text-emerald-600">{{ toastMessage }}</span>
+      </div>
+      <div v-if="draftShareUrl" class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600">
+        Link de borrador:
+        <span class="break-all font-medium text-slate-800">{{ draftShareUrl }}</span>
+      </div>
+      <div v-else class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
+        Configura <strong>VITE_ADMIN_PREVIEW_KEY</strong> en el .env para habilitar links de borrador compartibles.
       </div>
     </section>
 
@@ -243,11 +266,12 @@
         </div>
         <a
           class="rounded-lg border border-slate-200 px-3 py-1 text-xs"
-          :href="`/w/${draft.slug}`"
+          :class="draftShareUrl ? 'text-slate-800' : 'pointer-events-none text-slate-300'"
+          :href="draftShareUrl || '#'"
           target="_blank"
           rel="noopener"
         >
-          Ver pagina
+          Ver preview
         </a>
       </div>
       <div ref="previewRef" class="max-h-[80vh] overflow-y-auto">
@@ -263,6 +287,10 @@ import WeddingPreview from "../../components/WeddingPreview.vue";
 import type { TenantConfig } from "../../types/tenant";
 
 const previewRef = ref<HTMLElement | null>(null);
+const savedDraftId = ref("");
+const draftShareUrl = ref("");
+const copyStatus = ref("Copiar link");
+const toastMessage = ref("");
 
 const draft = reactive({
   slug: "nueva-boda",
@@ -398,5 +426,42 @@ function downloadJson() {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+}
+
+function encodeDraft(payload: { data: TenantConfig; sections: typeof draft.sections }) {
+  const json = JSON.stringify(payload);
+  return btoa(unescape(encodeURIComponent(json)));
+}
+
+function saveDraft() {
+  const { sections, slug, ...tenant } = draft;
+  const draftId = slug ? `${slug}-${Date.now()}` : `borrador-${Date.now()}`;
+  const raw = localStorage.getItem("weddingapp_drafts");
+  const current = raw ? (JSON.parse(raw) as Array<{ id: string; data: TenantConfig; sections?: typeof sections }>) : [];
+  current.unshift({ id: draftId, data: tenant as TenantConfig, sections });
+  localStorage.setItem("weddingapp_drafts", JSON.stringify(current.slice(0, 20)));
+  savedDraftId.value = draftId;
+  const key = String(import.meta.env.VITE_ADMIN_PREVIEW_KEY || "");
+  const encoded = encodeDraft({ data: tenant as TenantConfig, sections });
+  draftShareUrl.value = key
+    ? `${window.location.origin}/preview/${draftId}?key=${key}&data=${encoded}`
+    : "";
+  copyStatus.value = "Copiar link";
+}
+
+async function copyLink() {
+  if (!draftShareUrl.value) return;
+  try {
+    await navigator.clipboard.writeText(draftShareUrl.value);
+    copyStatus.value = "Copiado";
+    toastMessage.value = "Link copiado al portapapeles";
+  } catch {
+    copyStatus.value = "Error al copiar";
+    toastMessage.value = "No se pudo copiar";
+  }
+  setTimeout(() => {
+    copyStatus.value = "Copiar link";
+    toastMessage.value = "";
+  }, 1500);
 }
 </script>

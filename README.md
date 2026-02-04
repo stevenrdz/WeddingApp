@@ -13,10 +13,32 @@ npm run dev
 npm run build
 ```
 
+## Roadmap
+- Persistencia real de borradores en backend (para evitar URLs largas).
+- Bibliotecas de imagenes libres dentro del builder.
+- Control de secciones por plan (basic/standard/premium) desde el dashboard.
+
 ## Crear un nuevo tenant
 1) Agrega un nuevo archivo JSON en `src/tenants/data/tu-slug.json` siguiendo `TenantConfig`.
 2) Agrega el slug en `src/tenants/tenants.manifest.json`.
 3) (Opcional) Ajusta `rsvp.mode` a `netlify` y `rsvp.enabled` a `true`.
+
+## Admin builder (MVP)
+- Login: `/admin/login` (modo demo, cualquier clave).
+- Builder: `/admin/generate` (formulario + preview en vivo).
+- Guardar borrador: genera un link compartible a `/preview/:draftId`.
+
+### Clave para previews compartibles
+Crea un `.env` en la raiz con:
+```
+VITE_ADMIN_PREVIEW_KEY=tu-clave-unica
+```
+Reinicia el dev server para que Vite lea la variable.
+
+### Nota sobre links de borrador
+El link de preview incluye el JSON embebido en la URL. Esto permite compartir sin backend,
+pero puede generar URLs largas. Para un flujo mas robusto, se recomienda persistir
+los borradores en un backend o almacenamiento externo.
 
 ## RSVP por WhatsApp
 - `rsvp.enabled = true`

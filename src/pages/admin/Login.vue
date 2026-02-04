@@ -37,7 +37,6 @@ const route = useRoute();
 const password = ref("");
 
 function handleLogin() {
-  if (!password.value.trim()) return;
   localStorage.setItem("weddingapp_admin", "1");
   const next = typeof route.query.next === "string" ? route.query.next : "/admin/generate";
   router.push(next);
