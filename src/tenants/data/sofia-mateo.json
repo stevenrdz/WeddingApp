@@ -1,0 +1,87 @@
+{
+  "coupleNames": "Sofia & Mateo",
+  "dateISO": "2026-08-10",
+  "hero": {
+    "tagline": "Un amor que se escribe con calma",
+    "ctaPrimaryText": "RSVP",
+    "ctaSecondaryText": "Ubicaciones"
+  },
+  "ceremony": {
+    "name": "Capilla Santa Lucia",
+    "time": "17:00",
+    "address": "Calle del Sol 45, Guadalajara",
+    "mapUrl": "https://maps.google.com"
+  },
+  "reception": {
+    "name": "Hacienda Magnolia",
+    "time": "19:00",
+    "address": "Camino Real 123, Guadalajara",
+    "mapUrl": "https://maps.google.com"
+  },
+  "schedule": [
+    {
+      "time": "17:00",
+      "title": "Ceremonia",
+      "description": "Capilla"
+    },
+    {
+      "time": "19:00",
+      "title": "Recepcion",
+      "description": "Brindis y cena"
+    },
+    {
+      "time": "22:00",
+      "title": "Fiesta",
+      "description": "DJ en vivo"
+    }
+  ],
+  "dressCode": {
+    "title": "Coctel",
+    "description": "Elegante con tonos pastel."
+  },
+  "gifts": {
+    "bankTransferText": "Banco Luna 5678-9012-34",
+    "giftListUrl": "https://example.com",
+    "message": "Gracias por ser parte de este momento."
+  },
+  "rsvp": {
+    "mode": "netlify",
+    "enabled": true,
+    "deadlineISO": "2026-07-20",
+    "whatsappNumber": "5215512340000",
+    "netlifyFormNameOptional": "rsvp-sofia-mateo"
+  },
+  "gallery": [
+    {
+      "src": "/tenants/sofia-mateo/figma/1df7a6a2cf43e6f338df4a6e2618f2194bf0ef82.jpg",
+      "alt": "Galeria 1"
+    },
+    {
+      "src": "/tenants/sofia-mateo/figma/31f2e3b4b17996f64ea6bd73428dd10e95bcce37.jpg",
+      "alt": "Galeria 2"
+    },
+    {
+      "src": "/tenants/sofia-mateo/figma/528b4006190eb1a11652281ace8f215309701f45.jpg",
+      "alt": "Galeria 3"
+    }
+  ],
+  "theme": {
+    "primary": "#b4556b",
+    "secondary": "#1f2437",
+    "background": "#fbf6f1",
+    "text": "#2a2a2a",
+    "fontHeading": "Boska",
+    "fontBody": "Inter"
+  },
+  "seo": {
+    "title": "Sofia & Mateo | Boda",
+    "description": "Nos acompanias en este gran dia?",
+    "url": "https://tuboda.com/w/sofia-mateo",
+    "ogImage": "/og-default.svg"
+  },
+  "story": {
+    "title": "Nosotros",
+    "message": "Un cafe en una tarde lluviosa nos llevo a este dia."
+  },
+  "contactEmail": "contacto@tuboda.com"
+}

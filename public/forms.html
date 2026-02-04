@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forms</title>
+  </head>
+  <body>
+    <form name="rsvp-demo" data-netlify="true" netlify-honeypot="bot-field" method="POST">
+      <input type="hidden" name="form-name" value="rsvp-demo" />
+      <p>
+        <label>Nombre <input name="name" /></label>
+      </p>
+      <p>
+        <label>Telefono <input name="phone" /></label>
+      </p>
+      <p>
+        <label>Email <input name="email" /></label>
+      </p>
+      <p>
+        <label>Asistentes <input name="attendeesCount" type="number" /></label>
+      </p>
+      <p>
+        <label>Asistencia
+          <select name="attendance">
+            <option value="si">Si</option>
+            <option value="no">No</option>
+          </select>
+        </label>
+      </p>
+      <p>
+        <label>Mensaje <textarea name="message"></textarea></label>
+      </p>
+      <p>
+        <button type="submit">Enviar</button>
+      </p>
+    </form>
+  </body>
+</html>

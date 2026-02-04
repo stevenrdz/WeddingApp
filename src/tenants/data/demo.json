@@ -1,0 +1,65 @@
+{
+  "coupleNames": "Camila & Andres",
+  "dateISO": "2026-06-20",
+  "hero": {
+    "tagline": "Celebramos nuestro si, quiero contigo",
+    "ctaPrimaryText": "Confirmar asistencia",
+    "ctaSecondaryText": "Ver ubicaciones"
+  },
+  "ceremony": {
+    "name": "Jardin de los Olivos",
+    "time": "16:30",
+    "address": "Av. Primavera 120, CDMX",
+    "mapUrl": "https://maps.google.com"
+  },
+  "reception": {
+    "name": "Salon Aurora",
+    "time": "18:30",
+    "address": "Av. Reforma 250, CDMX",
+    "mapUrl": "https://maps.google.com"
+  },
+  "schedule": [
+    { "time": "16:30", "title": "Ceremonia", "description": "Comenzamos puntuales" },
+    { "time": "18:30", "title": "Recepcion", "description": "Brindis y cena" },
+    { "time": "21:00", "title": "Fiesta", "description": "Musica y baile" }
+  ],
+  "dressCode": {
+    "title": "Formal elegante",
+    "description": "Paleta neutra, sin blanco ni beige claro."
+  },
+  "gifts": {
+    "bankTransferText": "Banco Azul 1234-5678-90",
+    "giftListUrl": "https://example.com",
+    "message": "Tu presencia es nuestro mejor regalo."
+  },
+  "rsvp": {
+    "mode": "whatsapp",
+    "enabled": true,
+    "deadlineISO": "2026-05-31",
+    "whatsappNumber": "5215512345678"
+  },
+  "gallery": [
+    { "src": "https://images.unsplash.com/photo-1522673607200-164d1b6ce486", "alt": "Pareja en bosque" },
+    { "src": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee", "alt": "Anillos" },
+    { "src": "https://images.unsplash.com/photo-1519741497674-611481863552", "alt": "Decoracion" }
+  ],
+  "theme": {
+    "primary": "#b4556b",
+    "secondary": "#1f2437",
+    "background": "#fbf6f1",
+    "text": "#2a2a2a",
+    "fontHeading": "Cormorant Garamond",
+    "fontBody": "Source Sans 3"
+  },
+  "seo": {
+    "title": "Camila & Andres | Nuestra boda",
+    "description": "Acompananos en nuestro gran dia.",
+    "url": "https://tuboda.com/w/demo",
+    "ogImage": "/og-default.svg"
+  },
+  "story": {
+    "title": "Nuestra historia",
+    "message": "Nos conocimos en un viaje y desde entonces no hemos dejado de explorar juntos."
+  },
+  "contactEmail": "hola@tuboda.com"
+}

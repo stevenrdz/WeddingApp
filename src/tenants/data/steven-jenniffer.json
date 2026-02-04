@@ -1,0 +1,105 @@
+{
+  "coupleNames": "Steven & Jenniffer",
+  "dateISO": "2026-09-12",
+  "hero": {
+    "tagline": "Nuestro si, para siempre",
+    "ctaPrimaryText": "RSVP",
+    "ctaSecondaryText": "Ubicaciones"
+  },
+  "ceremony": {
+    "name": "Capilla San Miguel",
+    "time": "17:00",
+    "address": "Av. Central 450, CDMX",
+    "mapUrl": "https://maps.google.com"
+  },
+  "reception": {
+    "name": "Hacienda Los Laureles",
+    "time": "19:00",
+    "address": "Camino Antiguo 95, CDMX",
+    "mapUrl": "https://maps.google.com"
+  },
+  "schedule": [
+    {
+      "time": "17:00",
+      "title": "Ceremonia",
+      "description": "Capilla"
+    },
+    {
+      "time": "19:00",
+      "title": "Recepcion",
+      "description": "Brindis y cena"
+    },
+    {
+      "time": "22:00",
+      "title": "Fiesta",
+      "description": "DJ en vivo"
+    }
+  ],
+  "dressCode": {
+    "title": "Formal",
+    "description": "Tonos sobrios y elegantes."
+  },
+  "gifts": {
+    "bankTransferText": "Banco Aurora 9876-5432-10",
+    "giftListUrl": "https://example.com",
+    "message": "Gracias por acompanarnos en este dia."
+  },
+  "rsvp": {
+    "mode": "netlify",
+    "enabled": true,
+    "deadlineISO": "2026-08-20",
+    "whatsappNumber": "5215512341111",
+    "netlifyFormNameOptional": "rsvp-steven-jenniffer"
+  },
+  "gallery": [
+    {
+      "src": "/tenants/steven-jenniffer/figma/7b184ef376871762a305bdb917de716996c1ab2d.jpg",
+      "alt": "Galeria 1"
+    },
+    {
+      "src": "/tenants/steven-jenniffer/figma/fff873983d54b965dd35d17a00fdc297c0f6835e.jpg",
+      "alt": "Galeria 2"
+    },
+    {
+      "src": "/tenants/steven-jenniffer/figma/5d78e122fe11beb9b93b9a8d9efe319f0eac21fb.jpg",
+      "alt": "Galeria 3"
+    }
+  ],
+  "theme": {
+    "primary": "#7b4f62",
+    "secondary": "#1f2437",
+    "background": "#fbf6f1",
+    "text": "#2a2a2a",
+    "fontHeading": "Boska",
+    "fontBody": "Inter"
+  },
+  "seo": {
+    "title": "Steven & Jenniffer | Boda",
+    "description": "Acompananos en nuestro gran dia.",
+    "url": "https://tuboda.com/w/steven-jenniffer",
+    "ogImage": "/og-default.svg"
+  },
+  "story": {
+    "title": "Nuestra historia",
+    "message": "Un encuentro casual que termino en un si para siempre."
+  },
+  "contactEmail": "contacto@tuboda.com",
+  "faq": [
+    {
+      "question": "Como confirmo asistencia?",
+      "answer": "Entra a la seccion RSVP y completa el formulario o escribenos por WhatsApp."
+    },
+    {
+      "question": "Hay codigo de vestimenta?",
+      "answer": "Si. Vestimenta formal. Evita blanco o beige claro."
+    },
+    {
+      "question": "Se permiten ninos?",
+      "answer": "Amamos a los pequenos, pero esta celebracion es solo para adultos."
+    },
+    {
+      "question": "Habra transporte o estacionamiento?",
+      "answer": "Hay estacionamiento disponible en la hacienda. Considera llegar con tiempo."
+    }
+  ]
+}
