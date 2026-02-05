@@ -1,23 +1,13 @@
 
 <template>
-  <div
-    class="grid gap-6"
-    :class="isSidebarCollapsed ? 'lg:grid-cols-[96px_minmax(0,1fr)]' : 'lg:grid-cols-[420px_minmax(0,1fr)]'"
-  >
+  <div class="grid gap-6 lg:grid-cols-[420px_minmax(0,1fr)]">
     <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-lg font-semibold">Nuevo flujo de admin</h2>
-          <p v-if="!isSidebarCollapsed" class="text-sm text-slate-500">
-            Arma la estructura (navbar, hero, secciones, footer) y edita el contenido.
-          </p>
-        </div>
-        <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="toggleSidebar">
-          {{ isSidebarCollapsed ? "Expandir" : "Contraer" }}
-        </button>
+      <div>
+        <h2 class="text-lg font-semibold">Nuevo flujo de admin</h2>
+        <p class="text-sm text-slate-500">Arma la estructura (navbar, hero, secciones, footer) y edita el contenido.</p>
       </div>
 
-      <div v-if="!isSidebarCollapsed" class="mt-6 space-y-6">
+      <div class="mt-6 space-y-6">
 
       <details open class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="cursor-pointer text-sm font-semibold text-slate-800">Campos generales</summary>
@@ -592,7 +582,6 @@ const toastMessage = ref("");
 const slugNotice = ref("");
 const dragIndex = ref<number | null>(null);
 const draftVersions = ref<Array<{ id: string; slug: string; date: string; label: string; data: TenantConfig }>>([]);
-const isSidebarCollapsed = ref(false);
 const validationErrors = reactive<{ slug: string; dateISO: string; list: string[] }>({
   slug: "",
   dateISO: "",
@@ -858,9 +847,6 @@ function applyDraft(data: TenantConfig, slug?: string) {
   if (slug) draft.slug = slug;
 }
 
-function toggleSidebar() {
-  isSidebarCollapsed.value = !isSidebarCollapsed.value;
-}
 
 function addNavbar() {
   if (!draft.page.navbar) {
