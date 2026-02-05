@@ -20,6 +20,9 @@
           />
         </label>
         <p v-if="slugNotice" class="text-xs text-amber-600">{{ slugNotice }}</p>
+        <p v-else-if="slugStatus" class="text-xs" :class="slugStatus.ok ? 'text-emerald-600' : 'text-amber-600'">
+          {{ slugStatus.message }}
+        </p>
         <p v-if="validationErrors.slug" class="text-xs text-red-600">{{ validationErrors.slug }}</p>
         <label class="block text-sm font-medium text-slate-700">
           Fecha
@@ -76,6 +79,22 @@
             + Footer
           </button>
         </div>
+      </div>
+
+      <div class="space-y-3">
+        <h3 class="text-sm font-semibold text-slate-800">Plantillas rapidas</h3>
+        <div class="flex flex-wrap gap-3">
+          <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="applyPreset('clasico')">
+            Clasico
+          </button>
+          <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="applyPreset('moderno')">
+            Moderno
+          </button>
+          <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="applyPreset('minimal')">
+            Minimal
+          </button>
+        </div>
+        <p class="text-xs text-slate-500">Esto reemplaza la estructura actual (navbar, hero, secciones, footer).</p>
       </div>
 
       <div v-if="draft.page.navbar" class="space-y-4">
@@ -139,9 +158,10 @@
                 <span v-if="btn.variant === 'outline'">Color borde</span>
                 <span v-else>Color fondo</span>
                 <input
-                  v-model="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
+                  :value="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
                   class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
                   type="color"
+                  @input="updateButtonColor(btn, $event)"
                 />
               </label>
             </div>
@@ -204,9 +224,10 @@
                 <span v-if="btn.variant === 'outline'">Color borde</span>
                 <span v-else>Color fondo</span>
                 <input
-                  v-model="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
+                  :value="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
                   class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
                   type="color"
+                  @input="updateButtonColor(btn, $event)"
                 />
               </label>
             </div>
@@ -229,10 +250,25 @@
             Agregar
           </button>
         </div>
-        <div v-for="(section, index) in draft.page.sections" :key="`${section.type}-${index}`" class="rounded-xl border border-slate-200 p-3">
+        <div
+          v-for="(section, index) in draft.page.sections"
+          :key="`${section.type}-${index}`"
+          class="rounded-xl border border-slate-200 p-3"
+          draggable="true"
+          @dragstart="onDragStart(index)"
+          @dragover.prevent
+          @drop="onDrop(index)"
+        >
           <div class="flex items-center justify-between">
-            <p class="text-xs font-semibold text-slate-700">{{ section.label }} ({{ section.type }})</p>
-            <button class="text-xs text-red-500" type="button" @click="removeSection(index)">Quitar</button>
+            <div class="flex items-center gap-2">
+              <span class="cursor-move text-xs text-slate-400">↕</span>
+              <p class="text-xs font-semibold text-slate-700">{{ section.label }} ({{ section.type }})</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="text-xs text-slate-500" type="button" @click="moveSection(index, -1)">Subir</button>
+              <button class="text-xs text-slate-500" type="button" @click="moveSection(index, 1)">Bajar</button>
+              <button class="text-xs text-red-500" type="button" @click="removeSection(index)">Quitar</button>
+            </div>
           </div>
           <div class="mt-3 grid gap-3 md:grid-cols-2">
             <label class="text-xs text-slate-500">
@@ -429,12 +465,37 @@
         </label>
       </div>
 
+      <div class="space-y-3">
+        <h3 class="text-sm font-semibold text-slate-800">Versiones</h3>
+        <div v-if="draftVersions.length" class="space-y-2">
+          <div
+            v-for="version in draftVersions"
+            :key="version.id"
+            class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 px-3 py-2 text-xs"
+          >
+            <div>
+              <p class="font-semibold text-slate-700">{{ version.label }}</p>
+              <p class="text-slate-500">{{ version.date }}</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="rounded-lg border border-slate-200 px-2 py-1 text-xs" type="button" @click="restoreVersion(version)">
+                Restaurar
+              </button>
+            </div>
+          </div>
+        </div>
+        <p v-else class="text-xs text-slate-500">Guarda un borrador para crear versiones.</p>
+      </div>
+
       <div class="flex flex-wrap items-center gap-3">
         <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700" type="button" @click="saveDraft">
           Guardar borrador
         </button>
         <button class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white" type="button" @click="downloadJson">
           Descargar JSON
+        </button>
+        <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700" type="button" @click="saveToTenants">
+          Crear en tenants
         </button>
         <button
           class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
@@ -500,6 +561,8 @@ const draftShareUrl = ref("");
 const copyStatus = ref("Copiar link");
 const toastMessage = ref("");
 const slugNotice = ref("");
+const dragIndex = ref<number | null>(null);
+const draftVersions = ref<Array<{ id: string; slug: string; date: string; label: string; data: TenantConfig }>>([]);
 const validationErrors = reactive<{ slug: string; dateISO: string; list: string[] }>({
   slug: "",
   dateISO: "",
@@ -605,6 +668,16 @@ const anchorOptions = computed(() => {
   return options;
 });
 
+const slugStatus = computed(() => {
+  const value = draft.slug.trim();
+  if (!value) return null;
+  const taken = existingSlugs.value.has(value);
+  return {
+    ok: !taken,
+    message: taken ? "Slug ya existe. Se ajustara al salir." : "Slug disponible."
+  };
+});
+
 const existingSlugs = computed(() => {
   const fromManifest = Array.isArray(manifest) ? manifest : [];
   const raw = localStorage.getItem("weddingapp_drafts");
@@ -647,6 +720,26 @@ function ensureUniqueSlug() {
   slugNotice.value = `El slug ya existia. Se ajusto a: ${candidate}`;
 }
 
+function onDragStart(index: number) {
+  dragIndex.value = index;
+}
+
+function onDrop(index: number) {
+  if (dragIndex.value === null || dragIndex.value === index) return;
+  const list = draft.page.sections;
+  const [moved] = list.splice(dragIndex.value, 1);
+  list.splice(index, 0, moved);
+  dragIndex.value = null;
+}
+
+function moveSection(index: number, delta: number) {
+  const nextIndex = index + delta;
+  if (nextIndex < 0 || nextIndex >= draft.page.sections.length) return;
+  const list = draft.page.sections;
+  const [moved] = list.splice(index, 1);
+  list.splice(nextIndex, 0, moved);
+}
+
 function validateDraft() {
   validationErrors.slug = "";
   validationErrors.dateISO = "";
@@ -687,7 +780,10 @@ watch(
   () => [draft.slug, draft.dateISO],
   () => {
     if (validationErrors.list.length) validateDraft();
-  }
+    if (slugNotice.value) slugNotice.value = "";
+    loadVersions();
+  },
+  { immediate: true }
 );
 
 watch(
@@ -702,10 +798,40 @@ watch(
   { deep: true }
 );
 
+function loadVersions() {
+  const raw = localStorage.getItem("weddingapp_draft_versions");
+  const all = raw ? (JSON.parse(raw) as Array<{ id: string; slug: string; createdAt: string; data: TenantConfig }>) : [];
+  const current = draft.slug.trim();
+  const filtered = current ? all.filter((item) => item.slug === current) : [];
+  draftVersions.value = filtered
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .map((item, index) => ({
+      id: item.id,
+      slug: item.slug,
+      data: item.data,
+      date: new Date(item.createdAt).toLocaleString("es-MX", { dateStyle: "medium", timeStyle: "short" }),
+      label: `Version ${filtered.length - index}`
+    }));
+}
+
+function restoreVersion(version: { slug: string; data: TenantConfig }) {
+  applyDraft(version.data, version.slug);
+}
+
+function applyDraft(data: TenantConfig, slug?: string) {
+  const fallbackPage = { navbar: undefined, hero: undefined, sections: [], footer: undefined };
+  const normalized = {
+    ...data,
+    page: data.page ?? fallbackPage
+  };
+  Object.assign(draft, normalized);
+  if (slug) draft.slug = slug;
+}
+
 function addNavbar() {
   if (!draft.page.navbar) {
     draft.page.navbar = {
-      icon: "?",
+      icon: "♥",
       links: [
         { label: "Inicio", target: "#hero" },
         { label: "Ubicaciones", target: "#ubicaciones" }
@@ -737,6 +863,95 @@ function addNavbarButton() {
 
 function removeNavbarButton(index: number) {
   draft.page.navbar?.buttons.splice(index, 1);
+}
+
+function applyPreset(name: "clasico" | "moderno" | "minimal") {
+  if (name === "clasico") {
+    draft.page = {
+      navbar: {
+        icon: "♥",
+        links: [
+          { label: "Inicio", target: "#hero" },
+          { label: "Ubicaciones", target: "#ubicaciones" },
+          { label: "Itinerario", target: "#itinerario" }
+        ],
+        buttons: [{ label: "RSVP", target: "#rsvp", variant: "outline" }]
+      },
+      hero: {
+        backgroundMode: "default",
+        buttons: [
+          { label: "RSVP", target: "#rsvp", variant: "solid" },
+          { label: "Ubicaciones", target: "#ubicaciones", variant: "outline" }
+        ]
+      },
+      sections: [
+        resolveSectionDefaults("countdown"),
+        resolveSectionDefaults("locations"),
+        resolveSectionDefaults("timeline"),
+        resolveSectionDefaults("rsvp"),
+        resolveSectionDefaults("gallery")
+      ],
+      footer: { message: "Gracias por acompanarnos", anchorId: "footer" }
+    };
+  }
+
+  if (name === "moderno") {
+    draft.page = {
+      navbar: {
+        icon: "✦",
+        links: [
+          { label: "Inicio", target: "#hero" },
+          { label: "Historia", target: "#historia" },
+          { label: "RSVP", target: "#rsvp" }
+        ],
+        buttons: [{ label: "Confirmar", target: "#rsvp", variant: "solid" }]
+      },
+      hero: {
+        backgroundMode: "color",
+        backgroundColor: "#1f2437",
+        buttons: [{ label: "Confirmar", target: "#rsvp", variant: "solid" }]
+      },
+      sections: [
+        resolveSectionDefaults("story"),
+        resolveSectionDefaults("locations"),
+        resolveSectionDefaults("rsvp"),
+        resolveSectionDefaults("faq")
+      ],
+      footer: { message: "Nos vemos pronto", anchorId: "footer" }
+    };
+  }
+
+  if (name === "minimal") {
+    draft.page = {
+      navbar: {
+        icon: "•",
+        links: [{ label: "Inicio", target: "#hero" }],
+        buttons: []
+      },
+      hero: {
+        backgroundMode: "image",
+        backgroundImageUrl: "/tenants/demo/hero.jpg",
+        buttons: []
+      },
+      sections: [
+        resolveSectionDefaults("locations"),
+        resolveSectionDefaults("rsvp")
+      ],
+      footer: { message: "Gracias por acompanarnos", anchorId: "footer" }
+    };
+  }
+}
+
+function updateButtonColor(
+  btn: { variant: "outline" | "solid"; borderColor?: string; backgroundColor?: string },
+  event: Event
+) {
+  const value = (event.target as HTMLInputElement).value;
+  if (btn.variant === "outline") {
+    btn.borderColor = value;
+  } else {
+    btn.backgroundColor = value;
+  }
 }
 
 function addHero() {
@@ -838,6 +1053,34 @@ function downloadJson() {
   URL.revokeObjectURL(url);
 }
 
+async function saveToTenants() {
+  if (!validateDraft()) return;
+  const { slug, ...tenant } = draft;
+  const json = JSON.stringify(tenant, null, 2);
+  const suggestedName = `${slug || "tenant"}.json`;
+  const picker = (window as Window & { showSaveFilePicker?: (options: unknown) => Promise<FileSystemFileHandle> })
+    .showSaveFilePicker;
+
+  try {
+    if (picker) {
+      const handle = await picker({
+        suggestedName,
+        types: [{ description: "JSON", accept: { "application/json": [".json"] } }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(json);
+      await writable.close();
+      toastMessage.value = `Guardado. Mueve el archivo a src/tenants/data/${suggestedName}`;
+      return;
+    }
+  } catch {
+    // ignore cancel
+  }
+
+  downloadJson();
+  toastMessage.value = `Descargado. Mueve el archivo a src/tenants/data/${suggestedName}`;
+}
+
 function encodeDraft(payload: { data: TenantConfig }) {
   const json = JSON.stringify(payload);
   return btoa(unescape(encodeURIComponent(json)));
@@ -851,6 +1094,13 @@ function saveDraft() {
   const current = raw ? (JSON.parse(raw) as Array<{ id: string; data: TenantConfig; slug?: string }>) : [];
   current.unshift({ id: draftId, slug, data: tenant as TenantConfig });
   localStorage.setItem("weddingapp_drafts", JSON.stringify(current.slice(0, 20)));
+  const versionsRaw = localStorage.getItem("weddingapp_draft_versions");
+  const versions = versionsRaw
+    ? (JSON.parse(versionsRaw) as Array<{ id: string; slug: string; createdAt: string; data: TenantConfig }>)
+    : [];
+  versions.unshift({ id: draftId, slug, createdAt: new Date().toISOString(), data: tenant as TenantConfig });
+  localStorage.setItem("weddingapp_draft_versions", JSON.stringify(versions.slice(0, 50)));
+  loadVersions();
   const key = String(import.meta.env.VITE_ADMIN_PREVIEW_KEY || "");
   const encoded = encodeDraft({ data: tenant as TenantConfig });
   draftShareUrl.value = key ? `${window.location.origin}/preview/${draftId}?key=${key}&data=${encoded}` : "";
