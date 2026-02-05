@@ -683,6 +683,25 @@ watch(
   { deep: true, immediate: true }
 );
 
+watch(
+  () => [draft.slug, draft.dateISO],
+  () => {
+    if (validationErrors.list.length) validateDraft();
+  }
+);
+
+watch(
+  () => [
+    draft.page.navbar?.links,
+    draft.page.navbar?.buttons,
+    draft.page.hero?.buttons
+  ],
+  () => {
+    if (validationErrors.list.length) validateDraft();
+  },
+  { deep: true }
+);
+
 function addNavbar() {
   if (!draft.page.navbar) {
     draft.page.navbar = {
