@@ -1,56 +1,81 @@
 <template>
   <div class="min-h-screen bg-slate-100 text-slate-900">
-    <div class="flex min-h-screen">
+    <div id="app-layout" class="flex overflow-x-hidden">
       <aside
-        class="fixed inset-y-0 left-0 z-30 flex flex-col border-r border-slate-200 bg-white transition-[width] duration-200"
-        :class="isCollapsed ? 'w-20' : 'w-64'"
+        class="fixed inset-y-0 left-0 z-30 flex h-screen w-[15.625rem] flex-col border-r border-slate-200 bg-white transition-transform duration-200"
+        :class="isCollapsed ? '-translate-x-full' : 'translate-x-0'"
       >
         <div class="flex items-center justify-between px-6 py-5">
-          <div class="flex items-center gap-3">
-            <div class="grid h-9 w-9 place-items-center rounded-xl bg-slate-900 text-sm font-semibold text-white">W</div>
-            <div v-if="!isCollapsed">
-              <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">WeddingApp</div>
-              <div class="mt-1 text-lg font-semibold">Admin</div>
-            </div>
+          <div>
+            <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">WeddingApp</div>
+            <div class="mt-2 text-lg font-semibold">Admin</div>
           </div>
-          <button class="rounded-lg border border-slate-200 px-2 py-1 text-xs" type="button" @click="toggleSidebar">
+          <button class="rounded-md border border-slate-200 px-2 py-1 text-xs" type="button" @click="toggleSidebar">
             {{ isCollapsed ? ">" : "<" }}
           </button>
         </div>
-
         <nav class="px-3 py-2">
           <RouterLink
-            class="mb-1 flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-slate-100"
+            class="mb-1 flex items-center gap-3 rounded-md px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
             to="/admin/generate"
           >
-            <span class="grid h-6 w-6 place-items-center rounded-lg bg-slate-100 text-xs font-semibold text-slate-500">G</span>
-            <span v-if="!isCollapsed">Generar</span>
+            Generar
           </RouterLink>
           <button
-            class="mb-1 flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-medium text-slate-400"
+            class="mb-1 flex w-full items-center gap-3 rounded-md px-4 py-3 text-left text-sm font-medium text-slate-400"
             disabled
             type="button"
           >
-            <span class="grid h-6 w-6 place-items-center rounded-lg bg-slate-100 text-xs font-semibold text-slate-400">C</span>
-            <span v-if="!isCollapsed">Configurar (pronto)</span>
+            Configurar (pronto)
           </button>
           <button
-            class="mt-6 flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
+            class="mt-6 flex w-full items-center gap-3 rounded-md px-4 py-3 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
             type="button"
             @click="logout"
           >
-            <span class="grid h-6 w-6 place-items-center rounded-lg bg-red-50 text-xs font-semibold text-red-500">X</span>
-            <span v-if="!isCollapsed">Cerrar sesion</span>
+            Cerrar sesion
           </button>
         </nav>
       </aside>
 
-      <main class="flex-1 transition-[margin] duration-200" :class="isCollapsed ? 'ml-20' : 'ml-64'">
-        <div class="border-b border-slate-200 bg-white px-8 py-5">
-          <h1 class="text-xl font-semibold">Panel administrativo</h1>
-          <p class="text-sm text-slate-500">Crea y previsualiza nuevas bodas.</p>
+      <main
+        id="app-layout-content"
+        class="min-h-screen w-full min-w-[100vw] md:min-w-0 transition-[margin] duration-200"
+        :class="isCollapsed ? 'ml-0' : 'ml-[15.625rem]'"
+      >
+        <div class="bg-white px-6 py-[10px] shadow-sm">
+          <div class="flex items-center justify-between">
+            <button class="text-slate-700" type="button" @click="toggleSidebar">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              </svg>
+            </button>
+            <div class="hidden lg:block">
+              <input
+                type="search"
+                class="block w-full rounded border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-600 focus:ring-indigo-600"
+                placeholder="Search"
+              />
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="h-9 w-9 rounded-full bg-slate-200"></div>
+            </div>
+          </div>
         </div>
-        <div class="p-6">
+
+        <div class="bg-indigo-600 px-8 pt-10 pb-16">
+          <div class="flex items-center justify-between">
+            <h1 class="text-xl text-white">Panel administrativo</h1>
+            <button
+              class="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-100"
+              type="button"
+            >
+              Crear nuevo sitio
+            </button>
+          </div>
+        </div>
+
+        <div class="-mt-12 mx-6 mb-6">
           <RouterView />
         </div>
       </main>
