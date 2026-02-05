@@ -1,17 +1,29 @@
 <template>
   <main class="min-h-screen" :data-tenant="slug">
-    <Navbar :couple-names="tenant.coupleNames" />
-    <HeroSection :tenant="tenant" variant="default" />
-    <CountdownSection v-if="sectionFlags.countdown" :date-iso="tenant.dateISO" />
-    <StorySection v-if="sectionFlags.story && tenant.story" :story="tenant.story" />
-    <LocationsSection v-if="sectionFlags.locations" :tenant="tenant" />
-    <TimelineSection v-if="sectionFlags.timeline" :schedule="tenant.schedule" />
-    <DressCodeSection v-if="sectionFlags.dressCode" :dress-code="tenant.dressCode" />
-    <GiftsSection v-if="sectionFlags.gifts" :gifts="tenant.gifts" />
-    <FaqSection v-if="sectionFlags.faq && tenant.faq?.length" :items="tenant.faq" />
-    <RsvpSection v-if="sectionFlags.rsvp" :tenant="tenant" :slug="slug" />
-    <GallerySection v-if="sectionFlags.gallery" :gallery="tenant.gallery" />
-    <FooterSection :contact-email="tenant.contactEmail" />
+    <Navbar v-if="!hasPageConfig || navbarConfig" :couple-names="tenant.coupleNames" :config="navbarConfig || undefined" />
+    <HeroSection
+      v-if="!hasPageConfig || heroConfig"
+      :tenant="tenant"
+      :hero-config="heroConfig || undefined"
+      variant="default"
+    />
+    <template v-for="section in orderedSections" :key="`${section.type}-${section.anchorId}`">
+      <CountdownSection v-if="section.type === 'countdown'" :date-iso="tenant.dateISO" :anchor-id="section.anchorId" />
+      <StorySection v-else-if="section.type === 'story' && tenant.story" :story="tenant.story" :anchor-id="section.anchorId" />
+      <LocationsSection v-else-if="section.type === 'locations'" :tenant="tenant" :anchor-id="section.anchorId" />
+      <TimelineSection v-else-if="section.type === 'timeline'" :schedule="tenant.schedule" :anchor-id="section.anchorId" />
+      <DressCodeSection v-else-if="section.type === 'dressCode'" :dress-code="tenant.dressCode" :anchor-id="section.anchorId" />
+      <GiftsSection v-else-if="section.type === 'gifts'" :gifts="tenant.gifts" :anchor-id="section.anchorId" />
+      <RsvpSection v-else-if="section.type === 'rsvp'" :tenant="tenant" :slug="slug" :anchor-id="section.anchorId" />
+      <GallerySection v-else-if="section.type === 'gallery'" :gallery="tenant.gallery" :anchor-id="section.anchorId" />
+      <FaqSection v-else-if="section.type === 'faq' && tenant.faq?.length" :items="tenant.faq" :anchor-id="section.anchorId" />
+    </template>
+    <FooterSection
+      v-if="!hasPageConfig || footerConfig"
+      :contact-email="tenant.contactEmail"
+      :message="footerConfig?.message"
+      :anchor-id="footerConfig?.anchorId"
+    />
   </main>
 </template>
 
@@ -28,21 +40,23 @@ import FaqSection from "./FaqSection.vue";
 import RsvpSection from "./RsvpSection.vue";
 import GallerySection from "./GallerySection.vue";
 import FooterSection from "./FooterSection.vue";
-import type { TenantConfig } from "../types/tenant";
+import type { PageSection, TenantConfig } from "../types/tenant";
+import { computed } from "vue";
+import { defaultSections } from "../utils/sectionCatalog";
 
-defineProps<{
+const props = defineProps<{
   tenant: TenantConfig;
   slug: string;
-  sectionFlags: {
-    countdown: boolean;
-    story: boolean;
-    locations: boolean;
-    timeline: boolean;
-    dressCode: boolean;
-    gifts: boolean;
-    rsvp: boolean;
-    gallery: boolean;
-    faq: boolean;
-  };
 }>();
+
+const hasPageConfig = computed(() => Boolean(props.tenant.page));
+const navbarConfig = computed(() => props.tenant.page?.navbar);
+const heroConfig = computed(() => props.tenant.page?.hero);
+const footerConfig = computed(() => props.tenant.page?.footer);
+
+const orderedSections = computed<PageSection[]>(() => {
+  if (props.tenant.page?.sections?.length) return props.tenant.page.sections;
+  if (!props.tenant.page) return defaultSections();
+  return [];
+});
 </script>

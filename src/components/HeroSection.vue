@@ -3,8 +3,9 @@
     id="hero"
     :class="[
       'section hero-section',
-      isEnchanted ? 'enchanted-hero text-[#3b2b23]' : 'hero-surface text-white'
+      heroSurfaceClass
     ]"
+    :style="heroStyle"
   >
     <div class="container-safe grid gap-10 lg:grid-cols-2 lg:items-center">
       <div>
@@ -21,8 +22,15 @@
           {{ tenant.hero.tagline }}
         </p>
         <div class="mt-6 flex flex-wrap gap-4">
-          <a class="btn-primary" href="#rsvp">{{ tenant.hero.ctaPrimaryText }}</a>
-          <a class="btn-outline" href="#ubicaciones">{{ tenant.hero.ctaSecondaryText }}</a>
+          <a
+            v-for="(btn, index) in heroButtons"
+            :key="`${btn.label}-${index}`"
+            :class="btn.variant === 'solid' ? 'btn-primary' : 'btn-outline'"
+            :style="buttonStyle(btn)"
+            :href="btn.target"
+          >
+            {{ btn.label }}
+          </a>
         </div>
         <div v-if="isEnchanted" class="mt-8 grid gap-4 sm:grid-cols-2">
           <div class="enchanted-detail-card">
@@ -79,11 +87,65 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { TenantConfig } from "../types/tenant";
+import type { ActionButton, HeroLayoutConfig, TenantConfig } from "../types/tenant";
 
-const props = defineProps<{ tenant: TenantConfig; variant?: "default" | "enchanted" }>();
+const props = defineProps<{ tenant: TenantConfig; variant?: "default" | "enchanted"; heroConfig?: HeroLayoutConfig }>();
 const isEnchanted = computed(() => props.variant === "enchanted");
 const heroImages = computed(() => props.tenant.gallery?.slice(0, 2) ?? []);
+
+const heroButtons = computed(() => {
+  const layoutButtons = props.heroConfig?.buttons?.filter((btn) => btn.label && btn.target) ?? [];
+  if (layoutButtons.length) return layoutButtons;
+  return [
+    {
+      label: props.tenant.hero.ctaPrimaryText,
+      target: props.tenant.hero.ctaPrimaryTarget || "#rsvp",
+      variant: "solid"
+    },
+    {
+      label: props.tenant.hero.ctaSecondaryText,
+      target: props.tenant.hero.ctaSecondaryTarget || "#ubicaciones",
+      variant: "outline"
+    }
+  ];
+});
+
+const heroSurfaceClass = computed(() => {
+  if (isEnchanted.value) return "enchanted-hero text-[#3b2b23]";
+  const mode = props.heroConfig?.backgroundMode;
+  if (mode === "color" || mode === "image") return "text-white";
+  return "hero-surface text-white";
+});
+
+const heroStyle = computed(() => {
+  const mode = props.heroConfig?.backgroundMode;
+  if (mode === "color") {
+    return { backgroundColor: props.heroConfig?.backgroundColor || "var(--color-ink)" };
+  }
+  if (mode === "image" && props.heroConfig?.backgroundImageUrl) {
+    return {
+      backgroundImage: `url('${props.heroConfig.backgroundImageUrl}')`,
+      backgroundSize: "cover",
+      backgroundPosition: "center"
+    };
+  }
+  return {};
+});
+
+function buttonStyle(btn: ActionButton) {
+  if (btn.variant === "solid") {
+    return {
+      backgroundColor: btn.backgroundColor || "var(--color-primary)",
+      color: btn.textColor || "white",
+      borderColor: btn.borderColor || "transparent"
+    };
+  }
+  return {
+    backgroundColor: "transparent",
+    borderColor: btn.borderColor || "var(--color-accent)",
+    color: btn.textColor || "var(--color-accent)"
+  };
+}
 
 const formattedDate = computed(() => {
   const date = new Date(props.tenant.dateISO);

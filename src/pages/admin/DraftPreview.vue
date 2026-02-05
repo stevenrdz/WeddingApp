@@ -17,7 +17,7 @@
         No se encontro el borrador.
       </div>
       <div v-else ref="previewRef" class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <WeddingPreview :tenant="draft" :slug="slug" :section-flags="sectionFlags" />
+        <WeddingPreview :tenant="draft" :slug="slug" />
       </div>
     </div>
   </div>
@@ -32,20 +32,7 @@ import type { TenantConfig } from "../../types/tenant";
 const route = useRoute();
 const previewRef = ref<HTMLElement | null>(null);
 const draft = ref<TenantConfig | null>(null);
-const sections = ref({
-  countdown: true,
-  story: true,
-  locations: true,
-  timeline: true,
-  dressCode: true,
-  gifts: true,
-  rsvp: true,
-  gallery: true,
-  faq: true
-});
 const slug = computed(() => String(route.params.draftId || "borrador"));
-
-const sectionFlags = computed(() => sections.value);
 
 function applyThemeToElement(el: HTMLElement | null, theme: TenantConfig["theme"]) {
   if (!el) return;
@@ -55,13 +42,16 @@ function applyThemeToElement(el: HTMLElement | null, theme: TenantConfig["theme"
   el.style.setProperty("--color-surface", theme.background);
   el.style.setProperty("--color-text", theme.text);
   el.style.setProperty("--font-heading", theme.fontHeading);
+  if (theme.fontSubheading) {
+    el.style.setProperty("--font-subheading", theme.fontSubheading);
+  }
   el.style.setProperty("--font-body", theme.fontBody);
 }
 
-function decodeDraft(raw: string): { data: TenantConfig; sections?: typeof sections.value } | null {
+function decodeDraft(raw: string): { data: TenantConfig } | null {
   try {
     const json = decodeURIComponent(escape(atob(raw)));
-    return JSON.parse(json) as { data: TenantConfig; sections?: typeof sections.value };
+    return JSON.parse(json) as { data: TenantConfig };
   } catch {
     return null;
   }
@@ -74,7 +64,6 @@ onMounted(() => {
     const decoded = decodeDraft(shared);
     if (decoded?.data) {
       draft.value = decoded.data;
-      if (decoded.sections) sections.value = decoded.sections;
       applyThemeToElement(previewRef.value, decoded.data.theme);
     }
     return;
@@ -83,11 +72,10 @@ onMounted(() => {
   const raw = localStorage.getItem("weddingapp_drafts");
   if (!draftId || !raw) return;
   try {
-    const list = JSON.parse(raw) as Array<{ id: string; data: TenantConfig; sections?: typeof sections.value }>;
+    const list = JSON.parse(raw) as Array<{ id: string; data: TenantConfig }>;
     const found = list.find((item) => item.id === draftId);
     if (found) {
       draft.value = found.data;
-      if (found.sections) sections.value = found.sections;
       applyThemeToElement(previewRef.value, found.data.theme);
     }
   } catch {

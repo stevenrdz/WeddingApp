@@ -1,5 +1,5 @@
 <template>
-  <section id="itinerario" class="section timeline-section">
+  <section :id="anchorId ?? 'itinerario'" class="section timeline-section">
     <div class="container-safe">
       <p class="section-title text-left">ITINERARIO</p>
       <div class="ornament mt-2"></div>
@@ -18,5 +18,5 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ schedule: Array<{ time: string; title: string; description: string }> }>();
+defineProps<{ schedule: Array<{ time: string; title: string; description: string }>; anchorId?: string }>();
 </script>

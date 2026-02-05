@@ -1,5 +1,5 @@
 <template>
-  <section class="section dresscode-section bg-white/60">
+  <section :id="anchorId ?? 'dress-code'" class="section dresscode-section bg-white/60">
     <div class="container-safe grid gap-6 md:grid-cols-2 md:items-center">
       <div>
         <p class="section-title text-left">DRESS CODE</p>
@@ -14,5 +14,5 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ dressCode: { title: string; description: string } }>();
+defineProps<{ dressCode: { title: string; description: string }; anchorId?: string }>();
 </script>

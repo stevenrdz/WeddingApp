@@ -1,5 +1,5 @@
 <template>
-  <section class="section faq-section">
+  <section :id="anchorId ?? 'faq'" class="section faq-section">
     <div class="container-safe">
       <p class="section-title text-left">PREGUNTAS FRECUENTES</p>
       <div class="ornament mt-2"></div>
@@ -15,5 +15,5 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ items: Array<{ question: string; answer: string }> }>();
+defineProps<{ items: Array<{ question: string; answer: string }>; anchorId?: string }>();
 </script>

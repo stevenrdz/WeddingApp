@@ -6,18 +6,30 @@
       <RouterLink class="btn-primary mt-6 inline-flex" to="/">Volver al inicio</RouterLink>
     </div>
     <div v-else>
-      <Navbar :couple-names="tenant.coupleNames" />
-      <HeroSection :tenant="tenant" :variant="slug === 'sofia-mateo' ? 'enchanted' : 'default'" />
-      <CountdownSection v-if="sectionFlags.countdown" :date-iso="tenant.dateISO" />
-      <StorySection v-if="sectionFlags.story && tenant.story" :story="tenant.story" />
-      <LocationsSection v-if="sectionFlags.locations" :tenant="tenant" />
-      <TimelineSection v-if="sectionFlags.timeline" :schedule="tenant.schedule" />
-      <DressCodeSection v-if="sectionFlags.dressCode" :dress-code="tenant.dressCode" />
-      <GiftsSection v-if="sectionFlags.gifts" :gifts="tenant.gifts" />
-      <FaqSection v-if="sectionFlags.faq && tenant.faq?.length" :items="tenant.faq" />
-      <RsvpSection v-if="sectionFlags.rsvp" :tenant="tenant" :slug="slug" />
-      <GallerySection v-if="sectionFlags.gallery" :gallery="tenant.gallery" />
-      <FooterSection :contact-email="tenant.contactEmail" />
+      <Navbar v-if="!hasPageConfig || navbarConfig" :couple-names="tenant.coupleNames" :config="navbarConfig || undefined" />
+      <HeroSection
+        v-if="!hasPageConfig || heroConfig"
+        :tenant="tenant"
+        :hero-config="heroConfig || undefined"
+        :variant="slug === 'sofia-mateo' ? 'enchanted' : 'default'"
+      />
+      <template v-for="section in orderedSections" :key="`${section.type}-${section.anchorId}`">
+        <CountdownSection v-if="section.type === 'countdown'" :date-iso="tenant.dateISO" :anchor-id="section.anchorId" />
+        <StorySection v-else-if="section.type === 'story' && tenant.story" :story="tenant.story" :anchor-id="section.anchorId" />
+        <LocationsSection v-else-if="section.type === 'locations'" :tenant="tenant" :anchor-id="section.anchorId" />
+        <TimelineSection v-else-if="section.type === 'timeline'" :schedule="tenant.schedule" :anchor-id="section.anchorId" />
+        <DressCodeSection v-else-if="section.type === 'dressCode'" :dress-code="tenant.dressCode" :anchor-id="section.anchorId" />
+        <GiftsSection v-else-if="section.type === 'gifts'" :gifts="tenant.gifts" :anchor-id="section.anchorId" />
+        <RsvpSection v-else-if="section.type === 'rsvp'" :tenant="tenant" :slug="slug" :anchor-id="section.anchorId" />
+        <GallerySection v-else-if="section.type === 'gallery'" :gallery="tenant.gallery" :anchor-id="section.anchorId" />
+        <FaqSection v-else-if="section.type === 'faq' && tenant.faq?.length" :items="tenant.faq" :anchor-id="section.anchorId" />
+      </template>
+      <FooterSection
+        v-if="!hasPageConfig || footerConfig"
+        :contact-email="tenant.contactEmail"
+        :message="footerConfig?.message"
+        :anchor-id="footerConfig?.anchorId"
+      />
     </div>
   </main>
 </template>
@@ -26,7 +38,7 @@
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { LocalJsonAdapter } from "../tenants/LocalJsonAdapter";
-import type { TenantConfig } from "../types/tenant";
+import type { PageSection, TenantConfig } from "../types/tenant";
 import { applyTheme } from "../utils/applyTheme";
 import { applySeo } from "../utils/seo";
 import Navbar from "../components/Navbar.vue";
@@ -41,32 +53,22 @@ import FaqSection from "../components/FaqSection.vue";
 import RsvpSection from "../components/RsvpSection.vue";
 import GallerySection from "../components/GallerySection.vue";
 import FooterSection from "../components/FooterSection.vue";
+import { defaultSections } from "../utils/sectionCatalog";
 
 const route = useRoute();
 const adapter = new LocalJsonAdapter();
 const tenant = ref<TenantConfig | null>(null);
 const loading = ref(true);
 const slug = ref(String(route.params.slug || ""));
-const planBySlug = {
-  "sofia-mateo": "basic",
-  "lucia-diego": "standard",
-  "steven-jenniffer": "premium"
-} as const;
-type Plan = (typeof planBySlug)[keyof typeof planBySlug];
-const plan = computed<Plan>(() => planBySlug[slug.value as keyof typeof planBySlug] ?? "standard");
-const sectionFlags = computed(() => {
-  const current = plan.value;
-  return {
-    countdown: current !== "basic",
-    story: true,
-    locations: true,
-    timeline: current !== "basic",
-    dressCode: current !== "basic",
-    gifts: current !== "basic",
-    rsvp: true,
-    gallery: true,
-    faq: current === "premium"
-  };
+const hasPageConfig = computed(() => Boolean(tenant.value?.page));
+const navbarConfig = computed(() => tenant.value?.page?.navbar);
+const heroConfig = computed(() => tenant.value?.page?.hero);
+const footerConfig = computed(() => tenant.value?.page?.footer);
+const orderedSections = computed<PageSection[]>(() => {
+  if (!tenant.value) return [];
+  if (tenant.value.page?.sections?.length) return tenant.value.page.sections;
+  if (!tenant.value.page) return defaultSections();
+  return [];
 });
 
 async function loadTenant(currentSlug: string) {

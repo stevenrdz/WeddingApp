@@ -1,5 +1,5 @@
 <template>
-  <section class="section gifts-section">
+  <section :id="anchorId ?? 'regalos'" class="section gifts-section">
     <div class="container-safe">
       <p class="section-title text-left">REGALOS</p>
       <div class="ornament mt-2"></div>
@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-defineProps<{ gifts: { bankTransferText: string; giftListUrl: string; message: string } }>();
+defineProps<{ gifts: { bankTransferText: string; giftListUrl: string; message: string }; anchorId?: string }>();
 const copied = ref(false);
 const codeRef = ref<HTMLElement | null>(null);
 

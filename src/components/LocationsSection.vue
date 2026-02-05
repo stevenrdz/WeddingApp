@@ -1,5 +1,5 @@
 <template>
-  <section id="ubicaciones" class="section locations-section bg-white/60">
+  <section :id="anchorId ?? 'ubicaciones'" class="section locations-section bg-white/60">
     <div class="container-safe">
       <p class="section-title text-left">UBICACIONES</p>
       <div class="ornament mt-2"></div>
@@ -25,5 +25,5 @@
 <script setup lang="ts">
 import type { TenantConfig } from "../types/tenant";
 
-defineProps<{ tenant: TenantConfig }>();
+defineProps<{ tenant: TenantConfig; anchorId?: string }>();
 </script>

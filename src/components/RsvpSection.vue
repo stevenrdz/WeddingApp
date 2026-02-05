@@ -1,5 +1,5 @@
 <template>
-  <section id="rsvp" class="section rsvp-section bg-white/60">
+  <section :id="anchorId ?? 'rsvp'" class="section rsvp-section bg-white/60">
     <div class="container-safe">
       <p class="section-title text-left">RSVP</p>
       <div class="ornament mt-2"></div>
@@ -23,5 +23,5 @@ import type { TenantConfig } from "../types/tenant";
 import WhatsappCta from "./WhatsappCta.vue";
 import NetlifyRsvpForm from "./NetlifyRsvpForm.vue";
 
-defineProps<{ tenant: TenantConfig; slug: string }>();
+defineProps<{ tenant: TenantConfig; slug: string; anchorId?: string }>();
 </script>

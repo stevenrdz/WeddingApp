@@ -1,5 +1,5 @@
 <template>
-  <section class="section story-section">
+  <section :id="anchorId ?? 'historia'" class="section story-section">
     <div class="container-safe max-w-3xl text-center">
       <p class="section-title">HISTORIA</p>
       <div class="ornament mx-auto mt-2"></div>
@@ -10,5 +10,5 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ story: { title: string; message: string } }>();
+defineProps<{ story: { title: string; message: string }; anchorId?: string }>();
 </script>

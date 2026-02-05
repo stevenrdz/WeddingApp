@@ -26,6 +26,7 @@
   --color-ink: #1b2034;
   --color-accent: #c79a5b;
   --font-heading: "Cormorant Garamond";
+  --font-subheading: "Cormorant Garamond";
   --font-body: "Source Sans 3";
   --font-script: "Great Vibes";
 }
@@ -75,7 +76,8 @@ body {
 }
 
 .section-title {
-  @apply text-center font-heading text-3xl font-semibold tracking-[0.2em] text-black/70;
+  @apply text-center text-3xl font-semibold tracking-[0.2em] text-black/70;
+  font-family: var(--font-subheading), var(--font-heading), serif;
 }
 
 .ornament {

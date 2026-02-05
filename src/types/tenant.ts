@@ -1,4 +1,59 @@
 export type RsvpMode = "whatsapp" | "netlify";
+export type SectionType =
+  | "countdown"
+  | "story"
+  | "locations"
+  | "timeline"
+  | "dressCode"
+  | "gifts"
+  | "rsvp"
+  | "gallery"
+  | "faq";
+
+export type ButtonVariant = "outline" | "solid";
+
+export interface PageLink {
+  label: string;
+  target: string;
+}
+
+export interface ActionButton extends PageLink {
+  variant: ButtonVariant;
+  backgroundColor?: string;
+  borderColor?: string;
+  textColor?: string;
+}
+
+export interface NavbarConfig {
+  icon?: string;
+  links?: PageLink[];
+  buttons?: ActionButton[];
+}
+
+export interface HeroLayoutConfig {
+  backgroundMode?: "default" | "color" | "image";
+  backgroundColor?: string;
+  backgroundImageUrl?: string;
+  buttons?: ActionButton[];
+}
+
+export interface PageSection {
+  type: SectionType;
+  label: string;
+  anchorId: string;
+}
+
+export interface FooterConfig {
+  message?: string;
+  anchorId?: string;
+}
+
+export interface PageConfig {
+  navbar?: NavbarConfig;
+  hero?: HeroLayoutConfig;
+  sections?: PageSection[];
+  footer?: FooterConfig;
+}
 
 export interface TenantConfig {
   coupleNames: string;
@@ -7,6 +62,8 @@ export interface TenantConfig {
     tagline: string;
     ctaPrimaryText: string;
     ctaSecondaryText: string;
+    ctaPrimaryTarget?: string;
+    ctaSecondaryTarget?: string;
   };
   ceremony: {
     name: string;
@@ -37,9 +94,11 @@ export interface TenantConfig {
     background: string;
     text: string;
     fontHeading: string;
+    fontSubheading?: string;
     fontBody: string;
   };
   seo: { title: string; description: string; url: string; ogImage: string };
+  page?: PageConfig;
   story?: { title: string; message: string };
   faq?: Array<{ question: string; answer: string }>;
   contactEmail?: string;

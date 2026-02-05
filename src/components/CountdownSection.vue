@@ -1,5 +1,5 @@
 <template>
-  <section class="section countdown-section bg-white/60">
+  <section :id="anchorId ?? 'cuenta-regresiva'" class="section countdown-section bg-white/60">
     <div class="container-safe text-center">
       <p class="section-title">CUENTA REGRESIVA</p>
       <div class="ornament mx-auto mt-2"></div>
@@ -31,7 +31,7 @@
 import { onMounted, onUnmounted, ref } from "vue";
 import { getCountdown } from "../utils/countdown";
 
-const props = defineProps<{ dateIso: string }>();
+const props = defineProps<{ dateIso: string; anchorId?: string }>();
 const countdown = ref(getCountdown(props.dateIso));
 let timer: number | undefined;
 

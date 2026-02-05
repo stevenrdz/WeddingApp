@@ -4,6 +4,7 @@ export function applyTheme(theme: {
   background: string;
   text: string;
   fontHeading: string;
+  fontSubheading?: string;
   fontBody: string;
 }) {
   const root = document.documentElement;
@@ -13,5 +14,8 @@ export function applyTheme(theme: {
   root.style.setProperty("--color-surface", theme.background);
   root.style.setProperty("--color-text", theme.text);
   root.style.setProperty("--font-heading", theme.fontHeading);
+  if (theme.fontSubheading) {
+    root.style.setProperty("--font-subheading", theme.fontSubheading);
+  }
   root.style.setProperty("--font-body", theme.fontBody);
 }

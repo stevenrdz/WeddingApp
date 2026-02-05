@@ -1,5 +1,5 @@
 <template>
-  <section id="galeria" class="section gallery-section">
+  <section :id="anchorId ?? 'galeria'" class="section gallery-section">
     <div class="container-safe">
       <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-[#2b241f] text-white shadow-lg">
         <div class="px-6 py-12 md:px-10 md:py-16">
@@ -28,7 +28,7 @@
 import { ref } from "vue";
 import Lightbox from "./Lightbox.vue";
 
-defineProps<{ gallery: Array<{ src: string; alt: string }> }>();
+defineProps<{ gallery: Array<{ src: string; alt: string }>; anchorId?: string }>();
 const isOpen = ref(false);
 const current = ref(0);
 

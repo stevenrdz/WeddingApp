@@ -1,12 +1,14 @@
+
 <template>
   <div class="grid gap-6 lg:grid-cols-[420px_minmax(0,1fr)]">
     <section class="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <div>
-        <h2 class="text-lg font-semibold">Generar nueva boda</h2>
-        <p class="text-sm text-slate-500">Completa el formulario y mira la previsualizacion en vivo.</p>
+        <h2 class="text-lg font-semibold">Nuevo flujo de admin</h2>
+        <p class="text-sm text-slate-500">Arma la estructura (navbar, hero, secciones, footer) y edita el contenido.</p>
       </div>
 
       <div class="space-y-4">
+        <h3 class="text-sm font-semibold text-slate-800">Campos generales</h3>
         <label class="block text-sm font-medium text-slate-700">
           Slug
           <input
@@ -14,146 +16,30 @@
             class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm"
             placeholder="ej: steven-jenniffer"
             type="text"
+            @blur="ensureUniqueSlug"
           />
         </label>
-
-        <label class="block text-sm font-medium text-slate-700">
-          Nombres de la pareja
-          <input
-            v-model="draft.coupleNames"
-            class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm"
-            placeholder="Nombre & Nombre"
-            type="text"
-          />
-        </label>
-
+        <p v-if="slugNotice" class="text-xs text-amber-600">{{ slugNotice }}</p>
+        <p v-if="validationErrors.slug" class="text-xs text-red-600">{{ validationErrors.slug }}</p>
         <label class="block text-sm font-medium text-slate-700">
           Fecha
-          <input
-            v-model="draft.dateISO"
-            class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm"
-            type="date"
-          />
+          <input v-model="draft.dateISO" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="date" />
         </label>
-      </div>
-
-      <div class="space-y-3">
-        <h3 class="text-sm font-semibold text-slate-800">Hero</h3>
-        <label class="block text-sm text-slate-600">
-          Tagline
-          <input v-model="draft.hero.tagline" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-        </label>
+        <p v-if="validationErrors.dateISO" class="text-xs text-red-600">{{ validationErrors.dateISO }}</p>
         <div class="grid gap-3 md:grid-cols-2">
-          <label class="block text-sm text-slate-600">
-            CTA primaria
-            <input v-model="draft.hero.ctaPrimaryText" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          <label class="block text-sm font-medium text-slate-700">
+            Tipografia titulos
+            <input v-model="draft.theme.fontHeading" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
           </label>
-          <label class="block text-sm text-slate-600">
-            CTA secundaria
-            <input v-model="draft.hero.ctaSecondaryText" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          <label class="block text-sm font-medium text-slate-700">
+            Tipografia subtitulos
+            <input v-model="draft.theme.fontSubheading" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
           </label>
-        </div>
-      </div>
-
-      <div class="space-y-4">
-        <h3 class="text-sm font-semibold text-slate-800">Ceremonia</h3>
-        <label class="block text-sm text-slate-600">
-          Nombre
-          <input v-model="draft.ceremony.name" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-        </label>
-        <div class="grid gap-3 md:grid-cols-2">
-          <label class="block text-sm text-slate-600">
-            Hora
-            <input v-model="draft.ceremony.time" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="time" />
-          </label>
-          <label class="block text-sm text-slate-600">
-            Mapa
-            <input v-model="draft.ceremony.mapUrl" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="url" />
+          <label class="block text-sm font-medium text-slate-700">
+            Tipografia parrafos
+            <input v-model="draft.theme.fontBody" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
           </label>
         </div>
-        <label class="block text-sm text-slate-600">
-          Direccion
-          <input v-model="draft.ceremony.address" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-        </label>
-      </div>
-
-      <div class="space-y-4">
-        <h3 class="text-sm font-semibold text-slate-800">Recepcion</h3>
-        <label class="block text-sm text-slate-600">
-          Nombre
-          <input v-model="draft.reception.name" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-        </label>
-        <div class="grid gap-3 md:grid-cols-2">
-          <label class="block text-sm text-slate-600">
-            Hora
-            <input v-model="draft.reception.time" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="time" />
-          </label>
-          <label class="block text-sm text-slate-600">
-            Mapa
-            <input v-model="draft.reception.mapUrl" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="url" />
-          </label>
-        </div>
-        <label class="block text-sm text-slate-600">
-          Direccion
-          <input v-model="draft.reception.address" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-        </label>
-      </div>
-
-      <div class="space-y-3">
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-semibold text-slate-800">Itinerario</h3>
-          <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addSchedule">
-            Agregar
-          </button>
-        </div>
-        <div v-for="(item, index) in draft.schedule" :key="index" class="rounded-xl border border-slate-200 p-3">
-          <div class="grid gap-3 md:grid-cols-3">
-            <input v-model="item.time" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Hora" />
-            <input v-model="item.title" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Titulo" />
-            <input v-model="item.description" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Descripcion" />
-          </div>
-          <button
-            v-if="draft.schedule.length > 1"
-            class="mt-2 text-xs text-red-500"
-            type="button"
-            @click="removeSchedule(index)"
-          >
-            Quitar
-          </button>
-        </div>
-      </div>
-
-      <div class="space-y-3">
-        <h3 class="text-sm font-semibold text-slate-800">RSVP</h3>
-        <label class="flex items-center gap-2 text-sm text-slate-600">
-          <input v-model="draft.rsvp.enabled" type="checkbox" />
-          Habilitar RSVP
-        </label>
-        <label class="block text-sm text-slate-600">
-          Modo
-          <select v-model="draft.rsvp.mode" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm">
-            <option value="whatsapp">WhatsApp</option>
-            <option value="netlify">Netlify Forms</option>
-          </select>
-        </label>
-        <div class="grid gap-3 md:grid-cols-2">
-          <label class="block text-sm text-slate-600">
-            Fecha limite
-            <input v-model="draft.rsvp.deadlineISO" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="date" />
-          </label>
-          <label class="block text-sm text-slate-600">
-            WhatsApp
-            <input v-model="draft.rsvp.whatsappNumber" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" placeholder="521..." />
-          </label>
-        </div>
-        <label class="block text-sm text-slate-600">
-          Netlify Form (opcional)
-          <input v-model="draft.rsvp.netlifyFormNameOptional" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-        </label>
-      </div>
-
-      <div class="space-y-3">
-        <h3 class="text-sm font-semibold text-slate-800">Tema</h3>
         <div class="grid gap-3 md:grid-cols-2">
           <label class="block text-sm text-slate-600">
             Primario
@@ -172,16 +58,355 @@
             <input v-model="draft.theme.text" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
           </label>
         </div>
-        <div class="grid gap-3 md:grid-cols-2">
+      </div>
+
+      <div class="space-y-3">
+        <h3 class="text-sm font-semibold text-slate-800">Agregar bloques</h3>
+        <div class="flex flex-wrap gap-3">
+          <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addNavbar">
+            + Navbar
+          </button>
+          <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addHero">
+            + Hero
+          </button>
+          <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addSections">
+            + Secciones
+          </button>
+          <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addFooter">
+            + Footer
+          </button>
+        </div>
+      </div>
+
+      <div v-if="draft.page.navbar" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-slate-800">Navbar</h3>
+          <button class="text-xs text-red-500" type="button" @click="removeNavbar">Quitar</button>
+        </div>
+        <label class="block text-sm text-slate-600">
+          Nombre de la pareja
+          <input v-model="draft.coupleNames" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+        </label>
+        <label class="block text-sm text-slate-600">
+          Icono
+          <input v-model="draft.page.navbar.icon" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+        </label>
+
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-semibold text-slate-700">Links</h4>
+            <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addNavbarLink">
+              Agregar link
+            </button>
+          </div>
+          <div v-for="(link, index) in draft.page.navbar.links" :key="`navlink-${index}`" class="grid gap-3 md:grid-cols-3">
+            <input v-model="link.label" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Texto" />
+            <input
+              v-model="link.target"
+              class="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              placeholder="#rsvp"
+              list="anchor-options"
+            />
+            <button class="text-xs text-red-500" type="button" @click="removeNavbarLink(index)">Quitar</button>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-semibold text-slate-700">Botones</h4>
+            <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addNavbarButton">
+              Agregar boton
+            </button>
+          </div>
+          <div v-for="(btn, index) in draft.page.navbar.buttons" :key="`navbtn-${index}`" class="rounded-xl border border-slate-200 p-3">
+            <div class="grid gap-3 md:grid-cols-2">
+              <input v-model="btn.label" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Texto" />
+              <input v-model="btn.target" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="#rsvp" list="anchor-options" />
+            </div>
+            <div class="mt-3 grid gap-3 md:grid-cols-3">
+              <label class="text-xs text-slate-500">
+                Variante
+                <select v-model="btn.variant" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+                  <option value="outline">Borde</option>
+                  <option value="solid">Fondo</option>
+                </select>
+              </label>
+              <label class="text-xs text-slate-500">
+                Color texto
+                <input v-model="btn.textColor" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" type="color" />
+              </label>
+              <label class="text-xs text-slate-500">
+                <span v-if="btn.variant === 'outline'">Color borde</span>
+                <span v-else>Color fondo</span>
+                <input
+                  v-model="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
+                  class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                  type="color"
+                />
+              </label>
+            </div>
+            <button class="mt-2 text-xs text-red-500" type="button" @click="removeNavbarButton(index)">Quitar</button>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="draft.page.hero" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-slate-800">Hero</h3>
+          <button class="text-xs text-red-500" type="button" @click="removeHero">Quitar</button>
+        </div>
+        <label class="block text-sm text-slate-600">
+          Tagline
+          <input v-model="draft.hero.tagline" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+        </label>
+        <label class="block text-sm text-slate-600">
+          Fondo
+          <select v-model="draft.page.hero.backgroundMode" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm">
+            <option value="default">Default</option>
+            <option value="color">Color</option>
+            <option value="image">Imagen</option>
+          </select>
+        </label>
+        <label v-if="draft.page.hero.backgroundMode === 'color'" class="block text-sm text-slate-600">
+          Color de fondo
+          <input v-model="draft.page.hero.backgroundColor" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
+        </label>
+        <label v-if="draft.page.hero.backgroundMode === 'image'" class="block text-sm text-slate-600">
+          Imagen de fondo (URL)
+          <input v-model="draft.page.hero.backgroundImageUrl" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+        </label>
+
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-semibold text-slate-700">Botones</h4>
+            <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addHeroButton">
+              Agregar boton
+            </button>
+          </div>
+          <div v-for="(btn, index) in draft.page.hero.buttons" :key="`herobtn-${index}`" class="rounded-xl border border-slate-200 p-3">
+            <div class="grid gap-3 md:grid-cols-2">
+              <input v-model="btn.label" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Texto" />
+              <input v-model="btn.target" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="#rsvp" list="anchor-options" />
+            </div>
+            <div class="mt-3 grid gap-3 md:grid-cols-3">
+              <label class="text-xs text-slate-500">
+                Variante
+                <select v-model="btn.variant" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+                  <option value="solid">Fondo</option>
+                  <option value="outline">Borde</option>
+                </select>
+              </label>
+              <label class="text-xs text-slate-500">
+                Color texto
+                <input v-model="btn.textColor" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" type="color" />
+              </label>
+              <label class="text-xs text-slate-500">
+                <span v-if="btn.variant === 'outline'">Color borde</span>
+                <span v-else>Color fondo</span>
+                <input
+                  v-model="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
+                  class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                  type="color"
+                />
+              </label>
+            </div>
+            <button class="mt-2 text-xs text-red-500" type="button" @click="removeHeroButton(index)">Quitar</button>
+          </div>
+        </div>
+      </div>
+      <div v-if="draft.page.sections.length" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-slate-800">Secciones</h3>
+          <button class="text-xs text-red-500" type="button" @click="removeSections">Quitar</button>
+        </div>
+        <div class="flex items-center gap-3">
+          <select v-model="sectionToAdd" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm">
+            <option v-for="item in sectionCatalogOptions" :key="item.type" :value="item.type">
+              {{ item.label }}
+            </option>
+          </select>
+          <button class="rounded-lg border border-slate-200 px-3 py-2 text-xs" type="button" @click="addSection">
+            Agregar
+          </button>
+        </div>
+        <div v-for="(section, index) in draft.page.sections" :key="`${section.type}-${index}`" class="rounded-xl border border-slate-200 p-3">
+          <div class="flex items-center justify-between">
+            <p class="text-xs font-semibold text-slate-700">{{ section.label }} ({{ section.type }})</p>
+            <button class="text-xs text-red-500" type="button" @click="removeSection(index)">Quitar</button>
+          </div>
+          <div class="mt-3 grid gap-3 md:grid-cols-2">
+            <label class="text-xs text-slate-500">
+              Texto
+              <input v-model="section.label" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+            </label>
+            <label class="text-xs text-slate-500">
+              Referencia
+              <input
+                v-model="section.anchorId"
+                class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                placeholder="rsvp"
+                @blur="sanitizeAnchor(section)"
+              />
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="draft.page.sections.length" class="space-y-6">
+        <h4 class="text-sm font-semibold text-slate-800">Contenido de secciones</h4>
+
+        <div v-if="enabledSections.has('story')" class="space-y-3">
+          <h5 class="text-xs font-semibold text-slate-700">Historia</h5>
+          <input v-model="draft.story.title" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" placeholder="Titulo" />
+          <textarea v-model="draft.story.message" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" rows="3" placeholder="Mensaje" />
+        </div>
+
+        <div v-if="enabledSections.has('locations')" class="space-y-4">
+          <h5 class="text-xs font-semibold text-slate-700">Ubicaciones</h5>
           <label class="block text-sm text-slate-600">
-            Fuente titulo
-            <input v-model="draft.theme.fontHeading" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+            Ceremonia
+            <input v-model="draft.ceremony.name" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
           </label>
+          <div class="grid gap-3 md:grid-cols-2">
+            <label class="block text-sm text-slate-600">
+              Hora
+              <input v-model="draft.ceremony.time" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="time" />
+            </label>
+            <label class="block text-sm text-slate-600">
+              Mapa
+              <input v-model="draft.ceremony.mapUrl" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="url" />
+            </label>
+          </div>
           <label class="block text-sm text-slate-600">
-            Fuente cuerpo
-            <input v-model="draft.theme.fontBody" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+            Direccion
+            <input v-model="draft.ceremony.address" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </label>
+
+          <label class="block text-sm text-slate-600">
+            Recepcion
+            <input v-model="draft.reception.name" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </label>
+          <div class="grid gap-3 md:grid-cols-2">
+            <label class="block text-sm text-slate-600">
+              Hora
+              <input v-model="draft.reception.time" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="time" />
+            </label>
+            <label class="block text-sm text-slate-600">
+              Mapa
+              <input v-model="draft.reception.mapUrl" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="url" />
+            </label>
+          </div>
+          <label class="block text-sm text-slate-600">
+            Direccion
+            <input v-model="draft.reception.address" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
           </label>
         </div>
+
+        <div v-if="enabledSections.has('timeline')" class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h5 class="text-xs font-semibold text-slate-700">Itinerario</h5>
+            <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addSchedule">
+              Agregar
+            </button>
+          </div>
+          <div v-for="(item, index) in draft.schedule" :key="index" class="rounded-xl border border-slate-200 p-3">
+            <div class="grid gap-3 md:grid-cols-3">
+              <input v-model="item.time" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Hora" />
+              <input v-model="item.title" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Titulo" />
+              <input v-model="item.description" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Descripcion" />
+            </div>
+            <button v-if="draft.schedule.length > 1" class="mt-2 text-xs text-red-500" type="button" @click="removeSchedule(index)">
+              Quitar
+            </button>
+          </div>
+        </div>
+
+        <div v-if="enabledSections.has('dressCode')" class="space-y-3">
+          <h5 class="text-xs font-semibold text-slate-700">Dress code</h5>
+          <input v-model="draft.dressCode.title" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" placeholder="Titulo" />
+          <textarea v-model="draft.dressCode.description" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" rows="3" placeholder="Descripcion" />
+        </div>
+
+        <div v-if="enabledSections.has('gifts')" class="space-y-3">
+          <h5 class="text-xs font-semibold text-slate-700">Regalos</h5>
+          <textarea v-model="draft.gifts.message" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" rows="2" placeholder="Mensaje" />
+          <input v-model="draft.gifts.bankTransferText" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" placeholder="Transferencia" />
+          <input v-model="draft.gifts.giftListUrl" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" placeholder="URL lista de regalos" />
+        </div>
+
+        <div v-if="enabledSections.has('rsvp')" class="space-y-3">
+          <h5 class="text-xs font-semibold text-slate-700">RSVP</h5>
+          <label class="flex items-center gap-2 text-sm text-slate-600">
+            <input v-model="draft.rsvp.enabled" type="checkbox" />
+            Habilitar RSVP
+          </label>
+          <label class="block text-sm text-slate-600">
+            Modo
+            <select v-model="draft.rsvp.mode" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm">
+              <option value="whatsapp">WhatsApp</option>
+              <option value="netlify">Netlify Forms</option>
+            </select>
+          </label>
+          <div class="grid gap-3 md:grid-cols-2">
+            <label class="block text-sm text-slate-600">
+              Fecha limite
+              <input v-model="draft.rsvp.deadlineISO" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="date" />
+            </label>
+            <label class="block text-sm text-slate-600">
+              WhatsApp
+              <input v-model="draft.rsvp.whatsappNumber" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" placeholder="521..." />
+            </label>
+          </div>
+          <label class="block text-sm text-slate-600">
+            Netlify Form (opcional)
+            <input v-model="draft.rsvp.netlifyFormNameOptional" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </label>
+        </div>
+
+        <div v-if="enabledSections.has('gallery')" class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h5 class="text-xs font-semibold text-slate-700">Galeria</h5>
+            <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addGalleryItem">
+              Agregar
+            </button>
+          </div>
+          <div v-for="(img, index) in draft.gallery" :key="`gallery-${index}`" class="grid gap-3 md:grid-cols-3">
+            <input v-model="img.src" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="/tenants/slug/img.jpg" />
+            <input v-model="img.alt" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Alt" />
+            <button class="text-xs text-red-500" type="button" @click="removeGalleryItem(index)">Quitar</button>
+          </div>
+        </div>
+
+        <div v-if="enabledSections.has('faq')" class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h5 class="text-xs font-semibold text-slate-700">FAQ</h5>
+            <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addFaq">
+              Agregar
+            </button>
+          </div>
+          <div v-for="(item, index) in draft.faq" :key="`faq-${index}`" class="rounded-xl border border-slate-200 p-3">
+            <input v-model="item.question" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Pregunta" />
+            <textarea v-model="item.answer" class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" rows="2" placeholder="Respuesta" />
+            <button v-if="draft.faq.length > 1" class="mt-2 text-xs text-red-500" type="button" @click="removeFaq(index)">
+              Quitar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="draft.page.footer" class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-slate-800">Footer</h3>
+          <button class="text-xs text-red-500" type="button" @click="removeFooter">Quitar</button>
+        </div>
+        <label class="block text-sm text-slate-600">
+          Mensaje
+          <input v-model="draft.page.footer.message" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+        </label>
+        <label class="block text-sm text-slate-600">
+          Email de contacto
+          <input v-model="draft.contactEmail" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="email" />
+        </label>
       </div>
 
       <div class="space-y-3">
@@ -204,39 +429,11 @@
         </label>
       </div>
 
-      <div class="space-y-3">
-        <h3 class="text-sm font-semibold text-slate-800">Contacto</h3>
-        <label class="block text-sm text-slate-600">
-          Email
-          <input v-model="draft.contactEmail" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="email" />
-        </label>
-      </div>
-
-      <div class="space-y-3">
-        <h3 class="text-sm font-semibold text-slate-800">Secciones visibles</h3>
-        <div class="grid gap-2 md:grid-cols-2">
-          <label class="flex items-center gap-2 text-sm text-slate-600"><input v-model="draft.sections.countdown" type="checkbox" /> Countdown</label>
-          <label class="flex items-center gap-2 text-sm text-slate-600"><input v-model="draft.sections.timeline" type="checkbox" /> Itinerario</label>
-          <label class="flex items-center gap-2 text-sm text-slate-600"><input v-model="draft.sections.dressCode" type="checkbox" /> Dress code</label>
-          <label class="flex items-center gap-2 text-sm text-slate-600"><input v-model="draft.sections.gifts" type="checkbox" /> Regalos</label>
-          <label class="flex items-center gap-2 text-sm text-slate-600"><input v-model="draft.sections.gallery" type="checkbox" /> Galeria</label>
-          <label class="flex items-center gap-2 text-sm text-slate-600"><input v-model="draft.sections.faq" type="checkbox" /> FAQ</label>
-        </div>
-      </div>
-
       <div class="flex flex-wrap items-center gap-3">
-        <button
-          class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
-          type="button"
-          @click="saveDraft"
-        >
+        <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700" type="button" @click="saveDraft">
           Guardar borrador
         </button>
-        <button
-          class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
-          type="button"
-          @click="downloadJson"
-        >
+        <button class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white" type="button" @click="downloadJson">
           Descargar JSON
         </button>
         <button
@@ -248,6 +445,10 @@
           {{ copyStatus }}
         </button>
         <span v-if="toastMessage" class="text-xs text-emerald-600">{{ toastMessage }}</span>
+      </div>
+      <div v-if="validationErrors.list.length" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">
+        <p class="font-semibold">Faltan datos:</p>
+        <p v-for="(msg, index) in validationErrors.list" :key="`val-${index}`">{{ msg }}</p>
       </div>
       <div v-if="draftShareUrl" class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600">
         Link de borrador:
@@ -275,31 +476,47 @@
         </a>
       </div>
       <div ref="previewRef" class="max-h-[80vh] overflow-y-auto">
-        <WeddingPreview :tenant="tenantForPreview" :slug="draft.slug" :section-flags="sectionFlags" />
+        <WeddingPreview :tenant="tenantForPreview" :slug="draft.slug" />
       </div>
     </section>
   </div>
+
+  <datalist id="anchor-options">
+    <option v-for="item in anchorOptions" :key="item.value" :value="item.value">{{ item.label }}</option>
+  </datalist>
 </template>
 
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
 import WeddingPreview from "../../components/WeddingPreview.vue";
-import type { TenantConfig } from "../../types/tenant";
+import type { PageSection, SectionType, TenantConfig } from "../../types/tenant";
+import { resolveSectionDefaults, sectionCatalog } from "../../utils/sectionCatalog";
+import manifest from "../../tenants/tenants.manifest.json";
+
+type DraftConfig = TenantConfig & { slug: string };
 
 const previewRef = ref<HTMLElement | null>(null);
-const savedDraftId = ref("");
 const draftShareUrl = ref("");
 const copyStatus = ref("Copiar link");
 const toastMessage = ref("");
+const slugNotice = ref("");
+const validationErrors = reactive<{ slug: string; dateISO: string; list: string[] }>({
+  slug: "",
+  dateISO: "",
+  list: []
+});
+const sectionToAdd = ref<SectionType>("countdown");
 
-const draft = reactive({
+const draft = reactive<DraftConfig>({
   slug: "nueva-boda",
   coupleNames: "Nombre & Nombre",
   dateISO: "2026-09-12",
   hero: {
     tagline: "Nuestro si, para siempre",
     ctaPrimaryText: "RSVP",
-    ctaSecondaryText: "Ubicaciones"
+    ctaSecondaryText: "Ubicaciones",
+    ctaPrimaryTarget: "#rsvp",
+    ctaSecondaryTarget: "#ubicaciones"
   },
   ceremony: {
     name: "Capilla San Miguel",
@@ -327,7 +544,7 @@ const draft = reactive({
     message: "Gracias por acompanarnos en este dia."
   },
   rsvp: {
-    mode: "whatsapp" as const,
+    mode: "whatsapp",
     enabled: true,
     deadlineISO: "2026-08-20",
     whatsappNumber: "5215512341111",
@@ -340,6 +557,7 @@ const draft = reactive({
     background: "#fbf6f1",
     text: "#2a2a2a",
     fontHeading: "Boska",
+    fontSubheading: "Cormorant Garamond",
     fontBody: "Inter"
   },
   seo: {
@@ -359,35 +577,43 @@ const draft = reactive({
     }
   ],
   contactEmail: "contacto@tuboda.com",
-  sections: {
-    countdown: true,
-    story: true,
-    locations: true,
-    timeline: true,
-    dressCode: true,
-    gifts: true,
-    rsvp: true,
-    gallery: true,
-    faq: true
+  page: {
+    navbar: undefined,
+    hero: undefined,
+    sections: [],
+    footer: undefined
   }
 });
 
 const tenantForPreview = computed<TenantConfig>(() => {
-  const { sections, slug, ...tenant } = draft;
+  const { slug, ...tenant } = draft;
   return tenant as TenantConfig;
 });
 
-const sectionFlags = computed(() => ({
-  countdown: draft.sections.countdown,
-  story: draft.sections.story,
-  locations: draft.sections.locations,
-  timeline: draft.sections.timeline,
-  dressCode: draft.sections.dressCode,
-  gifts: draft.sections.gifts,
-  rsvp: draft.sections.rsvp,
-  gallery: draft.sections.gallery,
-  faq: draft.sections.faq
-}));
+const sectionCatalogOptions = computed(() => sectionCatalog);
+const enabledSections = computed(() => new Set(draft.page.sections.map((section) => section.type)));
+
+const anchorOptions = computed(() => {
+  const options: Array<{ label: string; value: string }> = [];
+  if (draft.page.hero) options.push({ label: "Hero", value: "#hero" });
+  for (const section of draft.page.sections) {
+    options.push({ label: section.label, value: `#${section.anchorId}` });
+  }
+  if (draft.page.footer) {
+    options.push({ label: "Footer", value: `#${draft.page.footer.anchorId || "footer"}` });
+  }
+  return options;
+});
+
+const existingSlugs = computed(() => {
+  const fromManifest = Array.isArray(manifest) ? manifest : [];
+  const raw = localStorage.getItem("weddingapp_drafts");
+  const drafts = raw ? (JSON.parse(raw) as Array<{ id: string; data: TenantConfig; slug?: string }>) : [];
+  const fromDrafts = drafts
+    .map((item) => item.slug || item.id.split("-").slice(0, -1).join("-"))
+    .filter(Boolean);
+  return new Set<string>([...fromManifest, ...fromDrafts]);
+});
 
 function applyThemeToElement(el: HTMLElement | null, theme: TenantConfig["theme"]) {
   if (!el) return;
@@ -397,7 +623,58 @@ function applyThemeToElement(el: HTMLElement | null, theme: TenantConfig["theme"
   el.style.setProperty("--color-surface", theme.background);
   el.style.setProperty("--color-text", theme.text);
   el.style.setProperty("--font-heading", theme.fontHeading);
+  if (theme.fontSubheading) {
+    el.style.setProperty("--font-subheading", theme.fontSubheading);
+  }
   el.style.setProperty("--font-body", theme.fontBody);
+}
+
+function ensureUniqueSlug() {
+  const base = draft.slug.trim();
+  if (!base) return;
+  const taken = existingSlugs.value;
+  if (!taken.has(base)) {
+    slugNotice.value = "";
+    return;
+  }
+  let counter = 2;
+  let candidate = `${base}-${counter}`;
+  while (taken.has(candidate)) {
+    counter += 1;
+    candidate = `${base}-${counter}`;
+  }
+  draft.slug = candidate;
+  slugNotice.value = `El slug ya existia. Se ajusto a: ${candidate}`;
+}
+
+function validateDraft() {
+  validationErrors.slug = "";
+  validationErrors.dateISO = "";
+  validationErrors.list = [];
+
+  if (!draft.slug.trim()) {
+    validationErrors.slug = "El slug es obligatorio.";
+    validationErrors.list.push("Define un slug unico.");
+  }
+
+  if (!draft.dateISO) {
+    validationErrors.dateISO = "La fecha es obligatoria.";
+    validationErrors.list.push("Selecciona la fecha del evento.");
+  }
+
+  if (draft.page.navbar) {
+    const badLink = draft.page.navbar.links?.some((link) => !link.label.trim() || !link.target.trim());
+    if (badLink) validationErrors.list.push("Completa texto y referencia en los links del navbar.");
+    const badButton = draft.page.navbar.buttons?.some((btn) => !btn.label.trim() || !btn.target.trim());
+    if (badButton) validationErrors.list.push("Completa texto y referencia en los botones del navbar.");
+  }
+
+  if (draft.page.hero) {
+    const badHeroButton = draft.page.hero.buttons?.some((btn) => !btn.label.trim() || !btn.target.trim());
+    if (badHeroButton) validationErrors.list.push("Completa texto y referencia en los botones del hero.");
+  }
+
+  return validationErrors.list.length === 0;
 }
 
 watch(
@@ -405,6 +682,103 @@ watch(
   (theme) => applyThemeToElement(previewRef.value, theme),
   { deep: true, immediate: true }
 );
+
+function addNavbar() {
+  if (!draft.page.navbar) {
+    draft.page.navbar = {
+      icon: "?",
+      links: [
+        { label: "Inicio", target: "#hero" },
+        { label: "Ubicaciones", target: "#ubicaciones" }
+      ],
+      buttons: [{ label: "RSVP", target: "#rsvp", variant: "outline" }]
+    };
+  }
+}
+
+function removeNavbar() {
+  draft.page.navbar = undefined;
+}
+
+function addNavbarLink() {
+  if (!draft.page.navbar) return;
+  const target = anchorOptions.value[0]?.value || "#hero";
+  draft.page.navbar.links.push({ label: "Seccion", target });
+}
+
+function removeNavbarLink(index: number) {
+  draft.page.navbar?.links.splice(index, 1);
+}
+
+function addNavbarButton() {
+  if (!draft.page.navbar) return;
+  const target = anchorOptions.value[0]?.value || "#hero";
+  draft.page.navbar.buttons.push({ label: "Boton", target, variant: "outline" });
+}
+
+function removeNavbarButton(index: number) {
+  draft.page.navbar?.buttons.splice(index, 1);
+}
+
+function addHero() {
+  if (!draft.page.hero) {
+    draft.page.hero = {
+      backgroundMode: "default",
+      buttons: [
+        { label: draft.hero.ctaPrimaryText, target: draft.hero.ctaPrimaryTarget || "#rsvp", variant: "solid" },
+        { label: draft.hero.ctaSecondaryText, target: draft.hero.ctaSecondaryTarget || "#ubicaciones", variant: "outline" }
+      ]
+    };
+  }
+}
+
+function removeHero() {
+  draft.page.hero = undefined;
+}
+
+function addHeroButton() {
+  if (!draft.page.hero) return;
+  const target = anchorOptions.value[0]?.value || "#hero";
+  draft.page.hero.buttons.push({ label: "Boton", target, variant: "solid" });
+}
+
+function removeHeroButton(index: number) {
+  draft.page.hero?.buttons.splice(index, 1);
+}
+
+function addSections() {
+  if (!draft.page.sections.length) {
+    draft.page.sections.push(resolveSectionDefaults(sectionToAdd.value));
+  }
+}
+
+function removeSections() {
+  draft.page.sections = [];
+}
+
+function addSection() {
+  if (!draft.page.sections) draft.page.sections = [];
+  const next = resolveSectionDefaults(sectionToAdd.value);
+  draft.page.sections.push(next);
+}
+
+function removeSection(index: number) {
+  draft.page.sections.splice(index, 1);
+}
+
+function sanitizeAnchor(section: PageSection) {
+  section.anchorId = section.anchorId.replace(/^#/, "").trim() || "seccion";
+}
+
+function addFooter() {
+  if (!draft.page.footer) {
+    draft.page.footer = { message: "Gracias por acompanarnos", anchorId: "footer" };
+  }
+}
+
+function removeFooter() {
+  draft.page.footer = undefined;
+}
 
 function addSchedule() {
   draft.schedule.push({ time: "", title: "", description: "" });
@@ -414,8 +788,25 @@ function removeSchedule(index: number) {
   draft.schedule.splice(index, 1);
 }
 
+function addGalleryItem() {
+  draft.gallery.push({ src: "", alt: "" });
+}
+
+function removeGalleryItem(index: number) {
+  draft.gallery.splice(index, 1);
+}
+
+function addFaq() {
+  draft.faq?.push({ question: "", answer: "" });
+}
+
+function removeFaq(index: number) {
+  draft.faq?.splice(index, 1);
+}
+
 function downloadJson() {
-  const { sections, slug, ...tenant } = draft;
+  if (!validateDraft()) return;
+  const { slug, ...tenant } = draft;
   const json = JSON.stringify(tenant, null, 2);
   const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -428,24 +819,22 @@ function downloadJson() {
   URL.revokeObjectURL(url);
 }
 
-function encodeDraft(payload: { data: TenantConfig; sections: typeof draft.sections }) {
+function encodeDraft(payload: { data: TenantConfig }) {
   const json = JSON.stringify(payload);
   return btoa(unescape(encodeURIComponent(json)));
 }
 
 function saveDraft() {
-  const { sections, slug, ...tenant } = draft;
+  if (!validateDraft()) return;
+  const { slug, ...tenant } = draft;
   const draftId = slug ? `${slug}-${Date.now()}` : `borrador-${Date.now()}`;
   const raw = localStorage.getItem("weddingapp_drafts");
-  const current = raw ? (JSON.parse(raw) as Array<{ id: string; data: TenantConfig; sections?: typeof sections }>) : [];
-  current.unshift({ id: draftId, data: tenant as TenantConfig, sections });
+  const current = raw ? (JSON.parse(raw) as Array<{ id: string; data: TenantConfig; slug?: string }>) : [];
+  current.unshift({ id: draftId, slug, data: tenant as TenantConfig });
   localStorage.setItem("weddingapp_drafts", JSON.stringify(current.slice(0, 20)));
-  savedDraftId.value = draftId;
   const key = String(import.meta.env.VITE_ADMIN_PREVIEW_KEY || "");
-  const encoded = encodeDraft({ data: tenant as TenantConfig, sections });
-  draftShareUrl.value = key
-    ? `${window.location.origin}/preview/${draftId}?key=${key}&data=${encoded}`
-    : "";
+  const encoded = encodeDraft({ data: tenant as TenantConfig });
+  draftShareUrl.value = key ? `${window.location.origin}/preview/${draftId}?key=${key}&data=${encoded}` : "";
   copyStatus.value = "Copiar link";
 }
 
