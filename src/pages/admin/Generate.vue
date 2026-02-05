@@ -1,67 +1,81 @@
 
 <template>
-  <div class="grid gap-6 lg:grid-cols-[420px_minmax(0,1fr)]">
-    <section class="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div>
-        <h2 class="text-lg font-semibold">Nuevo flujo de admin</h2>
-        <p class="text-sm text-slate-500">Arma la estructura (navbar, hero, secciones, footer) y edita el contenido.</p>
+  <div
+    class="grid gap-6"
+    :class="isSidebarCollapsed ? 'lg:grid-cols-[96px_minmax(0,1fr)]' : 'lg:grid-cols-[420px_minmax(0,1fr)]'"
+  >
+    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-semibold">Nuevo flujo de admin</h2>
+          <p v-if="!isSidebarCollapsed" class="text-sm text-slate-500">
+            Arma la estructura (navbar, hero, secciones, footer) y edita el contenido.
+          </p>
+        </div>
+        <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="toggleSidebar">
+          {{ isSidebarCollapsed ? "Expandir" : "Contraer" }}
+        </button>
       </div>
 
-      <div class="space-y-4">
-        <h3 class="text-sm font-semibold text-slate-800">Campos generales</h3>
-        <label class="block text-sm font-medium text-slate-700">
-          Slug
-          <input
-            v-model="draft.slug"
-            class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm"
-            placeholder="ej: steven-jenniffer"
-            type="text"
-            @blur="ensureUniqueSlug"
-          />
-        </label>
-        <p v-if="slugNotice" class="text-xs text-amber-600">{{ slugNotice }}</p>
-        <p v-else-if="slugStatus" class="text-xs" :class="slugStatus.ok ? 'text-emerald-600' : 'text-amber-600'">
-          {{ slugStatus.message }}
-        </p>
-        <p v-if="validationErrors.slug" class="text-xs text-red-600">{{ validationErrors.slug }}</p>
-        <label class="block text-sm font-medium text-slate-700">
-          Fecha
-          <input v-model="draft.dateISO" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="date" />
-        </label>
-        <p v-if="validationErrors.dateISO" class="text-xs text-red-600">{{ validationErrors.dateISO }}</p>
-        <div class="grid gap-3 md:grid-cols-2">
+      <div v-if="!isSidebarCollapsed" class="mt-6 space-y-6">
+
+      <details open class="rounded-xl border border-slate-200 px-4 py-3">
+        <summary class="cursor-pointer text-sm font-semibold text-slate-800">Campos generales</summary>
+        <div class="mt-4 space-y-4">
           <label class="block text-sm font-medium text-slate-700">
-            Tipografia titulos
-            <input v-model="draft.theme.fontHeading" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+            Slug
+            <input
+              v-model="draft.slug"
+              class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm"
+              placeholder="ej: steven-jenniffer"
+              type="text"
+              @blur="ensureUniqueSlug"
+            />
           </label>
+          <p v-if="slugNotice" class="text-xs text-amber-600">{{ slugNotice }}</p>
+          <p v-else-if="slugStatus" class="text-xs" :class="slugStatus.ok ? 'text-emerald-600' : 'text-amber-600'">
+            {{ slugStatus.message }}
+          </p>
+          <p v-if="validationErrors.slug" class="text-xs text-red-600">{{ validationErrors.slug }}</p>
           <label class="block text-sm font-medium text-slate-700">
-            Tipografia subtitulos
-            <input v-model="draft.theme.fontSubheading" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+            Fecha
+            <input v-model="draft.dateISO" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="date" />
           </label>
-          <label class="block text-sm font-medium text-slate-700">
-            Tipografia parrafos
-            <input v-model="draft.theme.fontBody" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-          </label>
+          <p v-if="validationErrors.dateISO" class="text-xs text-red-600">{{ validationErrors.dateISO }}</p>
+          <div class="grid gap-3 md:grid-cols-2">
+            <label class="block text-sm font-medium text-slate-700">
+              Tipografia titulos
+              <input v-model="draft.theme.fontHeading" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+            </label>
+            <label class="block text-sm font-medium text-slate-700">
+              Tipografia subtitulos
+              <input v-model="draft.theme.fontSubheading" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+            </label>
+            <label class="block text-sm font-medium text-slate-700">
+              Tipografia parrafos
+              <input v-model="draft.theme.fontBody" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+            </label>
+          </div>
+          <div class="grid gap-3 md:grid-cols-2">
+            <label class="block text-sm text-slate-600">
+              Primario
+              <input v-model="draft.theme.primary" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
+            </label>
+            <label class="block text-sm text-slate-600">
+              Secundario
+              <input v-model="draft.theme.secondary" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
+            </label>
+            <label class="block text-sm text-slate-600">
+              Fondo
+              <input v-model="draft.theme.background" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
+            </label>
+            <label class="block text-sm text-slate-600">
+              Texto
+              <input v-model="draft.theme.text" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
+            </label>
+          </div>
         </div>
-        <div class="grid gap-3 md:grid-cols-2">
-          <label class="block text-sm text-slate-600">
-            Primario
-            <input v-model="draft.theme.primary" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
-          </label>
-          <label class="block text-sm text-slate-600">
-            Secundario
-            <input v-model="draft.theme.secondary" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
-          </label>
-          <label class="block text-sm text-slate-600">
-            Fondo
-            <input v-model="draft.theme.background" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
-          </label>
-          <label class="block text-sm text-slate-600">
-            Texto
-            <input v-model="draft.theme.text" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
-          </label>
-        </div>
-      </div>
+      </details>
 
       <div class="space-y-3">
         <h3 class="text-sm font-semibold text-slate-800">Agregar bloques</h3>
@@ -97,19 +111,20 @@
         <p class="text-xs text-slate-500">Esto reemplaza la estructura actual (navbar, hero, secciones, footer).</p>
       </div>
 
-      <div v-if="draft.page.navbar" class="space-y-4">
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-semibold text-slate-800">Navbar</h3>
-          <button class="text-xs text-red-500" type="button" @click="removeNavbar">Quitar</button>
-        </div>
-        <label class="block text-sm text-slate-600">
-          Nombre de la pareja
-          <input v-model="draft.coupleNames" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-        </label>
-        <label class="block text-sm text-slate-600">
-          Icono
-          <input v-model="draft.page.navbar.icon" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-        </label>
+      <details v-if="draft.page.navbar" open class="rounded-xl border border-slate-200 px-4 py-3">
+        <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-slate-800">
+          Navbar
+          <button class="text-xs text-red-500" type="button" @click.stop="removeNavbar">Quitar</button>
+        </summary>
+        <div class="mt-4 space-y-4">
+          <label class="block text-sm text-slate-600">
+            Nombre de la pareja
+            <input v-model="draft.coupleNames" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </label>
+          <label class="block text-sm text-slate-600">
+            Icono
+            <input v-model="draft.page.navbar.icon" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </label>
 
         <div class="space-y-3">
           <div class="flex items-center justify-between">
@@ -168,17 +183,19 @@
             <button class="mt-2 text-xs text-red-500" type="button" @click="removeNavbarButton(index)">Quitar</button>
           </div>
         </div>
-      </div>
-
-      <div v-if="draft.page.hero" class="space-y-4">
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-semibold text-slate-800">Hero</h3>
-          <button class="text-xs text-red-500" type="button" @click="removeHero">Quitar</button>
         </div>
-        <label class="block text-sm text-slate-600">
-          Tagline
-          <input v-model="draft.hero.tagline" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-        </label>
+      </details>
+
+      <details v-if="draft.page.hero" open class="rounded-xl border border-slate-200 px-4 py-3">
+        <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-slate-800">
+          Hero
+          <button class="text-xs text-red-500" type="button" @click.stop="removeHero">Quitar</button>
+        </summary>
+        <div class="mt-4 space-y-4">
+          <label class="block text-sm text-slate-600">
+            Tagline
+            <input v-model="draft.hero.tagline" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </label>
         <label class="block text-sm text-slate-600">
           Fondo
           <select v-model="draft.page.hero.backgroundMode" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm">
@@ -235,21 +252,22 @@
           </div>
         </div>
       </div>
-      <div v-if="draft.page.sections.length" class="space-y-4">
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-semibold text-slate-800">Secciones</h3>
-          <button class="text-xs text-red-500" type="button" @click="removeSections">Quitar</button>
-        </div>
-        <div class="flex items-center gap-3">
-          <select v-model="sectionToAdd" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm">
-            <option v-for="item in sectionCatalogOptions" :key="item.type" :value="item.type">
-              {{ item.label }}
-            </option>
-          </select>
-          <button class="rounded-lg border border-slate-200 px-3 py-2 text-xs" type="button" @click="addSection">
-            Agregar
-          </button>
-        </div>
+      <details v-if="draft.page.sections.length" open class="rounded-xl border border-slate-200 px-4 py-3">
+        <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-slate-800">
+          Secciones
+          <button class="text-xs text-red-500" type="button" @click.stop="removeSections">Quitar</button>
+        </summary>
+        <div class="mt-4 space-y-4">
+          <div class="flex items-center gap-3">
+            <select v-model="sectionToAdd" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm">
+              <option v-for="item in sectionCatalogOptions" :key="item.type" :value="item.type">
+                {{ item.label }}
+              </option>
+            </select>
+            <button class="rounded-lg border border-slate-200 px-3 py-2 text-xs" type="button" @click="addSection">
+              Agregar
+            </button>
+          </div>
         <div
           v-for="(section, index) in draft.page.sections"
           :key="`${section.type}-${index}`"
@@ -286,10 +304,12 @@
             </label>
           </div>
         </div>
-      </div>
+        </div>
+      </details>
 
-      <div v-if="draft.page.sections.length" class="space-y-6">
-        <h4 class="text-sm font-semibold text-slate-800">Contenido de secciones</h4>
+      <details v-if="draft.page.sections.length" class="rounded-xl border border-slate-200 px-4 py-3">
+        <summary class="cursor-pointer text-sm font-semibold text-slate-800">Contenido de secciones</summary>
+        <div class="mt-4 space-y-6">
 
         <div v-if="enabledSections.has('story')" class="space-y-3">
           <h5 class="text-xs font-semibold text-slate-700">Historia</h5>
@@ -428,64 +448,72 @@
             </button>
           </div>
         </div>
-      </div>
-
-      <div v-if="draft.page.footer" class="space-y-3">
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-semibold text-slate-800">Footer</h3>
-          <button class="text-xs text-red-500" type="button" @click="removeFooter">Quitar</button>
         </div>
-        <label class="block text-sm text-slate-600">
-          Mensaje
-          <input v-model="draft.page.footer.message" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-        </label>
-        <label class="block text-sm text-slate-600">
-          Email de contacto
-          <input v-model="draft.contactEmail" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="email" />
-        </label>
-      </div>
+      </details>
 
-      <div class="space-y-3">
-        <h3 class="text-sm font-semibold text-slate-800">SEO</h3>
-        <label class="block text-sm text-slate-600">
-          Titulo
-          <input v-model="draft.seo.title" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-        </label>
-        <label class="block text-sm text-slate-600">
-          Descripcion
-          <textarea v-model="draft.seo.description" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" rows="3" />
-        </label>
-        <label class="block text-sm text-slate-600">
-          URL
-          <input v-model="draft.seo.url" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="url" />
-        </label>
-        <label class="block text-sm text-slate-600">
-          OG Image
-          <input v-model="draft.seo.ogImage" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-        </label>
-      </div>
+      <details v-if="draft.page.footer" class="rounded-xl border border-slate-200 px-4 py-3">
+        <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-slate-800">
+          Footer
+          <button class="text-xs text-red-500" type="button" @click.stop="removeFooter">Quitar</button>
+        </summary>
+        <div class="mt-4 space-y-3">
+          <label class="block text-sm text-slate-600">
+            Mensaje
+            <input v-model="draft.page.footer.message" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </label>
+          <label class="block text-sm text-slate-600">
+            Email de contacto
+            <input v-model="draft.contactEmail" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="email" />
+          </label>
+        </div>
+      </details>
+      </details>
 
-      <div class="space-y-3">
-        <h3 class="text-sm font-semibold text-slate-800">Versiones</h3>
-        <div v-if="draftVersions.length" class="space-y-2">
-          <div
-            v-for="version in draftVersions"
-            :key="version.id"
-            class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 px-3 py-2 text-xs"
-          >
-            <div>
-              <p class="font-semibold text-slate-700">{{ version.label }}</p>
-              <p class="text-slate-500">{{ version.date }}</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <button class="rounded-lg border border-slate-200 px-2 py-1 text-xs" type="button" @click="restoreVersion(version)">
-                Restaurar
-              </button>
+      <details class="rounded-xl border border-slate-200 px-4 py-3">
+        <summary class="cursor-pointer text-sm font-semibold text-slate-800">SEO</summary>
+        <div class="mt-4 space-y-3">
+          <label class="block text-sm text-slate-600">
+            Titulo
+            <input v-model="draft.seo.title" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </label>
+          <label class="block text-sm text-slate-600">
+            Descripcion
+            <textarea v-model="draft.seo.description" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" rows="3" />
+          </label>
+          <label class="block text-sm text-slate-600">
+            URL
+            <input v-model="draft.seo.url" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="url" />
+          </label>
+          <label class="block text-sm text-slate-600">
+            OG Image
+            <input v-model="draft.seo.ogImage" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </label>
+        </div>
+      </details>
+
+      <details class="rounded-xl border border-slate-200 px-4 py-3">
+        <summary class="cursor-pointer text-sm font-semibold text-slate-800">Versiones</summary>
+        <div class="mt-4 space-y-2">
+          <div v-if="draftVersions.length" class="space-y-2">
+            <div
+              v-for="version in draftVersions"
+              :key="version.id"
+              class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 px-3 py-2 text-xs"
+            >
+              <div>
+                <p class="font-semibold text-slate-700">{{ version.label }}</p>
+                <p class="text-slate-500">{{ version.date }}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button class="rounded-lg border border-slate-200 px-2 py-1 text-xs" type="button" @click="restoreVersion(version)">
+                  Restaurar
+                </button>
+              </div>
             </div>
           </div>
+          <p v-else class="text-xs text-slate-500">Guarda un borrador para crear versiones.</p>
         </div>
-        <p v-else class="text-xs text-slate-500">Guarda un borrador para crear versiones.</p>
-      </div>
+      </details>
 
       <div class="flex flex-wrap items-center gap-3">
         <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700" type="button" @click="saveDraft">
@@ -517,6 +545,7 @@
       </div>
       <div v-else class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
         Configura <strong>VITE_ADMIN_PREVIEW_KEY</strong> en el .env para habilitar links de borrador compartibles.
+      </div>
       </div>
     </section>
 
@@ -563,6 +592,7 @@ const toastMessage = ref("");
 const slugNotice = ref("");
 const dragIndex = ref<number | null>(null);
 const draftVersions = ref<Array<{ id: string; slug: string; date: string; label: string; data: TenantConfig }>>([]);
+const isSidebarCollapsed = ref(false);
 const validationErrors = reactive<{ slug: string; dateISO: string; list: string[] }>({
   slug: "",
   dateISO: "",
@@ -826,6 +856,10 @@ function applyDraft(data: TenantConfig, slug?: string) {
   };
   Object.assign(draft, normalized);
   if (slug) draft.slug = slug;
+}
+
+function toggleSidebar() {
+  isSidebarCollapsed.value = !isSidebarCollapsed.value;
 }
 
 function addNavbar() {
