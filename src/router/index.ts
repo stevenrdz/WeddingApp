@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 const Home = () => import("../pages/Home.vue");
+const Terms = () => import("../pages/Terms.vue");
+const Privacy = () => import("../pages/Privacy.vue");
 const Wedding = () => import("../pages/Wedding.vue");
 const NotFound = () => import("../pages/NotFound.vue");
 const AdminLayout = () => import("../pages/admin/AdminLayout.vue");
@@ -12,6 +14,8 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: "/", name: "home", component: Home },
+    { path: "/terminos", name: "terms", component: Terms },
+    { path: "/privacidad", name: "privacy", component: Privacy },
     { path: "/w", redirect: "/w/demo" },
     { path: "/w/:slug", name: "wedding", component: Wedding },
     { path: "/admin/login", name: "admin-login", component: AdminLogin },

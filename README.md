@@ -1,6 +1,7 @@
 # WeddingApp SaaS-ready (Vue 3 + Vite)
 
 Template multi-tenant para sitios de boda con rutas por slug, RSVP opcional y deploy en Netlify.
+Incluye landing comercial, demo y paginas legales basicas.
 
 ## Quickstart
 ```bash
@@ -35,6 +36,13 @@ VITE_ADMIN_PREVIEW_KEY=tu-clave-unica
 ```
 Reinicia el dev server para que Vite lea la variable.
 
+### Imagen hero (Unsplash, opcional)
+Si usas el hero con Unsplash en `Home.vue`, agrega en `.env`:
+```
+VITE_UNSPLASH_ACCESS_KEY=tu_access_key
+```
+Si no quieres consumir la API, deja el fallback local.
+
 ### Nota sobre links de borrador
 El link de preview incluye el JSON embebido en la URL. Esto permite compartir sin backend,
 pero puede generar URLs largas. Para un flujo mas robusto, se recomienda persistir
@@ -68,3 +76,7 @@ Netlify Forms requiere que los formularios existan en build-time. El script `scr
 ```bash
 docker compose up --build
 ```
+
+## Paginas legales
+- Terminos y condiciones: `/terminos`
+- Politicas de privacidad: `/privacidad`

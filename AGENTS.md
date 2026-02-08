@@ -12,6 +12,7 @@ WeddingApp is a multi-tenant wedding site template built with Vue 3 + Vite + Tai
 ## Routing and flow
 - Entry: `src/main.ts` mounts `src/App.vue` and router.
 - Routes: `/` (marketing home), `/w/:slug` (wedding), `/w` redirects to `/w/demo`.
+- Legal: `/terminos` and `/privacidad`.
 - Admin: `/admin/login` (demo login) and `/admin/generate` (builder).
 - Preview: `/preview/:draftId` (requires `VITE_ADMIN_PREVIEW_KEY` or admin session).
 - `src/pages/Wedding.vue` loads tenant data by slug, applies theme and SEO, and renders sections.
@@ -38,6 +39,10 @@ WeddingApp is a multi-tenant wedding site template built with Vue 3 + Vite + Tai
 - Draft links embed data in the URL for cross-device sharing.
 - Env: add `.env` with `VITE_ADMIN_PREVIEW_KEY` to enable preview links.
 - Limitation: very large drafts can create long URLs; consider backend persistence later.
+
+## Home hero (Unsplash, opcional)
+- Env: `VITE_UNSPLASH_ACCESS_KEY` (solo acceso publico).
+- Si no se configura, usa imagen fallback local.
 
 ## Roadmap
 - Persist draft data in a backend to avoid long URLs.

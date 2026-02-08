@@ -411,7 +411,7 @@
 
         <div v-if="enabledSections.has('gallery')" class="space-y-3">
           <div class="flex items-center justify-between">
-            <h5 class="text-xs font-semibold text-slate-700">Galeria</h5>
+            <h5 class="text-xs font-semibold text-slate-700">Galería</h5>
             <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addGalleryItem">
               Agregar
             </button>
@@ -623,7 +623,7 @@ const draft = reactive<DraftConfig>({
   gifts: {
     bankTransferText: "Banco Aurora 9876-5432-10",
     giftListUrl: "https://example.com",
-    message: "Gracias por acompanarnos en este dia."
+    message: "Gracias por acompañarnos en este día."
   },
   rsvp: {
     mode: "whatsapp",
@@ -654,7 +654,7 @@ const draft = reactive<DraftConfig>({
   },
   faq: [
     {
-      question: "Como confirmo asistencia?",
+      question: "¿Cómo confirmo asistencia?",
       answer: "Entra a la seccion RSVP y completa el formulario o escribenos por WhatsApp."
     }
   ],
@@ -911,7 +911,7 @@ function applyPreset(name: "clasico" | "moderno" | "minimal") {
         resolveSectionDefaults("rsvp"),
         resolveSectionDefaults("gallery")
       ],
-      footer: { message: "Gracias por acompanarnos", anchorId: "footer" }
+      footer: { message: "Gracias por acompañarnos", anchorId: "footer" }
     };
   }
 
@@ -957,7 +957,7 @@ function applyPreset(name: "clasico" | "moderno" | "minimal") {
         resolveSectionDefaults("locations"),
         resolveSectionDefaults("rsvp")
       ],
-      footer: { message: "Gracias por acompanarnos", anchorId: "footer" }
+      footer: { message: "Gracias por acompañarnos", anchorId: "footer" }
     };
   }
 }
@@ -1026,7 +1026,7 @@ function sanitizeAnchor(section: PageSection) {
 
 function addFooter() {
   if (!draft.page.footer) {
-    draft.page.footer = { message: "Gracias por acompanarnos", anchorId: "footer" };
+    draft.page.footer = { message: "Gracias por acompañarnos", anchorId: "footer" };
   }
 }
 

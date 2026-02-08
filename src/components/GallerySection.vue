@@ -3,7 +3,7 @@
     <div class="container-safe">
       <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-[#2b241f] text-white shadow-lg">
         <div class="px-6 py-12 md:px-10 md:py-16">
-          <p class="section-title text-white/70">GALERIA</p>
+          <p class="section-title text-white/70">GALERÍA</p>
           <div class="ornament mx-auto mt-2"></div>
           <h2 class="mt-6 text-center font-heading text-4xl">Memorias</h2>
           <div class="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-3">

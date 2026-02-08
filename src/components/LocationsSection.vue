@@ -3,7 +3,7 @@
     <div class="container-safe">
       <p class="section-title text-left">UBICACIONES</p>
       <div class="ornament mt-2"></div>
-      <h2 class="mt-4 font-heading text-3xl">Ceremonia y recepcion</h2>
+      <h2 class="mt-4 font-heading text-3xl">Ceremonia y recepción</h2>
       <div class="mt-8 grid gap-6 md:grid-cols-2">
         <div class="card">
           <h3 class="font-heading text-xl">{{ tenant.ceremony.name }}</h3>

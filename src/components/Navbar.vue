@@ -40,7 +40,7 @@ const links = computed<PageLink[]>(() => {
     { label: "Ubicaciones", target: "#ubicaciones" },
     { label: "Itinerario", target: "#itinerario" },
     { label: "RSVP", target: "#rsvp" },
-    { label: "Galeria", target: "#galeria" }
+    { label: "Galería", target: "#galeria" }
   ];
 });
 
