@@ -231,7 +231,7 @@ type UnsplashPhoto = {
 };
 
 const accessKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY as string | undefined;
-const fallbackHeroUrl = "/tenants/lucia-diego/figma/220d555f2b73bdc903d260a49a5a4cfd829769f3.jpg";
+const fallbackHeroUrl = "/hero-fallback.jpg";
 const heroPhotoUrl = ref<string>(fallbackHeroUrl);
 const heroAttribution = ref<{ authorName: string; authorUrl: string; unsplashUrl: string } | null>(null);
 const downloadTracked = ref(false);
@@ -357,4 +357,3 @@ onUnmounted(() => {
 });
 
 </script>
-
