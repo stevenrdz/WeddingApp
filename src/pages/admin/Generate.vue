@@ -7,6 +7,11 @@
         <p class="text-sm text-slate-500">Arma la estructura (navbar, hero, secciones, footer) y edita el contenido.</p>
       </div>
 
+      <div v-if="modeLabel" class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+        <p class="font-medium">{{ modeLabel }}</p>
+        <p v-if="modeHint" class="mt-1 text-xs text-slate-500">{{ modeHint }}</p>
+      </div>
+
       <div class="mt-6 space-y-6">
 
       <details open class="rounded-xl border border-slate-200 px-4 py-3">
@@ -724,6 +729,14 @@
         <button class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white" type="button" @click="downloadJson">
           Descargar JSON
         </button>
+        <button
+          v-if="canWriteToProject"
+          class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white"
+          type="button"
+          @click="saveToProject"
+        >
+          Guardar en proyecto
+        </button>
         <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700" type="button" @click="saveToTenants">
           Crear en tenants
         </button>
@@ -785,7 +798,7 @@ import type { BankAccount, BankKey, PageSection, SectionType, TenantConfig } fro
 import { resolveSectionDefaults, sectionCatalog } from "../../utils/sectionCatalog";
 import manifest from "../../tenants/tenants.manifest.json";
 import { LocalJsonAdapter } from "../../tenants/LocalJsonAdapter";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 type DraftConfig = TenantConfig & { slug: string };
 
@@ -852,12 +865,16 @@ function normalizeHexColor(input: string) {
 
 const previewRef = ref<HTMLElement | null>(null);
 const route = useRoute();
+const router = useRouter();
 const adapter = new LocalJsonAdapter();
 const draftShareUrl = ref("");
 const copyStatus = ref("Copiar link");
 const toastMessage = ref("");
 const slugNotice = ref("");
 const dragIndex = ref<number | null>(null);
+const loadedTenantSlug = ref<string>("");
+const loadedDraftId = ref<string>("");
+const canWriteToProject = ref(false);
 const draftVersions = ref<Array<{ id: string; slug: string; date: string; label: string; data: TenantConfig }>>([]);
 const validationErrors = reactive<{ slug: string; dateISO: string; list: string[] }>({
   slug: "",
@@ -953,6 +970,8 @@ async function loadFromQuery() {
   const tenantSlug = typeof q.tenant === "string" ? q.tenant : "";
 
   if (draftId) {
+    loadedDraftId.value = draftId;
+    loadedTenantSlug.value = "";
     const raw = localStorage.getItem("weddingapp_drafts");
     const current = raw ? (JSON.parse(raw) as Array<{ id: string; data: TenantConfig; slug?: string }>) : [];
     const found = current.find((d) => d.id === draftId);
@@ -966,6 +985,8 @@ async function loadFromQuery() {
   }
 
   if (tenantSlug) {
+    loadedTenantSlug.value = tenantSlug;
+    loadedDraftId.value = "";
     const tenant = await adapter.getTenant(tenantSlug);
     if (!tenant) {
       toastMessage.value = "No se encontró el sitio en tenants.";
@@ -973,6 +994,79 @@ async function loadFromQuery() {
     }
     applyDraft(tenant, tenantSlug);
     toastMessage.value = "Sitio cargado desde tenants.";
+    return;
+  }
+
+  loadedTenantSlug.value = "";
+  loadedDraftId.value = "";
+}
+
+const modeLabel = computed(() => {
+  if (loadedTenantSlug.value) return `Editando sitio: ${loadedTenantSlug.value}`;
+  if (loadedDraftId.value) return `Editando borrador: ${loadedDraftId.value}`;
+  return "";
+});
+
+const modeHint = computed(() => {
+  if (loadedTenantSlug.value) return `Se guardará como src/tenants/data/${draft.slug}.json y se actualizará el manifest.`;
+  if (loadedDraftId.value) return "Este borrador vive en este navegador (localStorage). Puedes guardarlo como sitio.";
+  return "";
+});
+
+async function checkWriter() {
+  if (!import.meta.env.DEV) {
+    canWriteToProject.value = false;
+    return;
+  }
+  try {
+    const res = await fetch("/__admin/tenants/ping");
+    const json = (await res.json()) as { ok?: boolean };
+    canWriteToProject.value = Boolean(res.ok && json?.ok);
+  } catch {
+    canWriteToProject.value = false;
+  }
+}
+
+async function saveToProject() {
+  if (!validateDraft()) return;
+  if (!canWriteToProject.value) {
+    toastMessage.value = "No se puede guardar en el proyecto (dev server no disponible).";
+    return;
+  }
+
+  const nextSlug = draft.slug.trim();
+  const prevSlug = loadedTenantSlug.value.trim();
+  const isRename = Boolean(prevSlug && prevSlug !== nextSlug);
+
+  if (isRename) {
+    const ok = window.confirm(`Vas a renombrar el sitio de "${prevSlug}" a "${nextSlug}". ¿Continuar?`);
+    if (!ok) return;
+  }
+
+  const { slug, ...tenant } = draft;
+  try {
+    const res = await fetch("/__admin/tenants/save", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        slug: nextSlug,
+        prevSlug: prevSlug || undefined,
+        deletePrev: isRename,
+        tenant
+      })
+    });
+    const json = (await res.json()) as { ok?: boolean; error?: string; slug?: string };
+    if (!res.ok || !json?.ok) {
+      toastMessage.value = json?.error || "No se pudo guardar.";
+      return;
+    }
+
+    loadedTenantSlug.value = nextSlug;
+    loadedDraftId.value = "";
+    toastMessage.value = `Guardado en src/tenants/data/${nextSlug}.json`;
+    await router.replace({ name: "admin-generate", query: { tenant: nextSlug } });
+  } catch {
+    toastMessage.value = "Error al guardar en el proyecto.";
   }
 }
 
@@ -1128,6 +1222,7 @@ watch(
 
 onMounted(() => {
   loadFromQuery();
+  checkWriter();
 });
 
 watch(
