@@ -883,6 +883,16 @@ const validationErrors = reactive<{ slug: string; dateISO: string; list: string[
 });
 const sectionToAdd = ref<SectionType>("countdown");
 
+const DEFAULT_THEME: TenantConfig["theme"] = {
+  primary: "#7b4f62",
+  secondary: "#1f2437",
+  background: "#fbf6f1",
+  text: "#2a2a2a",
+  fontHeading: "Boska",
+  fontSubheading: "Cormorant Garamond",
+  fontBody: "Inter"
+};
+
 const draft = reactive<DraftConfig>({
   slug: "nueva-boda",
   coupleNames: "Nombre & Nombre",
@@ -930,13 +940,7 @@ const draft = reactive<DraftConfig>({
   },
   gallery: [],
   theme: {
-    primary: "#7b4f62",
-    secondary: "#1f2437",
-    background: "#fbf6f1",
-    text: "#2a2a2a",
-    fontHeading: "Boska",
-    fontSubheading: "Cormorant Garamond",
-    fontBody: "Inter"
+    ...DEFAULT_THEME
   },
   seo: {
     title: "Nombre & Nombre | Boda",
@@ -1254,8 +1258,12 @@ function restoreVersion(version: { slug: string; data: TenantConfig }) {
 
 function applyDraft(data: TenantConfig, slug?: string) {
   const fallbackPage = { navbar: undefined, hero: undefined, sections: [], footer: undefined, locations: { showCeremony: true, showReception: true, mapMode: "button" } };
+  const nextTheme = { ...DEFAULT_THEME, ...(data.theme ?? {}) };
+  // Some existing tenants don't have fontSubheading; keep the select stable.
+  if (!nextTheme.fontSubheading) nextTheme.fontSubheading = nextTheme.fontHeading;
   const normalized = {
     ...data,
+    theme: nextTheme,
     page: {
       ...fallbackPage,
       ...(data.page ?? {}),
