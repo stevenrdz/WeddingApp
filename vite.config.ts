@@ -93,6 +93,46 @@ function adminTenantWriter(): Plugin {
             return;
           }
 
+          if (req.method === "POST" && req.url === "/__admin/tenants/delete") {
+            const raw = await readRequestBody(req);
+            const body = JSON.parse(raw || "{}") as { slug?: string };
+            const slug = String(body.slug || "").trim();
+
+            if (!slug || !isValidSlug(slug)) {
+              res.statusCode = 400;
+              res.setHeader("content-type", "application/json");
+              res.end(JSON.stringify({ ok: false, error: "Slug inválido. Usa solo minúsculas, números y guiones." }));
+              return;
+            }
+
+            if (slug === "demo") {
+              res.statusCode = 400;
+              res.setHeader("content-type", "application/json");
+              res.end(JSON.stringify({ ok: false, error: "No se puede eliminar el tenant demo." }));
+              return;
+            }
+
+            const manifest = await readJsonFile<string[]>(manifestPath).catch(() => [] as string[]);
+            const set = new Set<string>(Array.isArray(manifest) ? manifest : []);
+            if (!set.has(slug)) {
+              res.statusCode = 404;
+              res.setHeader("content-type", "application/json");
+              res.end(JSON.stringify({ ok: false, error: "El sitio no existe en el manifest." }));
+              return;
+            }
+
+            set.delete(slug);
+            const tenantPath = path.join(dataDir, `${slug}.json`);
+            await fs.rm(tenantPath, { force: true });
+            const nextManifest = Array.from(set).sort();
+            await writePrettyJsonFile(manifestPath, nextManifest);
+
+            res.statusCode = 200;
+            res.setHeader("content-type", "application/json");
+            res.end(JSON.stringify({ ok: true, slug }));
+            return;
+          }
+
           res.statusCode = 404;
           res.setHeader("content-type", "application/json");
           res.end(JSON.stringify({ ok: false, error: "Not found" }));

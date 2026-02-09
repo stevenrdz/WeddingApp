@@ -20,6 +20,14 @@
       <button class="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm" type="button" @click="load">
         Recargar
       </button>
+      <button
+        class="h-10 rounded-xl border border-red-200 bg-red-50 px-4 text-sm font-semibold text-red-700 disabled:opacity-60"
+        type="button"
+        :disabled="!items.length"
+        @click="removeAll"
+      >
+        Eliminar todos
+      </button>
       <p class="text-sm text-slate-500">{{ filtered.length }} borrador(es)</p>
     </div>
 
@@ -53,6 +61,31 @@
         </div>
       </div>
     </div>
+
+    <div class="fixed bottom-4 right-4 z-50 w-[min(360px,calc(100vw-2rem))] space-y-2">
+      <div
+        v-for="toast in toasts"
+        :key="toast.id"
+        class="rounded-2xl border bg-white px-4 py-3 shadow-lg"
+        :class="toast.kind === 'error' ? 'border-red-200' : toast.kind === 'success' ? 'border-emerald-200' : 'border-slate-200'"
+        :role="toast.kind === 'error' ? 'alert' : 'status'"
+      >
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <p
+              class="text-xs font-semibold uppercase tracking-widest"
+              :class="toast.kind === 'error' ? 'text-red-700' : toast.kind === 'success' ? 'text-emerald-700' : 'text-slate-600'"
+            >
+              {{ toast.kind === "error" ? "Error" : toast.kind === "success" ? "Listo" : "Info" }}
+            </p>
+            <p class="mt-1 break-words text-sm text-slate-900">{{ toast.message }}</p>
+          </div>
+          <button class="shrink-0 rounded-lg border border-slate-200 px-2 py-1 text-xs text-slate-600" type="button" @click="dismissToast(toast.id)">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -66,6 +99,21 @@ type StoredDraft = { id: string; slug?: string; data: TenantConfig };
 const router = useRouter();
 const items = ref<StoredDraft[]>([]);
 const query = ref("");
+
+type ToastKind = "success" | "error" | "info";
+type Toast = { id: number; kind: ToastKind; message: string };
+const toasts = ref<Toast[]>([]);
+let toastSeq = 0;
+
+function pushToast(kind: ToastKind, message: string) {
+  const id = (toastSeq += 1);
+  toasts.value.push({ id, kind, message });
+  window.setTimeout(() => dismissToast(id), kind === "error" ? 6500 : 3500);
+}
+
+function dismissToast(id: number) {
+  toasts.value = toasts.value.filter((toast) => toast.id !== id);
+}
 
 function readDrafts(): StoredDraft[] {
   const raw = localStorage.getItem("weddingapp_drafts");
@@ -104,6 +152,7 @@ function duplicate(draftId: string) {
   current.unshift({ id: nextId, slug: found.slug, data: found.data });
   writeDrafts(current);
   load();
+  pushToast("success", "Borrador duplicado.");
 }
 
 function remove(draftId: string) {
@@ -112,8 +161,16 @@ function remove(draftId: string) {
   const next = readDrafts().filter((d) => d.id !== draftId);
   writeDrafts(next);
   load();
+  pushToast("success", "Borrador eliminado.");
+}
+
+function removeAll() {
+  const ok = window.confirm("¿Eliminar TODOS los borradores de este navegador? Esta acción no se puede deshacer.");
+  if (!ok) return;
+  writeDrafts([]);
+  load();
+  pushToast("success", "Todos los borradores fueron eliminados.");
 }
 
 load();
 </script>
-
