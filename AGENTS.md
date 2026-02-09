@@ -13,6 +13,7 @@ Provenza is a multi-tenant wedding site template built with Vue 3 + Vite + Tailw
 ## Routing and flow
 - Entry: `src/main.ts` mounts `src/App.vue` and router.
 - Routes: `/` (marketing home), `/w/:slug` (wedding), `/w` redirects to `/w/demo`.
+- Premium (MVP demo): `/p/:slug/qr`, `/p/:slug/galeria`, `/p/:slug/upload`.
 - Legal: `/terminos` and `/privacidad`.
 - Admin: `/admin/login` (demo login) and `/admin/generate` (builder).
 - Admin dashboard: `/admin/drafts` (borradores) and `/admin/sites` (sitios).
@@ -57,6 +58,7 @@ Provenza is a multi-tenant wedding site template built with Vue 3 + Vite + Tailw
 - Add free-stock image picker inside the builder.
 - Move plan/section gating controls into the dashboard.
 - (Optional) Add a small library of baroque ornament dividers (SVG/PNG) for section titles.
+- (Optional / Premium) QR + guest uploads + live gallery with storage owned by the client (e.g., Google Drive via Apps Script) and realtime/polling updates.
 
 ## Common changes
 - Add a wedding: create JSON, add slug to manifest, add images.

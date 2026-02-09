@@ -27,6 +27,7 @@ npm run test:e2e
 - Bibliotecas de imagenes libres dentro del builder.
 - Control de secciones por plan (basic/standard/premium) desde el dashboard.
 - (Opcional) Crear una libreria de ornamentos barrocos (SVG/PNG) para titulos y secciones.
+- (Opcional / Premium) Galeria en vivo por QR (invitados suben fotos) con almacenamiento en Google Drive del cliente (Apps Script) y actualizacion por polling/tiempo real.
 
 ## Crear un nuevo tenant
 1) Agrega un nuevo archivo JSON en `src/tenants/data/tu-slug.json` siguiendo `TenantConfig`.
@@ -39,6 +40,14 @@ npm run test:e2e
 - Borradores: `/admin/drafts` (crear/duplicar/eliminar).
 - Sitios: `/admin/sites` (ver/editar/eliminar).
 - Guardar borrador: genera un link compartible a `/preview/:draftId`.
+
+## Premium (MVP - demo)
+Este flujo es un prototipo para el paquete Premium:
+- QR: `/p/:slug/qr` (genera un QR hacia la pagina de carga).
+- Galeria: `/p/:slug/galeria` (muestra fotos subidas).
+- Upload (invitados): `/p/:slug/upload` (abre camara/galeria y sube una foto).
+
+Por ahora las fotos se guardan en `localStorage` (demo). La version real sugerida es que el cliente sea dueno del almacenamiento (ej. Google Drive via Apps Script).
 
 ### Guardar/eliminar "en proyecto" (solo local)
 En modo local (`npm run dev`), el admin puede:
