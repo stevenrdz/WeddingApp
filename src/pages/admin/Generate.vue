@@ -55,19 +55,75 @@
           <div class="grid gap-3 md:grid-cols-2">
             <label class="block text-sm text-slate-600">
               Primario
-              <input v-model="draft.theme.primary" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
+              <div class="mt-2 flex items-center gap-3">
+                <input
+                  v-model="draft.theme.primary"
+                  class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0"
+                  type="color"
+                  @blur="draft.theme.primary = normalizeHexColor(draft.theme.primary)"
+                />
+                <input
+                  v-model="draft.theme.primary"
+                  class="h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm"
+                  placeholder="#b4556b"
+                  spellcheck="false"
+                  @blur="draft.theme.primary = normalizeHexColor(draft.theme.primary)"
+                />
+              </div>
             </label>
             <label class="block text-sm text-slate-600">
               Secundario
-              <input v-model="draft.theme.secondary" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
+              <div class="mt-2 flex items-center gap-3">
+                <input
+                  v-model="draft.theme.secondary"
+                  class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0"
+                  type="color"
+                  @blur="draft.theme.secondary = normalizeHexColor(draft.theme.secondary)"
+                />
+                <input
+                  v-model="draft.theme.secondary"
+                  class="h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm"
+                  placeholder="#1f2437"
+                  spellcheck="false"
+                  @blur="draft.theme.secondary = normalizeHexColor(draft.theme.secondary)"
+                />
+              </div>
             </label>
             <label class="block text-sm text-slate-600">
               Fondo
-              <input v-model="draft.theme.background" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
+              <div class="mt-2 flex items-center gap-3">
+                <input
+                  v-model="draft.theme.background"
+                  class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0"
+                  type="color"
+                  @blur="draft.theme.background = normalizeHexColor(draft.theme.background)"
+                />
+                <input
+                  v-model="draft.theme.background"
+                  class="h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm"
+                  placeholder="#fbf6f1"
+                  spellcheck="false"
+                  @blur="draft.theme.background = normalizeHexColor(draft.theme.background)"
+                />
+              </div>
             </label>
             <label class="block text-sm text-slate-600">
               Texto
-              <input v-model="draft.theme.text" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
+              <div class="mt-2 flex items-center gap-3">
+                <input
+                  v-model="draft.theme.text"
+                  class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0"
+                  type="color"
+                  @blur="draft.theme.text = normalizeHexColor(draft.theme.text)"
+                />
+                <input
+                  v-model="draft.theme.text"
+                  class="h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm"
+                  placeholder="#2a2a2a"
+                  spellcheck="false"
+                  @blur="draft.theme.text = normalizeHexColor(draft.theme.text)"
+                />
+              </div>
             </label>
           </div>
         </div>
@@ -288,11 +344,11 @@
           </div>
           <div class="mt-3 grid gap-3 md:grid-cols-2">
             <label class="text-xs text-slate-500">
-              Texto
+              Nombre (aparece en el menú)
               <input v-model="section.label" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
             </label>
             <label class="text-xs text-slate-500">
-              Referencia
+              Ancla (para links, ejemplo: `#rsvp`)
               <input
                 v-model="section.anchorId"
                 class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
@@ -608,6 +664,15 @@ const fontOptionsBody = [
   { label: "Cormorant Garamond", value: "Cormorant Garamond" },
   { label: "EB Garamond", value: "EB Garamond" }
 ];
+
+function normalizeHexColor(input: string) {
+  const raw = (input ?? "").trim();
+  const withHash = raw.startsWith("#") ? raw : `#${raw}`;
+  const hex = withHash.toLowerCase();
+  // Accept #rgb or #rrggbb only
+  if (/^#[0-9a-f]{3}$/.test(hex) || /^#[0-9a-f]{6}$/.test(hex)) return hex;
+  return "#000000";
+}
 
 const previewRef = ref<HTMLElement | null>(null);
 const draftShareUrl = ref("");
