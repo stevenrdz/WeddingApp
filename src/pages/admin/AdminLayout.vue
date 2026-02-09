@@ -1,6 +1,15 @@
 <template>
   <div class="min-h-screen bg-slate-100 text-slate-900">
     <div id="app-layout" class="flex min-h-screen overflow-x-hidden">
+      <div
+        v-if="!isCollapsed && !isDesktop"
+        class="fixed inset-0 z-20 bg-black/35 backdrop-blur-[1px]"
+        role="button"
+        aria-label="Cerrar menú"
+        tabindex="0"
+        @click="closeSidebarIfMobile"
+        @keydown.enter.prevent="closeSidebarIfMobile"
+      ></div>
       <aside
         class="fixed inset-y-0 left-0 z-30 flex h-screen w-[15.625rem] flex-col border-r border-slate-200 bg-white transition-transform duration-200"
         :class="isCollapsed ? '-translate-x-full' : 'translate-x-0'"
@@ -45,8 +54,8 @@
 
       <main
         id="app-layout-content"
-        class="min-h-screen w-full min-w-[100vw] md:min-w-0 transition-[margin] duration-200"
-        :class="isCollapsed ? 'ml-0' : 'ml-[15.625rem]'"
+        class="min-h-screen w-full transition-[margin] duration-200"
+        :class="!isCollapsed && isDesktop ? 'ml-[15.625rem]' : 'ml-0'"
       >
         <div class="bg-white px-6 py-[10px] shadow-sm">
           <div class="flex items-center justify-between">
@@ -70,11 +79,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRouter, RouterView, RouterLink } from "vue-router";
 
 const router = useRouter();
 const isCollapsed = ref(false);
+const viewportWidth = ref<number>(1024);
+const isDesktop = computed(() => viewportWidth.value >= 768);
+
+function syncViewport() {
+  viewportWidth.value = window.innerWidth || 0;
+}
+
+function closeSidebarIfMobile() {
+  if (!isDesktop.value) isCollapsed.value = true;
+}
 
 function toggleSidebar() {
   isCollapsed.value = !isCollapsed.value;
@@ -84,4 +103,15 @@ function logout() {
   localStorage.removeItem("weddingapp_admin");
   router.push({ name: "admin-login" });
 }
+
+onMounted(() => {
+  syncViewport();
+  window.addEventListener("resize", syncViewport, { passive: true });
+  // Default: hidden on mobile, visible on desktop
+  isCollapsed.value = !isDesktop.value;
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", syncViewport);
+});
 </script>
