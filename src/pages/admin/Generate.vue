@@ -311,7 +311,7 @@
         </div>
       </details>
 
-      <details v-if="draft.page.sections.length" open class="rounded-xl border border-slate-200 px-4 py-3">
+      <details v-if="draft.page.sections" open class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-slate-800">
           Secciones
           <button class="text-xs text-red-500" type="button" @click.stop="removeSections">Quitar</button>
@@ -327,6 +327,7 @@
               Agregar
             </button>
           </div>
+          <p v-if="!draft.page.sections.length" class="text-xs text-slate-500">Agrega secciones para construir tu sitio.</p>
         <div
           v-for="(section, index) in draft.page.sections"
           :key="`${section.type}-${index}`"
@@ -420,7 +421,7 @@
         </div>
       </details>
 
-      <details v-if="draft.page.sections.length" class="rounded-xl border border-slate-200 px-4 py-3">
+      <details v-if="draft.page.sections?.length" class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="cursor-pointer text-sm font-semibold text-slate-800">Contenido de secciones</summary>
         <div class="mt-4 space-y-6">
 
@@ -962,7 +963,7 @@ const draft = reactive<DraftConfig>({
   page: {
     navbar: undefined,
     hero: undefined,
-    sections: [],
+    sections: undefined,
     footer: undefined,
     locations: { showCeremony: true, showReception: true, mapMode: "button" }
   }
@@ -1080,12 +1081,12 @@ const tenantForPreview = computed<TenantConfig>(() => {
 });
 
 const sectionCatalogOptions = computed(() => sectionCatalog);
-const enabledSections = computed(() => new Set(draft.page.sections.map((section) => section.type)));
+const enabledSections = computed(() => new Set((draft.page.sections ?? []).map((section) => section.type)));
 
 const anchorOptions = computed(() => {
   const options: Array<{ label: string; value: string }> = [];
   if (draft.page.hero) options.push({ label: "Hero", value: "#hero" });
-  for (const section of draft.page.sections) {
+  for (const section of draft.page.sections ?? []) {
     options.push({ label: section.label, value: `#${section.anchorId}` });
   }
   if (draft.page.footer) {
@@ -1152,6 +1153,7 @@ function onDragStart(index: number) {
 
 function onDrop(index: number) {
   if (dragIndex.value === null || dragIndex.value === index) return;
+  if (!draft.page.sections) return;
   const list = draft.page.sections;
   const [moved] = list.splice(dragIndex.value, 1);
   list.splice(index, 0, moved);
@@ -1159,6 +1161,7 @@ function onDrop(index: number) {
 }
 
 function moveSection(index: number, delta: number) {
+  if (!draft.page.sections) return;
   const nextIndex = index + delta;
   if (nextIndex < 0 || nextIndex >= draft.page.sections.length) return;
   const list = draft.page.sections;
@@ -1257,7 +1260,7 @@ function restoreVersion(version: { slug: string; data: TenantConfig }) {
 }
 
 function applyDraft(data: TenantConfig, slug?: string) {
-  const fallbackPage = { navbar: undefined, hero: undefined, sections: [], footer: undefined, locations: { showCeremony: true, showReception: true, mapMode: "button" } };
+  const fallbackPage = { navbar: undefined, hero: undefined, sections: undefined, footer: undefined, locations: { showCeremony: true, showReception: true, mapMode: "button" } };
   const nextTheme = { ...DEFAULT_THEME, ...(data.theme ?? {}) };
   // Some existing tenants don't have fontSubheading; keep the select stable.
   if (!nextTheme.fontSubheading) nextTheme.fontSubheading = nextTheme.fontHeading;
@@ -1267,17 +1270,19 @@ function applyDraft(data: TenantConfig, slug?: string) {
     page: {
       ...fallbackPage,
       ...(data.page ?? {}),
-      sections: (data.page?.sections ?? fallbackPage.sections).map((s) => {
-        const base = resolveSectionDefaults(s.type);
-        return {
-          ...base,
-          ...s,
-          background: {
-            ...(base.background ?? { mode: "default" }),
-            ...(s.background ?? {})
-          }
-        };
-      }),
+      sections: data.page?.sections?.length
+        ? data.page.sections.map((s) => {
+            const base = resolveSectionDefaults(s.type);
+            return {
+              ...base,
+              ...s,
+              background: {
+                ...(base.background ?? { mode: "default" }),
+                ...(s.background ?? {})
+              }
+            };
+          })
+        : undefined,
       locations: {
         ...fallbackPage.locations,
         ...(data.page?.locations ?? {})
@@ -1442,13 +1447,11 @@ function removeHeroButton(index: number) {
 }
 
 function addSections() {
-  if (!draft.page.sections.length) {
-    draft.page.sections.push(resolveSectionDefaults(sectionToAdd.value));
-  }
+  if (!draft.page.sections) draft.page.sections = [];
 }
 
 function removeSections() {
-  draft.page.sections = [];
+  draft.page.sections = undefined;
 }
 
 function addSection() {
@@ -1458,7 +1461,7 @@ function addSection() {
 }
 
 function removeSection(index: number) {
-  draft.page.sections.splice(index, 1);
+  draft.page.sections?.splice(index, 1);
 }
 
 function sanitizeAnchor(section: PageSection) {
