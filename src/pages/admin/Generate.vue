@@ -34,16 +34,22 @@
           <p v-if="validationErrors.dateISO" class="text-xs text-red-600">{{ validationErrors.dateISO }}</p>
           <div class="grid gap-3 md:grid-cols-2">
             <label class="block text-sm font-medium text-slate-700">
-              Tipografia titulos
-              <input v-model="draft.theme.fontHeading" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+              Tipografía títulos
+              <select v-model="draft.theme.fontHeading" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm">
+                <option v-for="opt in fontOptionsHeading" :key="`fh-${opt.value}`" :value="opt.value">{{ opt.label }}</option>
+              </select>
             </label>
             <label class="block text-sm font-medium text-slate-700">
-              Tipografia subtitulos
-              <input v-model="draft.theme.fontSubheading" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+              Tipografía subtítulos
+              <select v-model="draft.theme.fontSubheading" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm">
+                <option v-for="opt in fontOptionsSubheading" :key="`fs-${opt.value}`" :value="opt.value">{{ opt.label }}</option>
+              </select>
             </label>
             <label class="block text-sm font-medium text-slate-700">
-              Tipografia parrafos
-              <input v-model="draft.theme.fontBody" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+              Tipografía párrafos
+              <select v-model="draft.theme.fontBody" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm">
+                <option v-for="opt in fontOptionsBody" :key="`fb-${opt.value}`" :value="opt.value">{{ opt.label }}</option>
+              </select>
             </label>
           </div>
           <div class="grid gap-3 md:grid-cols-2">
@@ -86,10 +92,10 @@
       </div>
 
       <div class="space-y-3">
-        <h3 class="text-sm font-semibold text-slate-800">Plantillas rapidas</h3>
+        <h3 class="text-sm font-semibold text-slate-800">Plantillas rápidas</h3>
         <div class="flex flex-wrap gap-3">
           <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="applyPreset('clasico')">
-            Clasico
+            Clásico
           </button>
           <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="applyPreset('moderno')">
             Moderno
@@ -186,62 +192,64 @@
             Tagline
             <input v-model="draft.hero.tagline" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
           </label>
-        <label class="block text-sm text-slate-600">
-          Fondo
-          <select v-model="draft.page.hero.backgroundMode" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm">
-            <option value="default">Default</option>
-            <option value="color">Color</option>
-            <option value="image">Imagen</option>
-          </select>
-        </label>
-        <label v-if="draft.page.hero.backgroundMode === 'color'" class="block text-sm text-slate-600">
-          Color de fondo
-          <input v-model="draft.page.hero.backgroundColor" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
-        </label>
-        <label v-if="draft.page.hero.backgroundMode === 'image'" class="block text-sm text-slate-600">
-          Imagen de fondo (URL)
-          <input v-model="draft.page.hero.backgroundImageUrl" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-        </label>
+          <label class="block text-sm text-slate-600">
+            Fondo
+            <select v-model="draft.page.hero.backgroundMode" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm">
+              <option value="default">Default</option>
+              <option value="color">Color</option>
+              <option value="image">Imagen</option>
+            </select>
+          </label>
+          <label v-if="draft.page.hero.backgroundMode === 'color'" class="block text-sm text-slate-600">
+            Color de fondo
+            <input v-model="draft.page.hero.backgroundColor" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
+          </label>
+          <label v-if="draft.page.hero.backgroundMode === 'image'" class="block text-sm text-slate-600">
+            Imagen de fondo (URL)
+            <input v-model="draft.page.hero.backgroundImageUrl" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+          </label>
 
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <h4 class="text-xs font-semibold text-slate-700">Botones</h4>
-            <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addHeroButton">
-              Agregar boton
-            </button>
-          </div>
-          <div v-for="(btn, index) in draft.page.hero.buttons" :key="`herobtn-${index}`" class="rounded-xl border border-slate-200 p-3">
-            <div class="grid gap-3 md:grid-cols-2">
-              <input v-model="btn.label" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Texto" />
-              <input v-model="btn.target" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="#rsvp" list="anchor-options" />
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-semibold text-slate-700">Botones</h4>
+              <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addHeroButton">
+                Agregar boton
+              </button>
             </div>
-            <div class="mt-3 grid gap-3 md:grid-cols-3">
-              <label class="text-xs text-slate-500">
-                Variante
-                <select v-model="btn.variant" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
-                  <option value="solid">Fondo</option>
-                  <option value="outline">Borde</option>
-                </select>
-              </label>
-              <label class="text-xs text-slate-500">
-                Color texto
-                <input v-model="btn.textColor" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" type="color" />
-              </label>
-              <label class="text-xs text-slate-500">
-                <span v-if="btn.variant === 'outline'">Color borde</span>
-                <span v-else>Color fondo</span>
-                <input
-                  :value="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
-                  class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
-                  type="color"
-                  @input="updateButtonColor(btn, $event)"
-                />
-              </label>
+            <div v-for="(btn, index) in draft.page.hero.buttons" :key="`herobtn-${index}`" class="rounded-xl border border-slate-200 p-3">
+              <div class="grid gap-3 md:grid-cols-2">
+                <input v-model="btn.label" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Texto" />
+                <input v-model="btn.target" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="#rsvp" list="anchor-options" />
+              </div>
+              <div class="mt-3 grid gap-3 md:grid-cols-3">
+                <label class="text-xs text-slate-500">
+                  Variante
+                  <select v-model="btn.variant" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+                    <option value="solid">Fondo</option>
+                    <option value="outline">Borde</option>
+                  </select>
+                </label>
+                <label class="text-xs text-slate-500">
+                  Color texto
+                  <input v-model="btn.textColor" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" type="color" />
+                </label>
+                <label class="text-xs text-slate-500">
+                  <span v-if="btn.variant === 'outline'">Color borde</span>
+                  <span v-else>Color fondo</span>
+                  <input
+                    :value="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
+                    class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                    type="color"
+                    @input="updateButtonColor(btn, $event)"
+                  />
+                </label>
+              </div>
+              <button class="mt-2 text-xs text-red-500" type="button" @click="removeHeroButton(index)">Quitar</button>
             </div>
-            <button class="mt-2 text-xs text-red-500" type="button" @click="removeHeroButton(index)">Quitar</button>
           </div>
         </div>
-      </div>
+      </details>
+
       <details v-if="draft.page.sections.length" open class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-slate-800">
           Secciones
@@ -329,7 +337,7 @@
           </label>
 
           <label class="block text-sm text-slate-600">
-            Recepcion
+            Recepción
             <input v-model="draft.reception.name" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
           </label>
           <div class="grid gap-3 md:grid-cols-2">
@@ -575,6 +583,33 @@ import manifest from "../../tenants/tenants.manifest.json";
 
 type DraftConfig = TenantConfig & { slug: string };
 
+const fontOptionsHeading = [
+  { label: "Boska (Actual)", value: "Boska" },
+  { label: "Playfair Display", value: "Playfair Display" },
+  { label: "Cormorant Garamond", value: "Cormorant Garamond" },
+  { label: "EB Garamond", value: "EB Garamond" },
+  { label: "Cinzel", value: "Cinzel" },
+  { label: "Prata", value: "Prata" },
+  { label: "Great Vibes (Script)", value: "Great Vibes" }
+];
+
+const fontOptionsSubheading = [
+  { label: "Cormorant Garamond (Actual)", value: "Cormorant Garamond" },
+  { label: "Playfair Display", value: "Playfair Display" },
+  { label: "EB Garamond", value: "EB Garamond" },
+  { label: "Cinzel", value: "Cinzel" },
+  { label: "Prata", value: "Prata" },
+  { label: "Boska", value: "Boska" },
+  { label: "Great Vibes (Script)", value: "Great Vibes" }
+];
+
+const fontOptionsBody = [
+  { label: "Inter (Actual)", value: "Inter" },
+  { label: "Source Sans 3", value: "Source Sans 3" },
+  { label: "Cormorant Garamond", value: "Cormorant Garamond" },
+  { label: "EB Garamond", value: "EB Garamond" }
+];
+
 const previewRef = ref<HTMLElement | null>(null);
 const draftShareUrl = ref("");
 const copyStatus = ref("Copiar link");
@@ -594,7 +629,7 @@ const draft = reactive<DraftConfig>({
   coupleNames: "Nombre & Nombre",
   dateISO: "2026-09-12",
   hero: {
-    tagline: "Nuestro si, para siempre",
+    tagline: "Nuestro sí, para siempre",
     ctaPrimaryText: "RSVP",
     ctaSecondaryText: "Ubicaciones",
     ctaPrimaryTarget: "#rsvp",
@@ -614,7 +649,7 @@ const draft = reactive<DraftConfig>({
   },
   schedule: [
     { time: "17:00", title: "Ceremonia", description: "Capilla" },
-    { time: "19:00", title: "Recepcion", description: "Brindis y cena" }
+    { time: "19:00", title: "Recepción", description: "Brindis y cena" }
   ],
   dressCode: {
     title: "Formal",
@@ -644,18 +679,18 @@ const draft = reactive<DraftConfig>({
   },
   seo: {
     title: "Nombre & Nombre | Boda",
-    description: "Acompananos en nuestro gran dia.",
+    description: "Acompáñanos en nuestro gran día.",
     url: "https://tuboda.com/w/nueva-boda",
     ogImage: "/og-default.svg"
   },
   story: {
     title: "Nuestra historia",
-    message: "Un encuentro casual que termino en un si para siempre."
+    message: "Un encuentro casual que terminó en un sí para siempre."
   },
   faq: [
     {
       question: "¿Cómo confirmo asistencia?",
-      answer: "Entra a la seccion RSVP y completa el formulario o escribenos por WhatsApp."
+      answer: "Entra a la sección RSVP y completa el formulario o escríbenos por WhatsApp."
     }
   ],
   contactEmail: "contacto@tuboda.com",
@@ -868,7 +903,7 @@ function removeNavbar() {
 function addNavbarLink() {
   if (!draft.page.navbar) return;
   const target = anchorOptions.value[0]?.value || "#hero";
-  draft.page.navbar.links.push({ label: "Seccion", target });
+  draft.page.navbar.links.push({ label: "Sección", target });
 }
 
 function removeNavbarLink(index: number) {

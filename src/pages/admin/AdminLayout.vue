@@ -83,9 +83,10 @@ import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRouter, RouterView, RouterLink } from "vue-router";
 
 const router = useRouter();
-const isCollapsed = ref(false);
-const viewportWidth = ref<number>(1024);
+const initialWidth = typeof window !== "undefined" ? window.innerWidth || 0 : 0;
+const viewportWidth = ref<number>(initialWidth);
 const isDesktop = computed(() => viewportWidth.value >= 768);
+const isCollapsed = ref(!isDesktop.value);
 
 function syncViewport() {
   viewportWidth.value = window.innerWidth || 0;
@@ -105,10 +106,11 @@ function logout() {
 }
 
 onMounted(() => {
+  // Keep it stable on reload (avoid "open then close" flicker on mobile)
   syncViewport();
-  window.addEventListener("resize", syncViewport, { passive: true });
-  // Default: hidden on mobile, visible on desktop
   isCollapsed.value = !isDesktop.value;
+
+  window.addEventListener("resize", syncViewport, { passive: true });
 });
 
 onUnmounted(() => {
