@@ -8,6 +8,8 @@ const NotFound = () => import("../pages/NotFound.vue");
 const AdminLayout = () => import("../pages/admin/AdminLayout.vue");
 const AdminLogin = () => import("../pages/admin/Login.vue");
 const AdminGenerate = () => import("../pages/admin/Generate.vue");
+const AdminDrafts = () => import("../pages/admin/Drafts.vue");
+const AdminSites = () => import("../pages/admin/Sites.vue");
 const DraftPreview = () => import("../pages/admin/DraftPreview.vue");
 
 const router = createRouter({
@@ -26,7 +28,9 @@ const router = createRouter({
       meta: { requiresAuth: true },
       children: [
         { path: "", redirect: "/admin/generate" },
-        { path: "generate", name: "admin-generate", component: AdminGenerate }
+        { path: "generate", name: "admin-generate", component: AdminGenerate },
+        { path: "drafts", name: "admin-drafts", component: AdminDrafts },
+        { path: "sites", name: "admin-sites", component: AdminSites }
       ]
     },
     { path: "/:pathMatch(.*)*", name: "not-found", component: NotFound }

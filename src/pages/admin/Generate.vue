@@ -779,11 +779,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import WeddingPreview from "../../components/WeddingPreview.vue";
 import type { BankAccount, BankKey, PageSection, SectionType, TenantConfig } from "../../types/tenant";
 import { resolveSectionDefaults, sectionCatalog } from "../../utils/sectionCatalog";
 import manifest from "../../tenants/tenants.manifest.json";
+import { LocalJsonAdapter } from "../../tenants/LocalJsonAdapter";
+import { useRoute } from "vue-router";
 
 type DraftConfig = TenantConfig & { slug: string };
 
@@ -849,6 +851,8 @@ function normalizeHexColor(input: string) {
 }
 
 const previewRef = ref<HTMLElement | null>(null);
+const route = useRoute();
+const adapter = new LocalJsonAdapter();
 const draftShareUrl = ref("");
 const copyStatus = ref("Copiar link");
 const toastMessage = ref("");
@@ -942,6 +946,35 @@ const draft = reactive<DraftConfig>({
     locations: { showCeremony: true, showReception: true, mapMode: "button" }
   }
 });
+
+async function loadFromQuery() {
+  const q = route.query;
+  const draftId = typeof q.draftId === "string" ? q.draftId : "";
+  const tenantSlug = typeof q.tenant === "string" ? q.tenant : "";
+
+  if (draftId) {
+    const raw = localStorage.getItem("weddingapp_drafts");
+    const current = raw ? (JSON.parse(raw) as Array<{ id: string; data: TenantConfig; slug?: string }>) : [];
+    const found = current.find((d) => d.id === draftId);
+    if (!found) {
+      toastMessage.value = "No se encontró el borrador.";
+      return;
+    }
+    applyDraft(found.data, found.slug);
+    toastMessage.value = "Borrador cargado.";
+    return;
+  }
+
+  if (tenantSlug) {
+    const tenant = await adapter.getTenant(tenantSlug);
+    if (!tenant) {
+      toastMessage.value = "No se encontró el sitio en tenants.";
+      return;
+    }
+    applyDraft(tenant, tenantSlug);
+    toastMessage.value = "Sitio cargado desde tenants.";
+  }
+}
 
 const tenantForPreview = computed<TenantConfig>(() => {
   const { slug, ...tenant } = draft;
@@ -1091,6 +1124,17 @@ watch(
     if (validationErrors.list.length) validateDraft();
   },
   { deep: true }
+);
+
+onMounted(() => {
+  loadFromQuery();
+});
+
+watch(
+  () => `${String(route.query.draftId || "")}|${String(route.query.tenant || "")}`,
+  () => {
+    loadFromQuery();
+  }
 );
 
 function loadVersions() {
