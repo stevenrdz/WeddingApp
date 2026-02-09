@@ -13,8 +13,52 @@
       </div>
 
       <div class="mt-6 space-y-6">
+      <div class="rounded-2xl bg-slate-100 p-1">
+        <div class="flex flex-wrap gap-1">
+          <button
+            class="rounded-xl px-3 py-2 text-xs font-semibold"
+            :class="activeTab === 'general' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:bg-white/60'"
+            type="button"
+            @click="activeTab = 'general'"
+          >
+            General
+          </button>
+          <button
+            class="rounded-xl px-3 py-2 text-xs font-semibold"
+            :class="activeTab === 'apariencia' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:bg-white/60'"
+            type="button"
+            @click="activeTab = 'apariencia'"
+          >
+            Apariencia
+          </button>
+          <button
+            class="rounded-xl px-3 py-2 text-xs font-semibold"
+            :class="activeTab === 'estructura' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:bg-white/60'"
+            type="button"
+            @click="activeTab = 'estructura'"
+          >
+            Estructura
+          </button>
+          <button
+            class="rounded-xl px-3 py-2 text-xs font-semibold"
+            :class="activeTab === 'contenido' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:bg-white/60'"
+            type="button"
+            @click="activeTab = 'contenido'"
+          >
+            Contenido
+          </button>
+          <button
+            class="rounded-xl px-3 py-2 text-xs font-semibold"
+            :class="activeTab === 'tools' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:bg-white/60'"
+            type="button"
+            @click="activeTab = 'tools'"
+          >
+            Herramientas
+          </button>
+        </div>
+      </div>
 
-      <details open class="rounded-xl border border-slate-200 px-4 py-3">
+      <details v-if="activeTab === 'general'" open class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="cursor-pointer text-sm font-semibold text-slate-800">Campos generales</summary>
         <div class="mt-4 space-y-4">
           <label class="block text-sm font-medium text-slate-700">
@@ -37,6 +81,12 @@
             <input v-model="draft.dateISO" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="date" />
           </label>
           <p v-if="validationErrors.dateISO" class="text-xs text-red-600">{{ validationErrors.dateISO }}</p>
+        </div>
+      </details>
+
+      <details v-if="activeTab === 'apariencia'" open class="rounded-xl border border-slate-200 px-4 py-3">
+        <summary class="cursor-pointer text-sm font-semibold text-slate-800">Apariencia</summary>
+        <div class="mt-4 space-y-4">
           <div class="grid gap-3 md:grid-cols-2">
             <label class="block text-sm font-medium text-slate-700">
               Tipografía títulos
@@ -131,10 +181,11 @@
               </div>
             </label>
           </div>
+          <p class="text-xs text-slate-500">Pronto: selector de ornamento e iconos.</p>
         </div>
       </details>
 
-      <div class="space-y-3">
+      <div v-if="activeTab === 'estructura'" class="space-y-3">
         <h3 class="text-sm font-semibold text-slate-800">Agregar bloques</h3>
         <div class="flex flex-wrap gap-3">
           <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addNavbar">
@@ -152,7 +203,7 @@
         </div>
       </div>
 
-      <div class="space-y-3">
+      <div v-if="activeTab === 'estructura'" class="space-y-3">
         <h3 class="text-sm font-semibold text-slate-800">Plantillas rápidas</h3>
         <div class="flex flex-wrap gap-3">
           <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="applyPreset('clasico')">
@@ -168,7 +219,7 @@
         <p class="text-xs text-slate-500">Esto reemplaza la estructura actual (navbar, hero, secciones, footer).</p>
       </div>
 
-      <details v-if="draft.page.navbar" class="rounded-xl border border-slate-200 px-4 py-3">
+      <details v-if="activeTab === 'estructura' && draft.page.navbar" class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-slate-800">
           Navbar
           <button class="text-xs text-red-500" type="button" @click.stop="removeNavbar">Quitar</button>
@@ -255,7 +306,7 @@
         </div>
       </details>
 
-      <details v-if="draft.page.hero" class="rounded-xl border border-slate-200 px-4 py-3">
+      <details v-if="activeTab === 'estructura' && draft.page.hero" class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-slate-800">
           Hero
           <button class="text-xs text-red-500" type="button" @click.stop="removeHero">Quitar</button>
@@ -335,7 +386,7 @@
         </div>
       </details>
 
-      <details v-if="draft.page.sections" class="rounded-xl border border-slate-200 px-4 py-3">
+      <details v-if="activeTab === 'estructura' && draft.page.sections" class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-slate-800">
           Secciones
           <button class="text-xs text-red-500" type="button" @click.stop="removeSections">Quitar</button>
@@ -449,7 +500,7 @@
         </div>
       </details>
 
-      <details v-if="draft.page.sections?.length" class="rounded-xl border border-slate-200 px-4 py-3">
+      <details v-if="activeTab === 'contenido' && draft.page.sections?.length" class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="cursor-pointer text-sm font-semibold text-slate-800">Contenido de secciones</summary>
         <div class="mt-4 space-y-6">
 
@@ -688,7 +739,11 @@
         </div>
       </details>
 
-      <details v-if="draft.page.footer" class="rounded-xl border border-slate-200 px-4 py-3">
+      <div v-if="activeTab === 'contenido' && !draft.page.sections?.length" class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+        Agrega secciones en la pestaña <strong>Estructura</strong> para habilitar el editor de contenido.
+      </div>
+
+      <details v-if="activeTab === 'estructura' && draft.page.footer" class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-slate-800">
           Footer
           <button class="text-xs text-red-500" type="button" @click.stop="removeFooter">Quitar</button>
@@ -705,7 +760,7 @@
         </div>
       </details>
 
-      <details class="rounded-xl border border-slate-200 px-4 py-3">
+      <details v-if="activeTab === 'tools'" class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="cursor-pointer text-sm font-semibold text-slate-800">SEO</summary>
         <div class="mt-4 space-y-3">
           <label class="block text-sm text-slate-600">
@@ -727,7 +782,7 @@
         </div>
       </details>
 
-      <details class="rounded-xl border border-slate-200 px-4 py-3">
+      <details v-if="activeTab === 'tools'" class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="cursor-pointer text-sm font-semibold text-slate-800">Versiones</summary>
         <div class="mt-4 space-y-2">
           <div v-if="draftVersions.length" class="space-y-2">
@@ -751,7 +806,7 @@
         </div>
       </details>
 
-      <div class="flex flex-wrap items-center gap-3">
+      <div v-if="activeTab === 'tools'" class="flex flex-wrap items-center gap-3">
         <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700" type="button" @click="saveDraft">
           Guardar borrador
         </button>
@@ -779,15 +834,15 @@
           {{ copyStatus }}
         </button>
       </div>
-      <div v-if="validationErrors.list.length" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">
+      <div v-if="activeTab === 'tools' && validationErrors.list.length" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">
         <p class="font-semibold">Faltan datos:</p>
         <p v-for="(msg, index) in validationErrors.list" :key="`val-${index}`">{{ msg }}</p>
       </div>
-      <div v-if="draftShareUrl" class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600">
+      <div v-if="activeTab === 'tools' && draftShareUrl" class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600">
         Link de borrador:
         <span class="break-all font-medium text-slate-800">{{ draftShareUrl }}</span>
       </div>
-      <div v-else class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
+      <div v-else-if="activeTab === 'tools'" class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
         Configura <strong>VITE_ADMIN_PREVIEW_KEY</strong> en el .env para habilitar links de borrador compartibles.
       </div>
       </div>
@@ -930,6 +985,7 @@ const loadedDraftId = ref<string>("");
 const canWriteToProject = ref(false);
 const draftVersions = ref<Array<{ id: string; slug: string; date: string; label: string; data: TenantConfig }>>([]);
 const isSavingProject = ref(false);
+const activeTab = ref<"general" | "apariencia" | "estructura" | "contenido" | "tools">("general");
 
 type ToastKind = "success" | "error" | "info";
 type Toast = { id: number; kind: ToastKind; message: string };
