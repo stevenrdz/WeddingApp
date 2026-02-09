@@ -1,5 +1,5 @@
 <template>
-  <section :id="anchorId ?? 'itinerario'" class="section timeline-section">
+  <section :id="anchorId ?? 'itinerario'" class="section timeline-section" :class="rootClass" :style="bg.style">
     <div class="container-safe">
       <p class="section-title text-left">ITINERARIO</p>
       <div class="ornament mt-2"></div>
@@ -18,5 +18,11 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ schedule: Array<{ time: string; title: string; description: string }>; anchorId?: string }>();
+import { computed } from "vue";
+import type { SectionBackgroundConfig } from "../types/tenant";
+import { sectionBackground } from "../utils/sectionBackground";
+
+const props = defineProps<{ schedule: Array<{ time: string; title: string; description: string }>; anchorId?: string; background?: SectionBackgroundConfig }>();
+const bg = computed(() => sectionBackground(props.background));
+const rootClass = computed(() => bg.value.className);
 </script>

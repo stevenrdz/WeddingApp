@@ -1,4 +1,4 @@
-
+﻿
 <template>
   <div class="grid gap-6 lg:grid-cols-[420px_minmax(0,1fr)]">
     <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -357,6 +357,60 @@
               />
             </label>
           </div>
+
+          <div class="mt-4 rounded-xl border border-slate-200 bg-white p-3">
+            <p class="text-xs font-semibold text-slate-700">Fondo de sección</p>
+            <div class="mt-3 grid gap-3 md:grid-cols-2">
+              <label class="block text-xs text-slate-500">
+                Modo
+                <select v-model="section.background.mode" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" @change="ensureSectionBackground(section)">
+                  <option value="default">Default</option>
+                  <option value="preset">Predefinido</option>
+                  <option value="color">Color</option>
+                  <option value="image">Imagen (URL)</option>
+                </select>
+              </label>
+
+              <label v-if="section.background?.mode === 'preset'" class="block text-xs text-slate-500">
+                Estilo
+                <select v-model="section.background.preset" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                  <option value="surface">Claro (surface)</option>
+                  <option value="texture">Textura</option>
+                  <option value="ink">Oscuro (ink)</option>
+                </select>
+              </label>
+
+              <label v-else-if="section.background?.mode === 'color'" class="block text-xs text-slate-500">
+                Color
+                <div class="mt-1 flex items-center gap-3">
+                  <input
+                    v-model="section.background.color"
+                    class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0"
+                    type="color"
+                    @blur="section.background.color = normalizeHexColor(section.background.color || '')"
+                  />
+                  <input
+                    v-model="section.background.color"
+                    class="h-10 w-full rounded-lg border border-slate-200 px-3 font-mono text-sm"
+                    placeholder="#ffffff"
+                    spellcheck="false"
+                    @blur="section.background.color = normalizeHexColor(section.background.color || '')"
+                  />
+                </div>
+              </label>
+
+              <div v-else-if="section.background?.mode === 'image'" class="space-y-2">
+                <label class="block text-xs text-slate-500">
+                  URL de imagen
+                  <input v-model="section.background.imageUrl" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="https://..." />
+                </label>
+                <label class="flex items-center gap-2 text-xs text-slate-600">
+                  <input v-model="section.background.parallax" type="checkbox" />
+                  Parallax (recomendado solo en escritorio)
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
         </div>
       </details>
@@ -373,43 +427,75 @@
 
         <div v-if="enabledSections.has('locations')" class="space-y-4">
           <h5 class="text-xs font-semibold text-slate-700">Ubicaciones</h5>
-          <label class="block text-sm text-slate-600">
-            Ceremonia
-            <input v-model="draft.ceremony.name" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-          </label>
           <div class="grid gap-3 md:grid-cols-2">
             <label class="block text-sm text-slate-600">
-              Hora
-              <input v-model="draft.ceremony.time" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="time" />
+              Mostrar
+              <div class="mt-2 flex flex-wrap gap-3">
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                  <input v-model="draft.page.locations.showCeremony" type="checkbox" />
+                  Ceremonia
+                </label>
+                <label class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                  <input v-model="draft.page.locations.showReception" type="checkbox" />
+                  Recepción
+                </label>
+              </div>
             </label>
             <label class="block text-sm text-slate-600">
               Mapa
-              <input v-model="draft.ceremony.mapUrl" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="url" />
+              <select v-model="draft.page.locations.mapMode" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm">
+                <option value="button">Botón (abre en una pestaña)</option>
+                <option value="iframe">Mini mapa (iframe)</option>
+              </select>
+              <p class="mt-2 text-xs text-slate-500">
+                Para iframe, usa un enlace de <strong>embed</strong> (por ejemplo, Google Maps “Insertar un mapa”).
+              </p>
             </label>
           </div>
-          <label class="block text-sm text-slate-600">
-            Direccion
-            <input v-model="draft.ceremony.address" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-          </label>
 
-          <label class="block text-sm text-slate-600">
-            Recepción
-            <input v-model="draft.reception.name" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-          </label>
-          <div class="grid gap-3 md:grid-cols-2">
+          <div v-if="draft.page.locations.showCeremony" class="space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p class="text-xs font-semibold uppercase tracking-widest text-slate-500">Ceremonia</p>
             <label class="block text-sm text-slate-600">
-              Hora
-              <input v-model="draft.reception.time" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="time" />
+              Nombre del lugar
+              <input v-model="draft.ceremony.name" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
             </label>
+            <div class="grid gap-3 md:grid-cols-2">
+              <label class="block text-sm text-slate-600">
+                Hora
+                <input v-model="draft.ceremony.time" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="time" />
+              </label>
+              <label class="block text-sm text-slate-600">
+                URL del mapa
+                <input v-model="draft.ceremony.mapUrl" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="url" />
+              </label>
+            </div>
             <label class="block text-sm text-slate-600">
-              Mapa
-              <input v-model="draft.reception.mapUrl" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="url" />
+              Dirección
+              <input v-model="draft.ceremony.address" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
             </label>
           </div>
-          <label class="block text-sm text-slate-600">
-            Direccion
-            <input v-model="draft.reception.address" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-          </label>
+
+          <div v-if="draft.page.locations.showReception" class="space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p class="text-xs font-semibold uppercase tracking-widest text-slate-500">Recepción</p>
+            <label class="block text-sm text-slate-600">
+              Nombre del lugar
+              <input v-model="draft.reception.name" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+            </label>
+            <div class="grid gap-3 md:grid-cols-2">
+              <label class="block text-sm text-slate-600">
+                Hora
+                <input v-model="draft.reception.time" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="time" />
+              </label>
+              <label class="block text-sm text-slate-600">
+                URL del mapa
+                <input v-model="draft.reception.mapUrl" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="url" />
+              </label>
+            </div>
+            <label class="block text-sm text-slate-600">
+              Dirección
+              <input v-model="draft.reception.address" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+            </label>
+          </div>
         </div>
 
         <div v-if="enabledSections.has('timeline')" class="space-y-3">
@@ -440,8 +526,71 @@
         <div v-if="enabledSections.has('gifts')" class="space-y-3">
           <h5 class="text-xs font-semibold text-slate-700">Regalos</h5>
           <textarea v-model="draft.gifts.message" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" rows="2" placeholder="Mensaje" />
-          <input v-model="draft.gifts.bankTransferText" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" placeholder="Transferencia" />
-          <input v-model="draft.gifts.giftListUrl" class="w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" placeholder="URL lista de regalos" />
+
+          <div class="flex items-center justify-between">
+            <p class="text-xs font-semibold text-slate-700">Cuentas bancarias</p>
+            <button
+              class="rounded-lg border border-slate-200 px-3 py-1 text-xs"
+              type="button"
+              :disabled="(draft.gifts.accounts?.length || 0) >= 5"
+              @click="addGiftAccount"
+            >
+              Agregar cuenta
+            </button>
+          </div>
+          <div v-if="draft.gifts.accounts?.length" class="grid gap-3">
+            <div v-for="(acc, index) in draft.gifts.accounts" :key="`gift-acc-${index}`" class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div class="flex items-center justify-between gap-3">
+                <p class="text-xs font-semibold uppercase tracking-widest text-slate-500">Cuenta {{ index + 1 }}</p>
+                <button class="text-xs text-red-500" type="button" @click="removeGiftAccount(index)">Quitar</button>
+              </div>
+
+              <div class="mt-3 grid gap-3 md:grid-cols-2">
+                <label class="block text-sm text-slate-600">
+                  Banco
+                  <div class="mt-2 flex items-center gap-3">
+                    <img
+                      v-if="acc.bank && bankLogoByKey[acc.bank]"
+                      class="h-9 w-9 rounded-lg bg-white p-1 shadow-sm ring-1 ring-black/5"
+                      :src="bankLogoByKey[acc.bank]"
+                      :alt="`Banco ${prettyBankName(acc.bank)}`"
+                      loading="lazy"
+                    />
+                    <select v-model="acc.bank" class="h-10 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm">
+                      <option :value="undefined">Seleccionar</option>
+                      <option v-for="opt in bankOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                    </select>
+                  </div>
+                </label>
+                <label class="block text-sm text-slate-600">
+                  Tipo de cuenta
+                  <select v-model="acc.accountType" class="mt-2 h-10 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm">
+                    <option value="ahorros">Ahorros</option>
+                    <option value="corriente">Corriente</option>
+                    <option value="otro">Otro</option>
+                  </select>
+                </label>
+                <label class="block text-sm text-slate-600">
+                  Identificación
+                  <input v-model="acc.identification" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" placeholder="Cédula/RUC" />
+                </label>
+                <label class="block text-sm text-slate-600">
+                  Nombres
+                  <input v-model="acc.name" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" placeholder="Titular" />
+                </label>
+              </div>
+              <label class="mt-3 block text-sm text-slate-600">
+                Número de cuenta
+                <input v-model="acc.accountNumber" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 py-2 font-mono text-sm" placeholder="0000000000" />
+              </label>
+            </div>
+          </div>
+          <p v-else class="text-xs text-slate-500">Agrega entre 1 y 5 cuentas bancarias (opcional).</p>
+
+          <label class="block text-sm text-slate-600">
+            Lista de regalos (opcional)
+            <input v-model="draft.gifts.giftListUrl" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" placeholder="https://..." />
+          </label>
         </div>
 
         <div v-if="enabledSections.has('rsvp')" class="space-y-3">
@@ -632,7 +781,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
 import WeddingPreview from "../../components/WeddingPreview.vue";
-import type { PageSection, SectionType, TenantConfig } from "../../types/tenant";
+import type { BankAccount, BankKey, PageSection, SectionType, TenantConfig } from "../../types/tenant";
 import { resolveSectionDefaults, sectionCatalog } from "../../utils/sectionCatalog";
 import manifest from "../../tenants/tenants.manifest.json";
 
@@ -664,6 +813,31 @@ const fontOptionsBody = [
   { label: "Cormorant Garamond", value: "Cormorant Garamond" },
   { label: "EB Garamond", value: "EB Garamond" }
 ];
+
+const bankOptions: Array<{ label: string; value: BankKey }> = [
+  { label: "Banco Pichincha", value: "pichincha" },
+  { label: "Banco Guayaquil", value: "guayaquil" },
+  { label: "Banco del Pacífico", value: "pacifico" },
+  { label: "Produbanco", value: "produbanco" },
+  { label: "Banco Internacional", value: "internacional" },
+  { label: "JEP", value: "jep" },
+  { label: "Banco Solidario", value: "solidario" }
+];
+
+const bankLogoByKey: Record<BankKey, string> = {
+  pichincha: "/banks/pichincha.svg",
+  guayaquil: "/banks/guayaquil.svg",
+  pacifico: "/banks/pacifico.png",
+  produbanco: "/banks/produbanco.png",
+  internacional: "/banks/internacional.png",
+  jep: "/banks/jep.svg",
+  solidario: "/banks/solidario.svg"
+};
+
+function prettyBankName(key: BankKey) {
+  const match = bankOptions.find((opt) => opt.value === key);
+  return match?.label.replace(/^Banco\s+/, "") ?? key;
+}
 
 function normalizeHexColor(input: string) {
   const raw = (input ?? "").trim();
@@ -720,9 +894,11 @@ const draft = reactive<DraftConfig>({
     description: "Tonos sobrios y elegantes."
   },
   gifts: {
-    bankTransferText: "Banco Aurora 9876-5432-10",
-    giftListUrl: "https://example.com",
-    message: "Gracias por acompañarnos en este día."
+    message: "Gracias por acompañarnos en este día.",
+    giftListUrl: "",
+    accounts: [
+      { bank: "pichincha", identification: "0000000000", name: "Nombre Apellido", accountNumber: "0000000000", accountType: "ahorros" }
+    ]
   },
   rsvp: {
     mode: "whatsapp",
@@ -762,7 +938,8 @@ const draft = reactive<DraftConfig>({
     navbar: undefined,
     hero: undefined,
     sections: [],
-    footer: undefined
+    footer: undefined,
+    locations: { showCeremony: true, showReception: true, mapMode: "button" }
   }
 });
 
@@ -937,10 +1114,28 @@ function restoreVersion(version: { slug: string; data: TenantConfig }) {
 }
 
 function applyDraft(data: TenantConfig, slug?: string) {
-  const fallbackPage = { navbar: undefined, hero: undefined, sections: [], footer: undefined };
+  const fallbackPage = { navbar: undefined, hero: undefined, sections: [], footer: undefined, locations: { showCeremony: true, showReception: true, mapMode: "button" } };
   const normalized = {
     ...data,
-    page: data.page ?? fallbackPage
+    page: {
+      ...fallbackPage,
+      ...(data.page ?? {}),
+      sections: (data.page?.sections ?? fallbackPage.sections).map((s) => {
+        const base = resolveSectionDefaults(s.type);
+        return {
+          ...base,
+          ...s,
+          background: {
+            ...(base.background ?? { mode: "default" }),
+            ...(s.background ?? {})
+          }
+        };
+      }),
+      locations: {
+        ...fallbackPage.locations,
+        ...(data.page?.locations ?? {})
+      }
+    }
   };
   Object.assign(draft, normalized);
   if (slug) draft.slug = slug;
@@ -1123,6 +1318,14 @@ function sanitizeAnchor(section: PageSection) {
   section.anchorId = section.anchorId.replace(/^#/, "").trim() || "seccion";
 }
 
+function ensureSectionBackground(section: PageSection) {
+  if (!section.background) section.background = { mode: "default" };
+  if (!section.background.mode) section.background.mode = "default";
+  if (section.background.mode === "preset" && !section.background.preset) section.background.preset = "surface";
+  if (section.background.mode === "color" && !section.background.color) section.background.color = "#ffffff";
+  if (section.background.mode === "image" && section.background.parallax === undefined) section.background.parallax = false;
+}
+
 function addFooter() {
   if (!draft.page.footer) {
     draft.page.footer = { message: "Gracias por acompañarnos", anchorId: "footer" };
@@ -1131,6 +1334,23 @@ function addFooter() {
 
 function removeFooter() {
   draft.page.footer = undefined;
+}
+
+function addGiftAccount() {
+  if (!draft.gifts.accounts) draft.gifts.accounts = [];
+  const next: BankAccount = {
+    bank: undefined,
+    identification: "",
+    name: "",
+    accountNumber: "",
+    accountType: "ahorros"
+  };
+  if (draft.gifts.accounts.length >= 5) return;
+  draft.gifts.accounts.push(next);
+}
+
+function removeGiftAccount(index: number) {
+  draft.gifts.accounts?.splice(index, 1);
 }
 
 function addSchedule() {
@@ -1242,3 +1462,4 @@ async function copyLink() {
   }, 1500);
 }
 </script>
+

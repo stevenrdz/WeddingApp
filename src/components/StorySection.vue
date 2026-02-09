@@ -1,5 +1,5 @@
 <template>
-  <section :id="anchorId ?? 'historia'" class="section story-section">
+  <section :id="anchorId ?? 'historia'" class="section story-section" :class="rootClass" :style="bg.style">
     <div class="container-safe max-w-3xl text-center">
       <p class="section-title">HISTORIA</p>
       <div class="ornament mx-auto mt-2"></div>
@@ -10,5 +10,11 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ story: { title: string; message: string }; anchorId?: string }>();
+import { computed } from "vue";
+import type { SectionBackgroundConfig } from "../types/tenant";
+import { sectionBackground } from "../utils/sectionBackground";
+
+const props = defineProps<{ story: { title: string; message: string }; anchorId?: string; background?: SectionBackgroundConfig }>();
+const bg = computed(() => sectionBackground(props.background));
+const rootClass = computed(() => bg.value.className);
 </script>

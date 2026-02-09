@@ -1,5 +1,5 @@
 <template>
-  <section :id="anchorId ?? 'rsvp'" class="section rsvp-section bg-white/60">
+  <section :id="anchorId ?? 'rsvp'" class="section rsvp-section" :class="rootClass" :style="bg.style">
     <div class="container-safe">
       <p class="section-title text-left">RSVP</p>
       <div class="ornament mt-2"></div>
@@ -19,9 +19,14 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import type { TenantConfig } from "../types/tenant";
 import WhatsappCta from "./WhatsappCta.vue";
 import NetlifyRsvpForm from "./NetlifyRsvpForm.vue";
+import type { SectionBackgroundConfig } from "../types/tenant";
+import { sectionBackground } from "../utils/sectionBackground";
 
-defineProps<{ tenant: TenantConfig; slug: string; anchorId?: string }>();
+const props = defineProps<{ tenant: TenantConfig; slug: string; anchorId?: string; background?: SectionBackgroundConfig }>();
+const bg = computed(() => sectionBackground(props.background));
+const rootClass = computed(() => (props.background?.mode && props.background.mode !== "default" ? bg.value.className : "bg-white/60"));
 </script>

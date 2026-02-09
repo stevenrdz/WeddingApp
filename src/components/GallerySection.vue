@@ -1,5 +1,5 @@
 <template>
-  <section :id="anchorId ?? 'galeria'" class="section gallery-section">
+  <section :id="anchorId ?? 'galeria'" class="section gallery-section" :class="rootClass" :style="bg.style">
     <div class="container-safe">
       <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-[#2b241f] text-white shadow-lg">
         <div class="px-6 py-12 md:px-10 md:py-16">
@@ -25,10 +25,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import Lightbox from "./Lightbox.vue";
+import type { SectionBackgroundConfig } from "../types/tenant";
+import { sectionBackground } from "../utils/sectionBackground";
 
-defineProps<{ gallery: Array<{ src: string; alt: string }>; anchorId?: string }>();
+const props = defineProps<{ gallery: Array<{ src: string; alt: string }>; anchorId?: string; background?: SectionBackgroundConfig }>();
+const bg = computed(() => sectionBackground(props.background));
+const rootClass = computed(() => bg.value.className);
 const isOpen = ref(false);
 const current = ref(0);
 

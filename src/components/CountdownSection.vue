@@ -1,5 +1,5 @@
 <template>
-  <section :id="anchorId ?? 'cuenta-regresiva'" class="section countdown-section bg-white/60">
+  <section :id="anchorId ?? 'cuenta-regresiva'" class="section countdown-section" :class="rootClass" :style="bg.style">
     <div class="container-safe text-center">
       <p class="section-title">CUENTA REGRESIVA</p>
       <div class="ornament mx-auto mt-2"></div>
@@ -28,10 +28,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { getCountdown } from "../utils/countdown";
+import { sectionBackground } from "../utils/sectionBackground";
+import type { SectionBackgroundConfig } from "../types/tenant";
 
-const props = defineProps<{ dateIso: string; anchorId?: string }>();
+const props = defineProps<{ dateIso: string; anchorId?: string; background?: SectionBackgroundConfig }>();
+const bg = computed(() => sectionBackground(props.background));
+const rootClass = computed(() => (props.background?.mode && props.background.mode !== "default" ? bg.value.className : "bg-white/60"));
 const countdown = ref(getCountdown(props.dateIso));
 let timer: number | undefined;
 
