@@ -1,0 +1,70 @@
+{
+  "coupleNames": "Nombre & Nombre",
+  "dateISO": "2026-12-12",
+  "hero": {
+    "tagline": "Estamos listos para celebrar nuestro gran día contigo.",
+    "ctaPrimaryText": "Confirmar asistencia",
+    "ctaSecondaryText": "Ver ubicaciones",
+    "ctaPrimaryTarget": "#rsvp",
+    "ctaSecondaryTarget": "#ubicaciones"
+  },
+  "ceremony": {
+    "name": "Ceremonia",
+    "time": "16:00",
+    "address": "Dirección de la ceremonia",
+    "mapUrl": "https://maps.google.com"
+  },
+  "reception": {
+    "name": "Recepción",
+    "time": "18:00",
+    "address": "Dirección de la recepción",
+    "mapUrl": "https://maps.google.com"
+  },
+  "schedule": [
+    { "time": "16:00", "title": "Ceremonia", "description": "Inicio del evento" },
+    { "time": "18:00", "title": "Recepción", "description": "Brindis y cena" },
+    { "time": "21:00", "title": "Fiesta", "description": "Música y baile" }
+  ],
+  "dressCode": {
+    "title": "Formal",
+    "description": "Sugerimos tonos sobrios y elegantes. Evita blanco o beige claro."
+  },
+  "gifts": {
+    "message": "Tu presencia es nuestro mejor regalo. Si deseas obsequiarnos algo, aquí te dejamos opciones.",
+    "giftListUrl": ""
+  },
+  "rsvp": {
+    "mode": "whatsapp",
+    "enabled": true,
+    "deadlineISO": "2026-11-30",
+    "whatsappNumber": "593000000000"
+  },
+  "gallery": [],
+  "theme": {
+    "primary": "#7b4f62",
+    "secondary": "#1f2437",
+    "background": "#fbf6f1",
+    "text": "#2a2a2a",
+    "fontHeading": "Boska",
+    "fontSubheading": "Cormorant Garamond",
+    "fontBody": "Inter"
+  },
+  "seo": {
+    "title": "Nombre & Nombre | Nuestra boda",
+    "description": "Acompáñanos en nuestro gran día.",
+    "url": "https://tuboda.com/w/mi-boda",
+    "ogImage": "/og-default.svg"
+  },
+  "story": {
+    "title": "Nuestra historia",
+    "message": "Escribe aquí una breve historia sobre ustedes."
+  },
+  "faq": [
+    {
+      "question": "¿Cómo confirmo asistencia?",
+      "answer": "Entra a la sección RSVP y confirma tu asistencia."
+    }
+  ],
+  "contactEmail": "contacto@tuboda.com"
+}
+
