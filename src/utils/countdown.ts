@@ -1,5 +1,7 @@
+import { parseDateOnlyLocal } from "./dateOnly";
+
 export function getCountdown(targetISO: string) {
-  const target = new Date(targetISO).getTime();
+  const target = (parseDateOnlyLocal(targetISO) ?? new Date(targetISO)).getTime();
   const now = Date.now();
   const diff = Math.max(0, target - now);
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));

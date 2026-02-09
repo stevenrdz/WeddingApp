@@ -168,7 +168,7 @@
         <p class="text-xs text-slate-500">Esto reemplaza la estructura actual (navbar, hero, secciones, footer).</p>
       </div>
 
-      <details v-if="draft.page.navbar" open class="rounded-xl border border-slate-200 px-4 py-3">
+      <details v-if="draft.page.navbar" class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-slate-800">
           Navbar
           <button class="text-xs text-red-500" type="button" @click.stop="removeNavbar">Quitar</button>
@@ -224,26 +224,38 @@
               </label>
               <label class="text-xs text-slate-500">
                 Color texto
-                <input v-model="btn.textColor" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" type="color" />
-              </label>
-              <label class="text-xs text-slate-500">
-                <span v-if="btn.variant === 'outline'">Color borde</span>
-                <span v-else>Color fondo</span>
+              <div class="mt-1 flex items-center gap-3">
+                <input v-model="btn.textColor" class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0" type="color" />
+                <input v-model="btn.textColor" class="h-10 w-full rounded-lg border border-slate-200 px-3 font-mono text-sm" placeholder="#ffffff" spellcheck="false" />
+              </div>
+            </label>
+            <label class="text-xs text-slate-500">
+              <span v-if="btn.variant === 'outline'">Color borde</span>
+              <span v-else>Color fondo</span>
+              <div class="mt-1 flex items-center gap-3">
                 <input
                   :value="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
-                  class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                  class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0"
                   type="color"
                   @input="updateButtonColor(btn, $event)"
                 />
-              </label>
-            </div>
+                <input
+                  :value="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
+                  class="h-10 w-full rounded-lg border border-slate-200 px-3 font-mono text-sm"
+                  placeholder="#c79a5b"
+                  spellcheck="false"
+                  @input="updateButtonColor(btn, $event)"
+                />
+              </div>
+            </label>
+          </div>
             <button class="mt-2 text-xs text-red-500" type="button" @click="removeNavbarButton(index)">Quitar</button>
           </div>
         </div>
         </div>
       </details>
 
-      <details v-if="draft.page.hero" open class="rounded-xl border border-slate-200 px-4 py-3">
+      <details v-if="draft.page.hero" class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-slate-800">
           Hero
           <button class="text-xs text-red-500" type="button" @click.stop="removeHero">Quitar</button>
@@ -292,17 +304,29 @@
                 </label>
                 <label class="text-xs text-slate-500">
                   Color texto
-                  <input v-model="btn.textColor" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" type="color" />
+                  <div class="mt-1 flex items-center gap-3">
+                    <input v-model="btn.textColor" class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0" type="color" />
+                    <input v-model="btn.textColor" class="h-10 w-full rounded-lg border border-slate-200 px-3 font-mono text-sm" placeholder="#ffffff" spellcheck="false" />
+                  </div>
                 </label>
                 <label class="text-xs text-slate-500">
                   <span v-if="btn.variant === 'outline'">Color borde</span>
                   <span v-else>Color fondo</span>
-                  <input
-                    :value="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
-                    class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
-                    type="color"
-                    @input="updateButtonColor(btn, $event)"
-                  />
+                  <div class="mt-1 flex items-center gap-3">
+                    <input
+                      :value="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
+                      class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0"
+                      type="color"
+                      @input="updateButtonColor(btn, $event)"
+                    />
+                    <input
+                      :value="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
+                      class="h-10 w-full rounded-lg border border-slate-200 px-3 font-mono text-sm"
+                      placeholder="#c79a5b"
+                      spellcheck="false"
+                      @input="updateButtonColor(btn, $event)"
+                    />
+                  </div>
                 </label>
               </div>
               <button class="mt-2 text-xs text-red-500" type="button" @click="removeHeroButton(index)">Quitar</button>
@@ -311,7 +335,7 @@
         </div>
       </details>
 
-      <details v-if="draft.page.sections" open class="rounded-xl border border-slate-200 px-4 py-3">
+      <details v-if="draft.page.sections" class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-slate-800">
           Secciones
           <button class="text-xs text-red-500" type="button" @click.stop="removeSections">Quitar</button>
@@ -1098,7 +1122,7 @@ const anchorOptions = computed(() => {
 const slugStatus = computed(() => {
   const value = draft.slug.trim();
   if (!value) return null;
-  const taken = existingSlugs.value.has(value);
+  const taken = existingSlugs.value.has(value) && value !== loadedTenantSlug.value;
   return {
     ok: !taken,
     message: taken ? "Slug ya existe. Se ajustara al salir." : "Slug disponible."
@@ -1132,6 +1156,11 @@ function applyThemeToElement(el: HTMLElement | null, theme: TenantConfig["theme"
 function ensureUniqueSlug() {
   const base = draft.slug.trim();
   if (!base) return;
+  // When editing an existing tenant, allow keeping its current slug.
+  if (loadedTenantSlug.value && base === loadedTenantSlug.value) {
+    slugNotice.value = "";
+    return;
+  }
   const taken = existingSlugs.value;
   if (!taken.has(base)) {
     slugNotice.value = "";

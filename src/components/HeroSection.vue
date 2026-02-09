@@ -88,6 +88,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { ActionButton, HeroLayoutConfig, TenantConfig } from "../types/tenant";
+import { parseDateOnlyLocal } from "../utils/dateOnly";
 
 const props = defineProps<{ tenant: TenantConfig; variant?: "default" | "enchanted"; heroConfig?: HeroLayoutConfig }>();
 const isEnchanted = computed(() => props.variant === "enchanted");
@@ -148,7 +149,7 @@ function buttonStyle(btn: ActionButton) {
 }
 
 const formattedDate = computed(() => {
-  const date = new Date(props.tenant.dateISO);
+  const date = parseDateOnlyLocal(props.tenant.dateISO) ?? new Date(props.tenant.dateISO);
   return date.toLocaleDateString("es-MX", { day: "2-digit", month: "long", year: "numeric" });
 });
 </script>
