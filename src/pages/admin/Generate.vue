@@ -465,7 +465,6 @@
           </label>
         </div>
       </details>
-      </details>
 
       <details class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="cursor-pointer text-sm font-semibold text-slate-800">SEO</summary>
