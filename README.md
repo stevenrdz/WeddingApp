@@ -14,6 +14,14 @@ npm run dev
 npm run build
 ```
 
+## Tests
+```bash
+npm run typecheck
+npm run smoke
+npm test
+npm run test:e2e
+```
+
 ## Roadmap
 - Persistencia real de borradores en backend (para evitar URLs largas).
 - Bibliotecas de imagenes libres dentro del builder.
@@ -28,7 +36,16 @@ npm run build
 ## Admin builder (MVP)
 - Login: `/admin/login` (modo demo, cualquier clave).
 - Builder: `/admin/generate` (formulario + preview en vivo).
+- Borradores: `/admin/drafts` (crear/duplicar/eliminar).
+- Sitios: `/admin/sites` (ver/editar/eliminar).
 - Guardar borrador: genera un link compartible a `/preview/:draftId`.
+
+### Guardar/eliminar "en proyecto" (solo local)
+En modo local (`npm run dev`), el admin puede:
+- Guardar un sitio en `src/tenants/data/<slug>.json` y actualizar `src/tenants/tenants.manifest.json`.
+- Eliminar un sitio (borra el JSON y lo saca del manifest).
+
+Esto funciona con un middleware de Vite (solo `dev server`). En deploy no aplica porque no hay backend.
 
 ### Clave para previews compartibles
 Crea un `.env` en la raiz con:
@@ -43,6 +60,10 @@ Si usas el hero con Unsplash en `Home.vue`, agrega en `.env`:
 VITE_UNSPLASH_ACCESS_KEY=tu_access_key
 ```
 Si no quieres consumir la API, deja el fallback local.
+
+## Assets
+- Coloca imagenes en `public/` y referencialas como `/mi-imagen.jpg`.
+- Si quieres separar por tenant, puedes usar `public/tenants/<slug>/...` (pero esa carpeta esta ignorada por git en este repo).
 
 ### Nota sobre links de borrador
 El link de preview incluye el JSON embebido en la URL. Esto permite compartir sin backend,

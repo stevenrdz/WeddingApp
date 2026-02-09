@@ -8,12 +8,14 @@ Provenza is a multi-tenant wedding site template built with Vue 3 + Vite + Tailw
 - Dev: `npm run dev`
 - Build: `npm run build`
 - Preview: `npm run preview`
+- Tests: `npm run typecheck`, `npm run smoke`, `npm test`, `npm run test:e2e`
 
 ## Routing and flow
 - Entry: `src/main.ts` mounts `src/App.vue` and router.
 - Routes: `/` (marketing home), `/w/:slug` (wedding), `/w` redirects to `/w/demo`.
 - Legal: `/terminos` and `/privacidad`.
 - Admin: `/admin/login` (demo login) and `/admin/generate` (builder).
+- Admin dashboard: `/admin/drafts` (borradores) and `/admin/sites` (sitios).
 - Preview: `/preview/:draftId` (requires `VITE_ADMIN_PREVIEW_KEY` or admin session).
 - `src/pages/Wedding.vue` loads tenant data by slug, applies theme and SEO, and renders sections.
 - Plan gating: `planBySlug` in `Wedding.vue` controls which sections render for basic/standard/premium.
@@ -24,14 +26,20 @@ Provenza is a multi-tenant wedding site template built with Vue 3 + Vite + Tailw
 - Adapter: `src/tenants/LocalJsonAdapter.ts` validates data and loads JSON via `import.meta.glob`.
 - Schema: `src/types/tenant.ts` (keep required fields present).
 
+## Local Dev Writer (No Backend)
+- Only in local dev (`npm run dev`), Vite exposes:
+- `GET /__admin/tenants/ping`
+- `POST /__admin/tenants/save` (writes `src/tenants/data/<slug>.json` + updates manifest)
+- `POST /__admin/tenants/delete` (deletes tenant JSON + updates manifest; demo is protected)
+
 ## RSVP modes
 - WhatsApp: `rsvp.enabled = true`, `rsvp.mode = "whatsapp"`, `rsvp.whatsappNumber = "521..."`.
 - Netlify Forms: `rsvp.enabled = true`, `rsvp.mode = "netlify"`, optional `rsvp.netlifyFormNameOptional`.
 - Build-time forms: `scripts/generate-forms.mjs` generates `public/forms.html` (run via `prebuild`).
 
 ## Assets
-- Public assets: `public/tenants/<slug>/...`
-- Sample images: `src/tenants/data/<slug>.json` gallery uses `/tenants/<slug>/...` paths.
+- Default approach: place assets in `public/` and reference them as `/asset.ext`.
+- Optional: `public/tenants/<slug>/...` can be used, but is ignored by git in this repo.
 
 ## Admin builder
 - Views: `src/pages/admin/AdminLayout.vue`, `src/pages/admin/Generate.vue`, `src/pages/admin/Login.vue`.
