@@ -1,7 +1,7 @@
 # AGENTS.md
 
 ## Purpose
-WeddingApp is a multi-tenant wedding site template built with Vue 3 + Vite + Tailwind. Each wedding is served by slug and loaded from JSON.
+Provenza is a multi-tenant wedding site template built with Vue 3 + Vite + Tailwind. Each wedding is served by slug and loaded from JSON.
 
 ## Quickstart
 - Install: `npm install`
@@ -48,6 +48,7 @@ WeddingApp is a multi-tenant wedding site template built with Vue 3 + Vite + Tai
 - Persist draft data in a backend to avoid long URLs.
 - Add free-stock image picker inside the builder.
 - Move plan/section gating controls into the dashboard.
+- (Optional) Add a small library of baroque ornament dividers (SVG/PNG) for section titles.
 
 ## Common changes
 - Add a wedding: create JSON, add slug to manifest, add images.

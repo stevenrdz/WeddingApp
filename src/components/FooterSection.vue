@@ -7,7 +7,7 @@
             <p class="font-heading text-2xl">{{ message || "Gracias por acompañarnos" }}</p>
             <p v-if="contactEmail" class="text-white/70">Contacto: {{ contactEmail }}</p>
           </div>
-          <p class="text-sm text-white/60">© 2026 WeddingApp</p>
+          <p class="text-sm text-white/60">© 2026 Provenza</p>
         </div>
       </div>
     </div>

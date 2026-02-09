@@ -91,6 +91,26 @@ body {
   opacity: 0.9;
 }
 
+.ornament--flourish {
+  background-image: url("/ornament-flourish.svg");
+}
+
+.ornament--knot {
+  background-image: url("/ornament-knot.svg");
+}
+
+.ornament--laurel {
+  background-image: url("/ornament-laurel.svg");
+}
+
+.ornament--dots {
+  background-image: url("/ornament-dots.svg");
+}
+
+.ornament--arch {
+  background-image: url("/ornament-arch.svg");
+}
+
 .hero-surface {
   background-color: var(--color-ink);
   background-image: radial-gradient(circle at top, rgba(255, 255, 255, 0.1), transparent 55%),

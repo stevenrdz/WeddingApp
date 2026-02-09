@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 80" fill="none">
+  <!-- Line grows thicker as it approaches the center -->
+  <path d="M40 40H300" stroke="#c79a5b" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M310 40H420" stroke="#c79a5b" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M430 40H480" stroke="#c79a5b" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M490 40H510" stroke="#c79a5b" stroke-width="3.2" stroke-linecap="round"/>
+
+  <path d="M690 40H710" stroke="#c79a5b" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M720 40H770" stroke="#c79a5b" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M780 40H890" stroke="#c79a5b" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M900 40H1160" stroke="#c79a5b" stroke-width="1.2" stroke-linecap="round"/>
+
+  <path d="M600 18l18 22-18 22-18-22 18-22z" fill="none" stroke="#c79a5b" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M600 30l8 10-8 10-8-10 8-10z" fill="#c79a5b"/>
+  <circle cx="560" cy="40" r="3" fill="#c79a5b"/>
+  <circle cx="640" cy="40" r="3" fill="#c79a5b"/>
+</svg>

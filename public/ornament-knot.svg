@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 80" fill="none">
+  <path d="M40 40H440" stroke="#c79a5b" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M760 40H1160" stroke="#c79a5b" stroke-width="2.6" stroke-linecap="round"/>
+
+  <!-- Baroque knot (scroll + pendant) -->
+  <g stroke="#c79a5b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M520 40c28-22 56-22 84 0" />
+    <path d="M520 40c-18 0-26 10-20 20 8 14 34 10 52-6" />
+    <path d="M604 40c18 0 26 10 20 20-8 14-34 10-52-6" />
+    <path d="M560 44c18 16 44 16 62 0" />
+    <circle cx="540" cy="40" r="2.4" fill="#c79a5b" stroke="none"/>
+    <circle cx="660" cy="40" r="2.4" fill="#c79a5b" stroke="none"/>
+  </g>
+
+  <path d="M600 26c-10 8-14 16-12 22 2 7 6 12 12 16 6-4 10-9 12-16 2-6-2-14-12-22z" fill="#c79a5b"/>
+  <path d="M600 58l10 12-10 10-10-10 10-12z" fill="#c79a5b" opacity="0.8"/>
+</svg>

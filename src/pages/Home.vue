@@ -9,7 +9,7 @@
       <div class="container-safe flex items-center justify-between py-4">
         <div class="flex items-center gap-3">
           <RouterLink :class="['font-heading text-lg tracking-widest', isScrolled ? 'text-black' : 'text-white']" to="/">
-            WeddingApp
+            Provenza
           </RouterLink>
         </div>
         <nav :class="['hidden gap-6 text-sm md:flex', isScrolled ? 'text-black/80' : 'text-white/90']">
@@ -357,6 +357,4 @@ onUnmounted(() => {
 });
 
 </script>
-
-
 

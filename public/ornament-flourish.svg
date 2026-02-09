@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 80" fill="none">
+  <path d="M40 40H470" stroke="#c79a5b" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M730 40H1160" stroke="#c79a5b" stroke-width="2.6" stroke-linecap="round"/>
+
+  <!-- Baroque-style curls (left) -->
+  <g stroke="#c79a5b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M470 40c38 0 40-22 16-22-18 0-26 14-18 24 10 12 36 8 56-6" />
+    <path d="M488 40c20 20 8 34-12 34-18 0-26-18-10-30 10-8 28-4 44 8" />
+    <path d="M506 40c26-18 52-18 78 0" />
+    <circle cx="470" cy="40" r="2.4" fill="#c79a5b" stroke="none"/>
+  </g>
+
+  <!-- Mirror curls to the right -->
+  <g transform="translate(1200 0) scale(-1 1)" stroke="#c79a5b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M470 40c38 0 40-22 16-22-18 0-26 14-18 24 10 12 36 8 56-6" />
+    <path d="M488 40c20 20 8 34-12 34-18 0-26-18-10-30 10-8 28-4 44 8" />
+    <path d="M506 40c26-18 52-18 78 0" />
+    <circle cx="470" cy="40" r="2.4" fill="#c79a5b" stroke="none"/>
+  </g>
+
+  <!-- Center fleur -->
+  <path
+    d="M600 10c-8 10-18 16-30 18 12 2 22 8 30 18 8-10 18-16 30-18-12-2-22-8-30-18z"
+    fill="#c79a5b"
+  />
+  <path d="M600 28c-10 6-16 12-18 18h36c-2-6-8-12-18-18z" fill="#c79a5b" opacity="0.75"/>
+  <circle cx="600" cy="40" r="5.2" fill="#c79a5b"/>
+</svg>

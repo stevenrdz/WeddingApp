@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 80" fill="none">
+  <path d="M40 40H440" stroke="#c79a5b" stroke-width="2" stroke-linecap="round"/>
+  <path d="M760 40H1160" stroke="#c79a5b" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Baroque centerpiece + scrolls -->
+  <g stroke="#c79a5b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M520 40c26-18 52-18 78 0" />
+    <path d="M680 40c-26-18-52-18-78 0" />
+
+    <path d="M520 40c-24 0-28 14-18 22 12 10 34 6 50-6" />
+    <path d="M680 40c24 0 28 14 18 22-12 10-34 6-50-6" />
+  </g>
+
+  <path d="M600 12l14 16-14 16-14-16 14-16z" fill="#c79a5b"/>
+  <path d="M600 44c-10 6-18 12-20 18h40c-2-6-10-12-20-18z" fill="#c79a5b" opacity="0.75"/>
+  <circle cx="600" cy="40" r="5.2" fill="#c79a5b"/>
+</svg>

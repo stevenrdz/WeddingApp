@@ -1,4 +1,4 @@
-# WeddingApp SaaS-ready (Vue 3 + Vite)
+# Provenza (Vue 3 + Vite)
 
 Template multi-tenant para sitios de boda con rutas por slug, RSVP opcional y deploy en Netlify.
 Incluye landing comercial, demo y paginas legales basicas.
@@ -18,6 +18,7 @@ npm run build
 - Persistencia real de borradores en backend (para evitar URLs largas).
 - Bibliotecas de imagenes libres dentro del builder.
 - Control de secciones por plan (basic/standard/premium) desde el dashboard.
+- (Opcional) Crear una libreria de ornamentos barrocos (SVG/PNG) para titulos y secciones.
 
 ## Crear un nuevo tenant
 1) Agrega un nuevo archivo JSON en `src/tenants/data/tu-slug.json` siguiendo `TenantConfig`.

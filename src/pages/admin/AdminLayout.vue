@@ -9,7 +9,7 @@
           <div class="flex items-center gap-3">
             <div class="grid h-9 w-9 place-items-center rounded-lg bg-indigo-600 text-sm font-semibold text-white">W</div>
             <div>
-              <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">WeddingApp</div>
+              <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Provenza</div>
               <div class="mt-1 text-lg font-semibold">Admin</div>
             </div>
           </div>
