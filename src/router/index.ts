@@ -11,6 +11,10 @@ const AdminGenerate = () => import("../pages/admin/Generate.vue");
 const AdminDrafts = () => import("../pages/admin/Drafts.vue");
 const AdminSites = () => import("../pages/admin/Sites.vue");
 const DraftPreview = () => import("../pages/admin/DraftPreview.vue");
+const PremiumLayout = () => import("../pages/premium/PremiumLayout.vue");
+const PremiumQr = () => import("../pages/premium/Qr.vue");
+const PremiumGallery = () => import("../pages/premium/Gallery.vue");
+const PremiumUpload = () => import("../pages/premium/Upload.vue");
 
 const router = createRouter({
   history: createWebHistory(),
@@ -22,6 +26,16 @@ const router = createRouter({
     { path: "/w/:slug", name: "wedding", component: Wedding },
     { path: "/admin/login", name: "admin-login", component: AdminLogin },
     { path: "/preview/:draftId", name: "preview", component: DraftPreview, meta: { requiresPreviewKey: true } },
+    { path: "/p/:slug/upload", name: "premium-upload", component: PremiumUpload },
+    {
+      path: "/p/:slug",
+      component: PremiumLayout,
+      children: [
+        { path: "", redirect: { name: "premium-qr" } },
+        { path: "qr", name: "premium-qr", component: PremiumQr },
+        { path: "galeria", name: "premium-gallery", component: PremiumGallery }
+      ]
+    },
     {
       path: "/admin",
       component: AdminLayout,

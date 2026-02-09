@@ -123,19 +123,75 @@
         </div>
         <div class="mt-8 grid gap-6 md:grid-cols-3">
           <div class="card">
-          <h3 class="font-heading text-xl">Básico</h3>
-            <p class="mt-2 text-black/70">Landing + RSVP WhatsApp</p>
-            <p class="mt-4 text-2xl font-semibold">$199</p>
+            <h3 class="font-heading text-xl">Básico</h3>
+            <p class="mt-2 text-black/70">Lo esencial para compartir tu boda con estilo.</p>
+            <ul class="mt-5 space-y-2 text-sm text-black/70">
+              <li class="flex gap-2">
+                <span class="mt-0.5 text-emerald-600">✓</span>
+                <span>Portada con mensaje y llamada a la acción</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="mt-0.5 text-emerald-600">✓</span>
+                <span>Fecha y cuenta regresiva</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="mt-0.5 text-emerald-600">✓</span>
+                <span>Ubicaciones con botón para ver el mapa</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="mt-0.5 text-emerald-600">✓</span>
+                <span>RSVP por WhatsApp</span>
+              </li>
+            </ul>
           </div>
+
           <div class="card border-primary">
-          <h3 class="font-heading text-xl">Estándar</h3>
-          <p class="mt-2 text-black/70">Todo Básico + galería</p>
-            <p class="mt-4 text-2xl font-semibold">$299</p>
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="font-heading text-xl">Estándar</h3>
+              <span class="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">Más elegido</span>
+            </div>
+            <p class="mt-2 text-black/70">Más secciones para una experiencia completa.</p>
+            <ul class="mt-5 space-y-2 text-sm text-black/70">
+              <li class="flex gap-2">
+                <span class="mt-0.5 text-emerald-600">✓</span>
+                <span>Todo lo del Básico</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="mt-0.5 text-emerald-600">✓</span>
+                <span>Itinerario del evento</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="mt-0.5 text-emerald-600">✓</span>
+                <span>Dress code y recomendaciones</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="mt-0.5 text-emerald-600">✓</span>
+                <span>Galería, regalos y FAQ</span>
+              </li>
+            </ul>
           </div>
+
           <div class="card">
             <h3 class="font-heading text-xl">Premium</h3>
-            <p class="mt-2 text-black/70">Netlify Forms + personalización</p>
-            <p class="mt-4 text-2xl font-semibold">$399</p>
+            <p class="mt-2 text-black/70">Una experiencia inolvidable, antes y durante la boda.</p>
+            <ul class="mt-5 space-y-2 text-sm text-black/70">
+              <li class="flex gap-2">
+                <span class="mt-0.5 text-emerald-600">✓</span>
+                <span>Todo lo del Estándar</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="mt-0.5 text-emerald-600">✓</span>
+                <span>Galería colaborativa en vivo</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="mt-0.5 text-emerald-600">✓</span>
+                <span>QR para que invitados suban fotos en segundos</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="mt-0.5 text-emerald-600">✓</span>
+                <span>Panel privado para administrar la galería</span>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
