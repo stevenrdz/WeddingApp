@@ -108,4 +108,10 @@ function adminTenantWriter(): Plugin {
 
 export default defineConfig({
   plugins: [vue(), adminTenantWriter()],
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: ["tests/setup.ts"],
+    include: ["tests/unit/**/*.spec.ts"]
+  }
 });

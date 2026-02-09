@@ -8,7 +8,13 @@ export function parseDateOnlyLocal(isoDate: string) {
   const month = Number(match[2]);
   const day = Number(match[3]);
   if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) return null;
-  // Local midnight.
-  return new Date(year, month - 1, day, 0, 0, 0, 0);
-}
 
+  if (month < 1 || month > 12) return null;
+  if (day < 1 || day > 31) return null;
+
+  // Local midnight.
+  const d = new Date(year, month - 1, day, 0, 0, 0, 0);
+  // Guard against overflow (e.g. 2026-13-99) which JS normalizes to a "valid" date.
+  if (d.getFullYear() !== year || d.getMonth() !== month - 1 || d.getDate() !== day) return null;
+  return d;
+}
