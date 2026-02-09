@@ -760,11 +760,12 @@
         </button>
         <button
           v-if="canWriteToProject"
-          class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white"
+          class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
           type="button"
+          :disabled="isSavingProject"
           @click="saveToProject"
         >
-          Guardar en proyecto
+          {{ isSavingProject ? "Guardando..." : "Guardar en proyecto" }}
         </button>
         <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700" type="button" @click="saveToTenants">
           Crear en tenants
@@ -777,7 +778,6 @@
         >
           {{ copyStatus }}
         </button>
-        <span v-if="toastMessage" class="text-xs text-emerald-600">{{ toastMessage }}</span>
       </div>
       <div v-if="validationErrors.list.length" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">
         <p class="font-semibold">Faltan datos:</p>
@@ -813,6 +813,31 @@
         <WeddingPreview :tenant="tenantForPreview" :slug="draft.slug" />
       </div>
     </section>
+  </div>
+
+  <div class="fixed bottom-4 right-4 z-50 w-[min(360px,calc(100vw-2rem))] space-y-2">
+    <div
+      v-for="toast in toasts"
+      :key="toast.id"
+      class="rounded-2xl border bg-white px-4 py-3 shadow-lg"
+      :class="toast.kind === 'error' ? 'border-red-200' : toast.kind === 'success' ? 'border-emerald-200' : 'border-slate-200'"
+      :role="toast.kind === 'error' ? 'alert' : 'status'"
+    >
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <p
+            class="text-xs font-semibold uppercase tracking-widest"
+            :class="toast.kind === 'error' ? 'text-red-700' : toast.kind === 'success' ? 'text-emerald-700' : 'text-slate-600'"
+          >
+            {{ toast.kind === "error" ? "Error" : toast.kind === "success" ? "Listo" : "Info" }}
+          </p>
+          <p class="mt-1 break-words text-sm text-slate-900">{{ toast.message }}</p>
+        </div>
+        <button class="shrink-0 rounded-lg border border-slate-200 px-2 py-1 text-xs text-slate-600" type="button" @click="dismissToast(toast.id)">
+          Cerrar
+        </button>
+      </div>
+    </div>
   </div>
 
   <datalist id="anchor-options">
@@ -898,13 +923,28 @@ const router = useRouter();
 const adapter = new LocalJsonAdapter();
 const draftShareUrl = ref("");
 const copyStatus = ref("Copiar link");
-const toastMessage = ref("");
 const slugNotice = ref("");
 const dragIndex = ref<number | null>(null);
 const loadedTenantSlug = ref<string>("");
 const loadedDraftId = ref<string>("");
 const canWriteToProject = ref(false);
 const draftVersions = ref<Array<{ id: string; slug: string; date: string; label: string; data: TenantConfig }>>([]);
+const isSavingProject = ref(false);
+
+type ToastKind = "success" | "error" | "info";
+type Toast = { id: number; kind: ToastKind; message: string };
+const toasts = ref<Toast[]>([]);
+let toastSeq = 0;
+
+function pushToast(kind: ToastKind, message: string) {
+  const id = (toastSeq += 1);
+  toasts.value.push({ id, kind, message });
+  window.setTimeout(() => dismissToast(id), kind === "error" ? 6500 : 3500);
+}
+
+function dismissToast(id: number) {
+  toasts.value = toasts.value.filter((toast) => toast.id !== id);
+}
 const validationErrors = reactive<{ slug: string; dateISO: string; list: string[] }>({
   slug: "",
   dateISO: "",
@@ -1009,11 +1049,11 @@ async function loadFromQuery() {
     const current = raw ? (JSON.parse(raw) as Array<{ id: string; data: TenantConfig; slug?: string }>) : [];
     const found = current.find((d) => d.id === draftId);
     if (!found) {
-      toastMessage.value = "No se encontró el borrador.";
+      pushToast("error", "No se encontró el borrador.");
       return;
     }
     applyDraft(found.data, found.slug);
-    toastMessage.value = "Borrador cargado.";
+    pushToast("info", "Borrador cargado.");
     return;
   }
 
@@ -1022,11 +1062,11 @@ async function loadFromQuery() {
     loadedDraftId.value = "";
     const tenant = await adapter.getTenant(tenantSlug);
     if (!tenant) {
-      toastMessage.value = "No se encontró el sitio en tenants.";
+      pushToast("error", "No se encontró el sitio en tenants.");
       return;
     }
     applyDraft(tenant, tenantSlug);
-    toastMessage.value = "Sitio cargado desde tenants.";
+    pushToast("info", "Sitio cargado desde tenants.");
     return;
   }
 
@@ -1079,9 +1119,10 @@ function normalizeTenantForSave(input: TenantConfig): TenantConfig {
 async function saveToProject() {
   if (!validateDraft()) return;
   if (!canWriteToProject.value) {
-    toastMessage.value = "No se puede guardar en el proyecto (dev server no disponible).";
+    pushToast("error", "No se puede guardar en el proyecto (dev server no disponible).");
     return;
   }
+  if (isSavingProject.value) return;
 
   const nextSlug = draft.slug.trim();
   const prevSlug = loadedTenantSlug.value.trim();
@@ -1095,6 +1136,7 @@ async function saveToProject() {
   const { slug, ...tenantRaw } = draft;
   const tenant = normalizeTenantForSave(tenantRaw as TenantConfig);
   try {
+    isSavingProject.value = true;
     const res = await fetch("/__admin/tenants/save", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -1107,16 +1149,18 @@ async function saveToProject() {
     });
     const json = (await res.json()) as { ok?: boolean; error?: string; slug?: string };
     if (!res.ok || !json?.ok) {
-      toastMessage.value = json?.error || "No se pudo guardar.";
+      pushToast("error", json?.error || "No se pudo guardar.");
       return;
     }
 
     loadedTenantSlug.value = nextSlug;
     loadedDraftId.value = "";
-    toastMessage.value = `Guardado en src/tenants/data/${nextSlug}.json`;
+    pushToast("success", `Guardado en src/tenants/data/${nextSlug}.json`);
     await router.replace({ name: "admin-generate", query: { tenant: nextSlug } });
   } catch {
-    toastMessage.value = "Error al guardar en el proyecto.";
+    pushToast("error", "Error al guardar en el proyecto.");
+  } finally {
+    isSavingProject.value = false;
   }
 }
 
@@ -1627,7 +1671,7 @@ async function saveToTenants() {
       const writable = await handle.createWritable();
       await writable.write(json);
       await writable.close();
-      toastMessage.value = `Guardado. Mueve el archivo a src/tenants/data/${suggestedName}`;
+      pushToast("success", `Guardado. Mueve el archivo a src/tenants/data/${suggestedName}`);
       return;
     }
   } catch {
@@ -1635,7 +1679,7 @@ async function saveToTenants() {
   }
 
   downloadJson();
-  toastMessage.value = `Descargado. Mueve el archivo a src/tenants/data/${suggestedName}`;
+  pushToast("success", `Descargado. Mueve el archivo a src/tenants/data/${suggestedName}`);
 }
 
 function encodeDraft(payload: { data: TenantConfig }) {
@@ -1663,6 +1707,7 @@ function saveDraft() {
   const encoded = encodeDraft({ data: tenant as TenantConfig });
   draftShareUrl.value = key ? `${window.location.origin}/preview/${draftId}?key=${key}&data=${encoded}` : "";
   copyStatus.value = "Copiar link";
+  pushToast("success", "Borrador guardado.");
 }
 
 async function copyLink() {
@@ -1670,14 +1715,13 @@ async function copyLink() {
   try {
     await navigator.clipboard.writeText(draftShareUrl.value);
     copyStatus.value = "Copiado";
-    toastMessage.value = "Link copiado al portapapeles";
+    pushToast("success", "Link copiado al portapapeles.");
   } catch {
     copyStatus.value = "Error al copiar";
-    toastMessage.value = "No se pudo copiar";
+    pushToast("error", "No se pudo copiar.");
   }
   setTimeout(() => {
     copyStatus.value = "Copiar link";
-    toastMessage.value = "";
   }, 1500);
 }
 </script>
