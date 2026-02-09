@@ -393,7 +393,11 @@
             <div class="mt-3 grid gap-3 md:grid-cols-2">
               <label class="block text-xs text-slate-500">
                 Modo
-                <select v-model="section.background.mode" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" @change="ensureSectionBackground(section)">
+                <select
+                  :value="section.background?.mode ?? 'default'"
+                  class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                  @change="onSectionBackgroundModeChange(section, ($event.target as HTMLSelectElement).value)"
+                >
                   <option value="default">Default</option>
                   <option value="preset">Predefinido</option>
                   <option value="color">Color</option>
@@ -1056,6 +1060,22 @@ async function checkWriter() {
   }
 }
 
+function normalizeTenantForSave(input: TenantConfig): TenantConfig {
+  // Remove default-only noise so saving doesn't accidentally "change" unrelated section backgrounds.
+  const cloned = JSON.parse(JSON.stringify(input)) as TenantConfig;
+  if (cloned.page?.sections?.length) {
+    cloned.page.sections = cloned.page.sections.map((s) => {
+      if (!s.background || s.background.mode === "default") {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { background, ...rest } = s as typeof s & { background?: unknown };
+        return rest as typeof s;
+      }
+      return s;
+    });
+  }
+  return cloned;
+}
+
 async function saveToProject() {
   if (!validateDraft()) return;
   if (!canWriteToProject.value) {
@@ -1072,7 +1092,8 @@ async function saveToProject() {
     if (!ok) return;
   }
 
-  const { slug, ...tenant } = draft;
+  const { slug, ...tenantRaw } = draft;
+  const tenant = normalizeTenantForSave(tenantRaw as TenantConfig);
   try {
     const res = await fetch("/__admin/tenants/save", {
       method: "POST",
@@ -1302,13 +1323,19 @@ function applyDraft(data: TenantConfig, slug?: string) {
       sections: data.page?.sections?.length
         ? data.page.sections.map((s) => {
             const base = resolveSectionDefaults(s.type);
+            const background =
+              s.background?.mode && s.background.mode !== "default"
+                ? {
+                    ...s.background,
+                    ...(s.background.mode === "preset" && !s.background.preset ? { preset: "surface" } : {}),
+                    ...(s.background.mode === "color" && !s.background.color ? { color: "#ffffff" } : {}),
+                    ...(s.background.mode === "image" && s.background.parallax === undefined ? { parallax: false } : {})
+                  }
+                : undefined;
             return {
               ...base,
               ...s,
-              background: {
-                ...(base.background ?? { mode: "default" }),
-                ...(s.background ?? {})
-              }
+              ...(background ? { background } : {})
             };
           })
         : undefined,
@@ -1497,9 +1524,19 @@ function sanitizeAnchor(section: PageSection) {
   section.anchorId = section.anchorId.replace(/^#/, "").trim() || "seccion";
 }
 
-function ensureSectionBackground(section: PageSection) {
-  if (!section.background) section.background = { mode: "default" };
-  if (!section.background.mode) section.background.mode = "default";
+function onSectionBackgroundModeChange(section: PageSection, mode: string) {
+  if (mode === "default") {
+    section.background = undefined;
+    return;
+  }
+
+  if (!section.background) section.background = { mode: mode as "preset" | "color" | "image" };
+  section.background.mode = mode as "preset" | "color" | "image";
+  ensureSectionBackgroundDefaults(section);
+}
+
+function ensureSectionBackgroundDefaults(section: PageSection) {
+  if (!section.background) return;
   if (section.background.mode === "preset" && !section.background.preset) section.background.preset = "surface";
   if (section.background.mode === "color" && !section.background.color) section.background.color = "#ffffff";
   if (section.background.mode === "image" && section.background.parallax === undefined) section.background.parallax = false;
@@ -1558,7 +1595,8 @@ function removeFaq(index: number) {
 
 function downloadJson() {
   if (!validateDraft()) return;
-  const { slug, ...tenant } = draft;
+  const { slug, ...tenantRaw } = draft;
+  const tenant = normalizeTenantForSave(tenantRaw as TenantConfig);
   const json = JSON.stringify(tenant, null, 2);
   const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -1573,7 +1611,8 @@ function downloadJson() {
 
 async function saveToTenants() {
   if (!validateDraft()) return;
-  const { slug, ...tenant } = draft;
+  const { slug, ...tenantRaw } = draft;
+  const tenant = normalizeTenantForSave(tenantRaw as TenantConfig);
   const json = JSON.stringify(tenant, null, 2);
   const suggestedName = `${slug || "tenant"}.json`;
   const picker = (window as Window & { showSaveFilePicker?: (options: unknown) => Promise<FileSystemFileHandle> })
@@ -1606,7 +1645,8 @@ function encodeDraft(payload: { data: TenantConfig }) {
 
 function saveDraft() {
   if (!validateDraft()) return;
-  const { slug, ...tenant } = draft;
+  const { slug, ...tenantRaw } = draft;
+  const tenant = normalizeTenantForSave(tenantRaw as TenantConfig);
   const draftId = slug ? `${slug}-${Date.now()}` : `borrador-${Date.now()}`;
   const raw = localStorage.getItem("weddingapp_drafts");
   const current = raw ? (JSON.parse(raw) as Array<{ id: string; data: TenantConfig; slug?: string }>) : [];

@@ -34,7 +34,8 @@ const props = defineProps<{ coupleNames: string; config?: NavbarConfig }>();
 const icon = computed(() => props.config?.icon || "♥");
 
 const links = computed<PageLink[]>(() => {
-  if (props.config?.links?.length) return props.config.links;
+  // If links are explicitly configured (even empty), respect that (allows hiding links).
+  if (props.config && "links" in props.config) return props.config.links ?? [];
   return [
     { label: "Inicio", target: "#hero" },
     { label: "Ubicaciones", target: "#ubicaciones" },
@@ -45,7 +46,8 @@ const links = computed<PageLink[]>(() => {
 });
 
 const buttons = computed<ActionButton[]>(() => {
-  if (props.config?.buttons?.length) return props.config.buttons;
+  // If buttons are explicitly configured (even empty), respect that (allows hiding buttons).
+  if (props.config && "buttons" in props.config) return props.config.buttons ?? [];
   return [
     {
       label: "RSVP",

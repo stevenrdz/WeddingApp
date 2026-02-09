@@ -21,7 +21,7 @@
         <p :class="['mt-4 text-lg', isEnchanted ? 'text-black/70' : 'text-white/80']">
           {{ tenant.hero.tagline }}
         </p>
-        <div class="mt-6 flex flex-wrap gap-4">
+        <div v-if="heroButtons.length" class="mt-6 flex flex-wrap gap-4">
           <a
             v-for="(btn, index) in heroButtons"
             :key="`${btn.label}-${index}`"
@@ -95,8 +95,10 @@ const isEnchanted = computed(() => props.variant === "enchanted");
 const heroImages = computed(() => props.tenant.gallery?.slice(0, 2) ?? []);
 
 const heroButtons = computed(() => {
-  const layoutButtons = props.heroConfig?.buttons?.filter((btn) => btn.label && btn.target) ?? [];
-  if (layoutButtons.length) return layoutButtons;
+  // If buttons are explicitly configured (even empty), respect that (allows hiding buttons).
+  if (props.heroConfig && "buttons" in props.heroConfig) {
+    return (props.heroConfig.buttons ?? []).filter((btn) => btn.label && btn.target);
+  }
   return [
     {
       label: props.tenant.hero.ctaPrimaryText,
