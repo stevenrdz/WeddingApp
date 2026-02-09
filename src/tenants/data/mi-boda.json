@@ -21,9 +21,21 @@
     "mapUrl": "https://maps.google.com"
   },
   "schedule": [
-    { "time": "16:00", "title": "Ceremonia", "description": "Inicio del evento" },
-    { "time": "18:00", "title": "Recepción", "description": "Brindis y cena" },
-    { "time": "21:00", "title": "Fiesta", "description": "Música y baile" }
+    {
+      "time": "16:00",
+      "title": "Ceremonia",
+      "description": "Inicio del evento"
+    },
+    {
+      "time": "18:00",
+      "title": "Recepción",
+      "description": "Brindis y cena"
+    },
+    {
+      "time": "21:00",
+      "title": "Fiesta",
+      "description": "Música y baile"
+    }
   ],
   "dressCode": {
     "title": "Formal",
@@ -67,4 +79,3 @@
   ],
   "contactEmail": "contacto@tuboda.com"
 }
-
