@@ -7,9 +7,12 @@ const Wedding = () => import("../pages/Wedding.vue");
 const NotFound = () => import("../pages/NotFound.vue");
 const AdminLayout = () => import("../pages/admin/AdminLayout.vue");
 const AdminLogin = () => import("../pages/admin/Login.vue");
+const AdminDashboard = () => import("../pages/admin/Dashboard.vue");
 const AdminGenerate = () => import("../pages/admin/Generate.vue");
 const AdminDrafts = () => import("../pages/admin/Drafts.vue");
 const AdminSites = () => import("../pages/admin/Sites.vue");
+const AdminCustomers = () => import("../pages/admin/Customers.vue");
+const AdminSettings = () => import("../pages/admin/Settings.vue");
 const DraftPreview = () => import("../pages/admin/DraftPreview.vue");
 const PremiumLayout = () => import("../pages/premium/PremiumLayout.vue");
 const PremiumQr = () => import("../pages/premium/Qr.vue");
@@ -41,10 +44,20 @@ const router = createRouter({
       component: AdminLayout,
       meta: { requiresAuth: true },
       children: [
-        { path: "", redirect: "/admin/generate" },
+        { path: "", redirect: "/admin/dashboard" },
+        { path: "dashboard", name: "admin-dashboard", component: AdminDashboard },
         { path: "generate", name: "admin-generate", component: AdminGenerate },
         { path: "drafts", name: "admin-drafts", component: AdminDrafts },
-        { path: "sites", name: "admin-sites", component: AdminSites }
+        { path: "sites", name: "admin-sites", component: AdminSites },
+        // Back-compat redirects
+        { path: "customers", redirect: { name: "admin-customers-list" } },
+        { path: "customers/new", redirect: { name: "admin-customers-new" } },
+
+        // Spanish URLs / sidebar flow
+        { path: "clientes", name: "admin-customers-list", component: AdminCustomers, props: { view: "list" } },
+        { path: "clientes/nuevo", name: "admin-customers-new", component: AdminCustomers, props: { view: "new" } },
+
+        { path: "settings", name: "admin-settings", component: AdminSettings }
       ]
     },
     { path: "/:pathMatch(.*)*", name: "not-found", component: NotFound }

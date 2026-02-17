@@ -12,6 +12,24 @@
         <p v-if="modeHint" class="mt-1 text-xs text-slate-500">{{ modeHint }}</p>
       </div>
 
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700" type="button" @click="saveDraft">
+          Guardar borrador
+        </button>
+        <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700" type="button" @click="openLivePreview">
+          Abrir preview
+        </button>
+        <button
+          v-if="canWriteToProject"
+          class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+          type="button"
+          :disabled="isSavingProject"
+          @click="saveToProject"
+        >
+          {{ isSavingProject ? "Guardando..." : "Guardar en proyecto" }}
+        </button>
+      </div>
+
       <div class="mt-6 space-y-6">
       <div class="rounded-2xl bg-slate-100 p-1">
         <div class="flex flex-wrap gap-1">
@@ -61,9 +79,19 @@
       <details v-if="activeTab === 'general'" open class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="cursor-pointer text-sm font-semibold text-slate-800">Campos generales</summary>
         <div class="mt-4 space-y-4">
+          <label v-if="canPickCustomer" class="block text-sm font-medium text-slate-700">
+            Cliente
+            <select v-model="selectedCustomerSlug" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm">
+              <option value="__manual">Manual</option>
+              <option v-for="opt in customerOptions" :key="`cust-${opt.slug}`" :value="opt.slug">{{ opt.label }}</option>
+            </select>
+            <p class="mt-1 text-xs text-slate-500">Administra clientes en <span class="font-mono">/admin/clientes</span>.</p>
+          </label>
           <label class="block text-sm font-medium text-slate-700">
             Slug
+            <input v-if="isCustomerSelected" :value="draft.slug" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="text" readonly />
             <input
+              v-else
               v-model="draft.slug"
               class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm"
               placeholder="ej: steven-jenniffer"
@@ -500,7 +528,7 @@
         </div>
       </details>
 
-      <details v-if="activeTab === 'contenido' && draft.page.sections?.length" class="rounded-xl border border-slate-200 px-4 py-3">
+      <details v-if="activeTab === 'contenido' && draft.page.sections?.length" open class="rounded-xl border border-slate-200 px-4 py-3">
         <summary class="cursor-pointer text-sm font-semibold text-slate-800">Contenido de secciones</summary>
         <div class="mt-4 space-y-6">
 
@@ -807,20 +835,8 @@
       </details>
 
       <div v-if="activeTab === 'tools'" class="flex flex-wrap items-center gap-3">
-        <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700" type="button" @click="saveDraft">
-          Guardar borrador
-        </button>
         <button class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white" type="button" @click="downloadJson">
           Descargar JSON
-        </button>
-        <button
-          v-if="canWriteToProject"
-          class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
-          type="button"
-          :disabled="isSavingProject"
-          @click="saveToProject"
-        >
-          {{ isSavingProject ? "Guardando..." : "Guardar en proyecto" }}
         </button>
         <button class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700" type="button" @click="saveToTenants">
           Crear en tenants
@@ -854,15 +870,9 @@
           <h2 class="text-lg font-semibold">Preview en vivo</h2>
           <p class="text-sm text-slate-500">Se actualiza con cada cambio.</p>
         </div>
-        <a
-          class="rounded-lg border border-slate-200 px-3 py-1 text-xs"
-          :class="draftShareUrl ? 'text-slate-800' : 'pointer-events-none text-slate-300'"
-          :href="draftShareUrl || '#'"
-          target="_blank"
-          rel="noopener"
-        >
-          Ver preview
-        </a>
+        <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs text-slate-800" type="button" @click="openLivePreview">
+          Abrir preview
+        </button>
       </div>
       <div ref="previewRef" class="max-h-[80vh] overflow-y-auto">
         <WeddingPreview :tenant="tenantForPreview" :slug="draft.slug" />
@@ -903,11 +913,13 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import WeddingPreview from "../../components/WeddingPreview.vue";
+import type { CustomerRecord } from "../../types/customer";
 import type { BankAccount, BankKey, PageSection, SectionType, TenantConfig } from "../../types/tenant";
 import { resolveSectionDefaults, sectionCatalog } from "../../utils/sectionCatalog";
 import manifest from "../../tenants/tenants.manifest.json";
 import { LocalJsonAdapter } from "../../tenants/LocalJsonAdapter";
 import { useRoute, useRouter } from "vue-router";
+import { canUseLocalAdminApi } from "../../utils/adminCapabilities";
 
 type DraftConfig = TenantConfig & { slug: string };
 
@@ -986,6 +998,8 @@ const canWriteToProject = ref(false);
 const draftVersions = ref<Array<{ id: string; slug: string; date: string; label: string; data: TenantConfig }>>([]);
 const isSavingProject = ref(false);
 const activeTab = ref<"general" | "apariencia" | "estructura" | "contenido" | "tools">("general");
+const customers = ref<CustomerRecord[]>([]);
+const selectedCustomerSlug = ref<string>("__manual");
 
 type ToastKind = "success" | "error" | "info";
 type Toast = { id: number; kind: ToastKind; message: string };
@@ -1130,6 +1144,79 @@ async function loadFromQuery() {
   loadedDraftId.value = "";
 }
 
+const canPickCustomer = computed(() => !loadedTenantSlug.value && !loadedDraftId.value);
+const customerOptions = computed(() => customers.value.map((c) => ({ slug: c.slug, label: `${c.slug} — ${c.coupleNames || `${c.groomName} & ${c.brideName}`}` })));
+const isCustomerSelected = computed(() => canPickCustomer.value && selectedCustomerSlug.value !== "__manual" && Boolean(selectedCustomerSlug.value));
+
+async function loadCustomers() {
+  try {
+    const res = await fetch("/__admin/customers/list");
+    const json = (await res.json()) as { ok?: boolean; customers?: unknown };
+    customers.value = Array.isArray(json?.customers) ? (json.customers as CustomerRecord[]) : [];
+  } catch {
+    customers.value = [];
+  }
+}
+
+function looksLikeUrl(value: string) {
+  return /^https?:\/\//i.test(String(value || "").trim());
+}
+
+function applyCustomerBaseToDraft(customer: CustomerRecord) {
+  draft.slug = customer.slug;
+  draft.coupleNames = customer.coupleNames?.trim() || [customer.groomName.trim(), customer.brideName.trim()].filter(Boolean).join(" & ") || draft.coupleNames;
+  if (customer.dateISO) draft.dateISO = customer.dateISO;
+  if (customer.ceremonyName) draft.ceremony.name = customer.ceremonyName;
+  {
+    const legacy = String(customer.ceremonyAddress || "").trim();
+    const address = looksLikeUrl(legacy) ? "" : legacy;
+    const mapUrl = String(customer.ceremonyMapUrl || "").trim() || (looksLikeUrl(legacy) ? legacy : "");
+    if (address) draft.ceremony.address = address;
+    if (mapUrl) draft.ceremony.mapUrl = mapUrl;
+  }
+  if (customer.receptionName) draft.reception.name = customer.receptionName;
+  {
+    const legacy = String(customer.receptionAddress || "").trim();
+    const address = looksLikeUrl(legacy) ? "" : legacy;
+    const mapUrl = String(customer.receptionMapUrl || "").trim() || (looksLikeUrl(legacy) ? legacy : "");
+    if (address) draft.reception.address = address;
+    if (mapUrl) draft.reception.mapUrl = mapUrl;
+  }
+  if (customer.rsvpWhatsappNumber) {
+    draft.rsvp.enabled = true;
+    draft.rsvp.mode = "whatsapp";
+    draft.rsvp.whatsappNumber = customer.rsvpWhatsappNumber;
+  }
+  if (customer.contactEmail) draft.contactEmail = customer.contactEmail;
+  draft.seo.title = `${draft.coupleNames} | Boda`;
+  draft.seo.url = `${window.location.origin}/w/${customer.slug}`;
+}
+
+async function onSelectCustomerSlug(slug: string) {
+  if (!slug || slug === "__manual") return;
+
+  // If the tenant already exists, load it via the existing flow (query ?tenant=...).
+  const existsInManifest = Array.isArray(manifest) && manifest.includes(slug);
+  if (existsInManifest) {
+    await router.replace({ name: "admin-generate", query: { tenant: slug } });
+    return;
+  }
+
+  const found = customers.value.find((c) => c.slug === slug);
+  if (!found) return;
+
+  const mightOverwrite = draft.slug.trim() !== "nueva-boda" || draft.coupleNames.trim() !== "Nombre & Nombre";
+  if (mightOverwrite) {
+    const ok = window.confirm("Esto reemplazará campos base (slug, nombres, fecha y lugares). ¿Continuar?");
+    if (!ok) {
+      selectedCustomerSlug.value = "__manual";
+      return;
+    }
+  }
+
+  applyCustomerBaseToDraft(found);
+}
+
 const modeLabel = computed(() => {
   if (loadedTenantSlug.value) return `Editando sitio: ${loadedTenantSlug.value}`;
   if (loadedDraftId.value) return `Editando borrador: ${loadedDraftId.value}`;
@@ -1143,17 +1230,7 @@ const modeHint = computed(() => {
 });
 
 async function checkWriter() {
-  if (!import.meta.env.DEV) {
-    canWriteToProject.value = false;
-    return;
-  }
-  try {
-    const res = await fetch("/__admin/tenants/ping");
-    const json = (await res.json()) as { ok?: boolean };
-    canWriteToProject.value = Boolean(res.ok && json?.ok);
-  } catch {
-    canWriteToProject.value = false;
-  }
+  canWriteToProject.value = await canUseLocalAdminApi("/__admin/tenants/ping");
 }
 
 function normalizeTenantForSave(input: TenantConfig): TenantConfig {
@@ -1380,7 +1457,22 @@ watch(
 onMounted(() => {
   loadFromQuery();
   checkWriter();
+  loadCustomers();
 });
+
+watch(
+  () => selectedCustomerSlug.value,
+  (value) => {
+    void onSelectCustomerSlug(value);
+  }
+);
+
+watch(
+  () => [loadedTenantSlug.value, loadedDraftId.value],
+  () => {
+    if (loadedTenantSlug.value || loadedDraftId.value) selectedCustomerSlug.value = "__manual";
+  }
+);
 
 watch(
   () => `${String(route.query.draftId || "")}|${String(route.query.tenant || "")}`,
@@ -1741,6 +1833,19 @@ async function saveToTenants() {
 function encodeDraft(payload: { data: TenantConfig }) {
   const json = JSON.stringify(payload);
   return btoa(unescape(encodeURIComponent(json)));
+}
+
+function openLivePreview() {
+  try {
+    const { slug, ...tenantRaw } = draft;
+    const tenant = normalizeTenantForSave(tenantRaw as TenantConfig);
+    const encoded = encodeDraft({ data: tenant as TenantConfig });
+    const id = `${(slug || "borrador").trim() || "borrador"}-live`;
+    const url = `${window.location.origin}/preview/${encodeURIComponent(id)}?data=${encodeURIComponent(encoded)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  } catch {
+    pushToast("error", "No se pudo abrir el preview.");
+  }
 }
 
 function saveDraft() {

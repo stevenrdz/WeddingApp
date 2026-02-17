@@ -21,9 +21,7 @@
         Recargar
       </button>
       <p class="text-sm text-slate-500">{{ filtered.length }} sitio(s)</p>
-      <p v-if="!canWriteToProject" class="text-xs text-slate-400">
-        Para eliminar sitios debes estar en modo local (`npm run dev`).
-      </p>
+      <p v-if="!canWriteToProject" class="text-xs text-slate-400">Eliminación no disponible en este entorno.</p>
     </div>
 
     <div class="mt-6 grid gap-4">
@@ -93,6 +91,7 @@ import { computed, onMounted, ref } from "vue";
 import { useRouter, RouterLink } from "vue-router";
 import { LocalJsonAdapter } from "../../tenants/LocalJsonAdapter";
 import type { TenantConfig } from "../../types/tenant";
+import { canUseLocalAdminApi } from "../../utils/adminCapabilities";
 
 type SiteRow = { slug: string; coupleNames: string; dateISO: string };
 
@@ -120,17 +119,7 @@ function dismissToast(id: number) {
 }
 
 async function checkWriter() {
-  if (!import.meta.env.DEV) {
-    canWriteToProject.value = false;
-    return;
-  }
-  try {
-    const res = await fetch("/__admin/tenants/ping");
-    const json = (await res.json()) as { ok?: boolean };
-    canWriteToProject.value = Boolean(res.ok && json?.ok);
-  } catch {
-    canWriteToProject.value = false;
-  }
+  canWriteToProject.value = await canUseLocalAdminApi("/__admin/tenants/ping");
 }
 
 async function load() {

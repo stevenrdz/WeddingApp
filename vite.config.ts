@@ -146,8 +146,101 @@ function adminTenantWriter(): Plugin {
   };
 }
 
+function adminCustomerWriter(): Plugin {
+  const root = process.cwd();
+  const customersPath = path.join(root, "src", "admin", "customers.json");
+
+  return {
+    name: "provenza-admin-customer-writer",
+    apply: "serve",
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        if (!req.url?.startsWith("/__admin/customers/")) return next();
+
+        try {
+          if (req.method === "GET" && req.url === "/__admin/customers/ping") {
+            res.statusCode = 200;
+            res.setHeader("content-type", "application/json");
+            res.end(JSON.stringify({ ok: true }));
+            return;
+          }
+
+          if (req.method === "GET" && req.url === "/__admin/customers/list") {
+            const customers = await readJsonFile<unknown>(customersPath).catch(() => [] as unknown);
+            res.statusCode = 200;
+            res.setHeader("content-type", "application/json");
+            res.end(JSON.stringify({ ok: true, customers: Array.isArray(customers) ? customers : [] }));
+            return;
+          }
+
+          if (req.method === "POST" && req.url === "/__admin/customers/save") {
+            const raw = await readRequestBody(req);
+            const body = JSON.parse(raw || "{}") as { customer?: unknown };
+            const customer = (body.customer ?? null) as any;
+            const slug = String(customer?.slug || "").trim();
+
+            if (!slug || !isValidSlug(slug)) {
+              res.statusCode = 400;
+              res.setHeader("content-type", "application/json");
+              res.end(JSON.stringify({ ok: false, error: "Slug inválido. Usa solo minúsculas, números y guiones." }));
+              return;
+            }
+
+            const current = await readJsonFile<unknown>(customersPath).catch(() => [] as unknown);
+            const list = Array.isArray(current) ? (current as any[]) : [];
+            const next = list.filter((c) => String(c?.slug || "") !== slug);
+            next.unshift({
+              ...customer,
+              slug,
+              updatedAt: new Date().toISOString(),
+              createdAt: customer?.createdAt ? String(customer.createdAt) : new Date().toISOString()
+            });
+            await writePrettyJsonFile(customersPath, next.slice(0, 200));
+
+            res.statusCode = 200;
+            res.setHeader("content-type", "application/json");
+            res.end(JSON.stringify({ ok: true, slug }));
+            return;
+          }
+
+          if (req.method === "POST" && req.url === "/__admin/customers/delete") {
+            const raw = await readRequestBody(req);
+            const body = JSON.parse(raw || "{}") as { slug?: string };
+            const slug = String(body.slug || "").trim();
+
+            if (!slug || !isValidSlug(slug)) {
+              res.statusCode = 400;
+              res.setHeader("content-type", "application/json");
+              res.end(JSON.stringify({ ok: false, error: "Slug inválido. Usa solo minúsculas, números y guiones." }));
+              return;
+            }
+
+            const current = await readJsonFile<unknown>(customersPath).catch(() => [] as unknown);
+            const list = Array.isArray(current) ? (current as any[]) : [];
+            const next = list.filter((c) => String(c?.slug || "") !== slug);
+            await writePrettyJsonFile(customersPath, next.slice(0, 200));
+
+            res.statusCode = 200;
+            res.setHeader("content-type", "application/json");
+            res.end(JSON.stringify({ ok: true, slug }));
+            return;
+          }
+
+          res.statusCode = 404;
+          res.setHeader("content-type", "application/json");
+          res.end(JSON.stringify({ ok: false, error: "Not found" }));
+        } catch (err) {
+          res.statusCode = 500;
+          res.setHeader("content-type", "application/json");
+          res.end(JSON.stringify({ ok: false, error: err instanceof Error ? err.message : "Error" }));
+        }
+      });
+    }
+  };
+}
+
 export default defineConfig({
-  plugins: [vue(), adminTenantWriter()],
+  plugins: [vue(), adminTenantWriter(), adminCustomerWriter()],
   test: {
     environment: "jsdom",
     globals: true,

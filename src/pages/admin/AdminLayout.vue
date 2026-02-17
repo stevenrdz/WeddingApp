@@ -23,49 +23,68 @@
             </div>
           </div>
         </div>
-        <nav class="px-3 py-2">
-          <div class="mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Builder</div>
-          <RouterLink
-            :class="navItemClass('admin-generate')"
-            to="/admin/generate"
-            @click="closeSidebarIfMobile"
-          >
-            <span class="grid h-6 w-6 place-items-center rounded-md bg-indigo-50 text-xs font-semibold text-indigo-600">G</span>
-            Generar
-          </RouterLink>
-          <RouterLink
-            :class="navItemClass('admin-drafts')"
-            to="/admin/drafts"
-            @click="closeSidebarIfMobile"
-          >
-            <span class="grid h-6 w-6 place-items-center rounded-md bg-slate-100 text-xs font-semibold text-slate-600">B</span>
-            Borradores
-          </RouterLink>
-          <RouterLink
-            :class="navItemClass('admin-sites')"
-            to="/admin/sites"
-            @click="closeSidebarIfMobile"
-          >
-            <span class="grid h-6 w-6 place-items-center rounded-md bg-slate-100 text-xs font-semibold text-slate-600">S</span>
-            Sitios
-          </RouterLink>
-          <button
-            class="mb-1 flex w-full items-center gap-3 rounded-md px-4 py-3 text-left text-sm font-medium text-slate-400"
-            disabled
-            type="button"
-          >
-            <span class="grid h-6 w-6 place-items-center rounded-md bg-slate-100 text-xs font-semibold text-slate-400">C</span>
-            Configurar (pronto)
-          </button>
-          <div class="mt-6 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Cuenta</div>
-          <button
-            class="flex w-full items-center gap-3 rounded-md px-4 py-3 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
-            type="button"
-            @click="logout"
-          >
-            <span class="grid h-6 w-6 place-items-center rounded-md bg-red-50 text-xs font-semibold text-red-500">X</span>
-            Cerrar sesión
-          </button>
+        <nav class="flex h-full flex-col px-3 py-2">
+          <div class="space-y-1">
+            <RouterLink
+              :class="navItemClass('admin-dashboard')"
+              to="/admin/dashboard"
+              @click="closeSidebarIfMobile"
+            >
+              <span class="grid h-9 w-9 place-items-center rounded-lg bg-indigo-50 text-indigo-600">
+                <ChartBarIcon class="h-5 w-5" aria-hidden="true" />
+              </span>
+              Dashboard
+            </RouterLink>
+
+            <div class="mt-6 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Gestión</div>
+            <RouterLink :class="navItemClass('admin-sites')" to="/admin/sites" @click="closeSidebarIfMobile">
+              <span class="grid h-9 w-9 place-items-center rounded-lg bg-slate-100 text-slate-700">
+                <GlobeAltIcon class="h-5 w-5" aria-hidden="true" />
+              </span>
+              Sitios
+            </RouterLink>
+            <RouterLink :class="navItemClass('admin-drafts')" to="/admin/drafts" @click="closeSidebarIfMobile">
+              <span class="grid h-9 w-9 place-items-center rounded-lg bg-slate-100 text-slate-700">
+                <DocumentTextIcon class="h-5 w-5" aria-hidden="true" />
+              </span>
+              Borradores
+            </RouterLink>
+
+            <div class="mt-6 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Cliente</div>
+            <RouterLink :class="navSubItemClass('admin-customers-new')" to="/admin/clientes/nuevo" @click="closeSidebarIfMobile">
+              <span class="grid h-8 w-8 place-items-center rounded-lg bg-emerald-50 text-emerald-700">
+                <UserPlusIcon class="h-5 w-5" aria-hidden="true" />
+              </span>
+              <span>Agregar cliente</span>
+            </RouterLink>
+            <RouterLink :class="navSubItemClass('admin-customers-list')" to="/admin/clientes" @click="closeSidebarIfMobile">
+              <span class="grid h-8 w-8 place-items-center rounded-lg bg-sky-50 text-sky-700">
+                <UsersIcon class="h-5 w-5" aria-hidden="true" />
+              </span>
+              <span>Listar clientes</span>
+            </RouterLink>
+
+            <div class="mt-6 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Configuración</div>
+            <RouterLink :class="navItemClass('admin-settings')" to="/admin/settings" @click="closeSidebarIfMobile">
+              <span class="grid h-9 w-9 place-items-center rounded-lg bg-slate-100 text-slate-700">
+                <Cog6ToothIcon class="h-5 w-5" aria-hidden="true" />
+              </span>
+              Ajustes globales
+            </RouterLink>
+          </div>
+
+          <div class="mt-auto pt-6">
+            <button
+              class="flex w-full items-center gap-3 rounded-md px-4 py-3 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
+              type="button"
+              @click="logout"
+            >
+              <span class="grid h-9 w-9 place-items-center rounded-lg bg-red-50 text-red-600">
+                <ArrowRightOnRectangleIcon class="h-5 w-5" aria-hidden="true" />
+              </span>
+              Cerrar sesión
+            </button>
+          </div>
         </nav>
       </aside>
 
@@ -98,6 +117,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter, RouterView, RouterLink } from "vue-router";
+import { ArrowRightOnRectangleIcon, ChartBarIcon, Cog6ToothIcon, DocumentTextIcon, GlobeAltIcon, UserPlusIcon, UsersIcon } from "@heroicons/vue/24/outline";
 
 const router = useRouter();
 const route = useRoute();
@@ -109,8 +129,16 @@ const isCollapsed = ref(!isDesktop.value);
 function navItemClass(name: string) {
   const isActive = route.name === name;
   return [
-    "mb-1 flex items-center gap-3 rounded-md px-4 py-3 text-sm font-medium transition",
+    "mb-1 flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition",
     isActive ? "bg-slate-100 text-slate-900" : "text-slate-700 hover:bg-slate-100"
+  ].join(" ");
+}
+
+function navSubItemClass(name: string) {
+  const isActive = route.name === name;
+  return [
+    "mb-1 flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition",
+    isActive ? "bg-slate-100 text-slate-900" : "text-slate-600 hover:bg-slate-50"
   ].join(" ");
 }
 
