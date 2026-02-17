@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+  <head>
+    <base target="_top" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sube tu foto</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        margin: 0;
+        background: #f1f5f9;
+        color: #0f172a;
+      }
+      .wrap {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+      .card {
+        width: 100%;
+        max-width: 520px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+      h1 {
+        margin: 0;
+        font-size: 22px;
+      }
+      p {
+        margin: 12px 0 0;
+        color: #334155;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+      .btn {
+        margin-top: 16px;
+        width: 100%;
+        border: 0;
+        border-radius: 14px;
+        padding: 12px 14px;
+        background: #0f172a;
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+      .preview {
+        margin-top: 14px;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        background: #f8fafc;
+      }
+      .preview img {
+        display: block;
+        width: 100%;
+        height: 280px;
+        object-fit: cover;
+      }
+      .status {
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      .ok {
+        color: #047857;
+      }
+      .err {
+        color: #b91c1c;
+      }
+      .meta {
+        margin-top: 16px;
+        font-size: 12px;
+        color: #64748b;
+      }
+      input[type="file"] {
+        width: 100%;
+        margin-top: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <div style="font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: #94a3b8; font-weight: 700;">Invitados</div>
+        <h1 style="margin-top: 10px;">Sube tu foto</h1>
+        <p>Selecciona una foto desde tu cÃ¡mara o galerÃ­a. Se convertirÃ¡ a JPG y se subirÃ¡ al Drive del evento.</p>
+
+        <input id="file" type="file" accept="image/*" capture="environment" />
+
+        <div id="preview" class="preview" style="display:none;">
+          <img id="img" alt="PrevisualizaciÃ³n" />
+        </div>
+
+        <button id="upload" class="btn" disabled>Subir foto</button>
+
+        <div id="status" class="status"></div>
+        <div class="meta">Slug: <span id="slug"></span></div>
+      </div>
+    </div>
+
+    <script>
+      const SLUG = "<?= String(slug) ?>";
+      const TOKEN = "<?= String(token) ?>";
+      document.getElementById("slug").textContent = SLUG;
+
+      const fileEl = document.getElementById("file");
+      const uploadBtn = document.getElementById("upload");
+      const statusEl = document.getElementById("status");
+      const previewWrap = document.getElementById("preview");
+      const imgEl = document.getElementById("img");
+
+      let currentDataUrl = "";
+
+      function setStatus(kind, msg) {
+        statusEl.className = "status " + (kind || "");
+        statusEl.textContent = msg || "";
+      }
+
+      async function fileToJpegDataUrl(file, maxWidth = 1600, quality = 0.82) {
+        const bitmap = await createImageBitmap(file);
+        const scale = Math.min(1, maxWidth / bitmap.width);
+        const width = Math.round(bitmap.width * scale);
+        const height = Math.round(bitmap.height * scale);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(bitmap, 0, 0, width, height);
+        return canvas.toDataURL("image/jpeg", quality);
+      }
+
+      fileEl.addEventListener("change", async () => {
+        setStatus("", "");
+        currentDataUrl = "";
+        uploadBtn.disabled = true;
+        previewWrap.style.display = "none";
+
+        const file = fileEl.files && fileEl.files[0];
+        if (!file) return;
+
+        try {
+          setStatus("", "Procesando foto...");
+          currentDataUrl = await fileToJpegDataUrl(file);
+          imgEl.src = currentDataUrl;
+          previewWrap.style.display = "block";
+          uploadBtn.disabled = false;
+          setStatus("", "");
+        } catch (e) {
+          setStatus("err", "No se pudo procesar la imagen.");
+        }
+      });
+
+      uploadBtn.addEventListener("click", () => {
+        if (!currentDataUrl) return;
+        uploadBtn.disabled = true;
+        setStatus("", "Subiendo...");
+
+        google.script.run
+          .withSuccessHandler((res) => {
+            setStatus("ok", "Â¡Listo! Foto subida.");
+            fileEl.value = "";
+            currentDataUrl = "";
+            uploadBtn.disabled = true;
+          })
+          .withFailureHandler((err) => {
+            setStatus("err", (err && err.message) ? err.message : "No se pudo subir. Intenta nuevamente.");
+            uploadBtn.disabled = false;
+          })
+          .uploadJpegDataUrl(SLUG, currentDataUrl, TOKEN);
+      });
+    </script>
+  </body>
+</html>
+

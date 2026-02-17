@@ -2,22 +2,31 @@
   <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <h1 class="text-lg font-semibold">Galería</h1>
-        <p class="mt-1 text-sm text-slate-600">Las fotos se actualizan automáticamente.</p>
+        <h1 class="text-lg font-semibold">GalerÃ­a</h1>
+        <p class="mt-1 text-sm text-slate-600">Las fotos se actualizan automÃ¡ticamente.</p>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <a class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700" :href="uploadUrl" target="_blank" rel="noreferrer">
+        <a
+          class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700"
+          :href="uploadUrl"
+          target="_blank"
+          rel="noreferrer"
+        >
           Abrir link de subida
         </a>
-        <button class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700" type="button" @click="refresh">
+        <button v-if="!driveConfig" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700" type="button" @click="refresh">
           Recargar
         </button>
       </div>
     </div>
 
-    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div v-if="driveConfig" class="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+      <iframe class="h-[70vh] w-full" :src="driveEmbedUrl" title="GalerÃ­a (Google Drive)" loading="lazy" />
+    </div>
+
+    <div v-else class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <div v-if="!items.length" class="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm text-slate-600 sm:col-span-2 lg:col-span-3">
-        Aún no hay fotos. Comparte el QR para que tus invitados empiecen a subirlas.
+        AÃºn no hay fotos. Comparte el QR para que tus invitados empiecen a subirlas.
       </div>
 
       <div v-for="item in items" :key="item.id" class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
@@ -36,11 +45,24 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import { buildPremiumDriveEmbedUrl, buildPremiumUploadUrl, getPremiumDriveConfig } from "../../utils/premiumDriveLinks";
 import { listPremiumPhotos, removePremiumPhoto, subscribePremiumGallery, type PremiumPhoto } from "../../utils/premiumGallery";
 
 const route = useRoute();
 const slug = computed(() => String(route.params.slug || "boda"));
-const uploadUrl = computed(() => `${window.location.origin}/p/${slug.value}/upload`);
+
+const driveConfig = computed(() => getPremiumDriveConfig());
+const uploadUrl = computed(() => {
+  const cfg = driveConfig.value;
+  if (cfg) return buildPremiumUploadUrl(cfg, slug.value);
+  return `${window.location.origin}/p/${slug.value}/upload`;
+});
+const driveEmbedUrl = computed(() => {
+  const cfg = driveConfig.value;
+  if (!cfg) return "";
+  return buildPremiumDriveEmbedUrl(cfg);
+});
+
 const items = ref<PremiumPhoto[]>([]);
 let stopSub: (() => void) | null = null;
 let pollTimer: number | undefined;
@@ -50,7 +72,7 @@ function refresh() {
 }
 
 function remove(id: string) {
-  const ok = window.confirm("¿Ocultar esta foto de la galería?");
+  const ok = window.confirm("Â¿Ocultar esta foto de la galerÃ­a?");
   if (!ok) return;
   removePremiumPhoto(slug.value, id);
   refresh();
@@ -62,6 +84,7 @@ function formatDate(value: string) {
 }
 
 onMounted(() => {
+  if (driveConfig.value) return;
   refresh();
   stopSub = subscribePremiumGallery(slug.value, refresh);
   pollTimer = window.setInterval(refresh, 4000);

@@ -52,10 +52,16 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import QRCode from "qrcode";
+import { buildPremiumUploadUrl, getPremiumDriveConfig } from "../../utils/premiumDriveLinks";
 
 const route = useRoute();
 const slug = computed(() => String(route.params.slug || "boda"));
-const uploadUrl = computed(() => `${window.location.origin}/p/${slug.value}/upload`);
+const driveConfig = computed(() => getPremiumDriveConfig());
+const uploadUrl = computed(() => {
+  const cfg = driveConfig.value;
+  if (cfg) return buildPremiumUploadUrl(cfg, slug.value);
+  return `${window.location.origin}/p/${slug.value}/upload`;
+});
 const qrDataUrl = ref<string>("");
 const copyLabel = ref("Copiar link");
 
@@ -90,4 +96,3 @@ function downloadPng() {
 onMounted(generate);
 watch(uploadUrl, generate);
 </script>
-
