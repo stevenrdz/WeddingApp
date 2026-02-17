@@ -1,9 +1,15 @@
 <template>
   <section :id="anchorId ?? 'ubicaciones'" class="section locations-section" :class="rootClass" :style="bg.style">
     <div class="container-safe">
-      <p class="section-title text-left">UBICACIONES</p>
-      <div class="ornament mt-2"></div>
-      <h2 class="mt-4 font-heading text-3xl">{{ heading }}</h2>
+      <SectionHeader
+        title="UBICACIONES"
+        :heading="header?.headingText ?? heading"
+        :align="header?.align ?? 'left'"
+        :ornament="header?.ornament"
+        :title-style="header?.titleStyle"
+        :heading-style="header?.headingStyle"
+        :tagline-style="header?.taglineStyle"
+      />
       <div class="mt-8 grid gap-6 md:grid-cols-2">
         <div v-if="showCeremony" class="card">
           <h3 class="font-heading text-xl">{{ tenant.ceremony.name || "Ceremonia" }}</h3>
@@ -43,10 +49,11 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { LocationsMapMode, SectionBackgroundConfig, TenantConfig } from "../types/tenant";
+import type { LocationsMapMode, PageSection, SectionBackgroundConfig, TenantConfig } from "../types/tenant";
 import { sectionBackground } from "../utils/sectionBackground";
+import SectionHeader from "./SectionHeader.vue";
 
-const props = defineProps<{ tenant: TenantConfig; anchorId?: string; background?: SectionBackgroundConfig }>();
+const props = defineProps<{ tenant: TenantConfig; anchorId?: string; background?: SectionBackgroundConfig; header?: PageSection["header"] }>();
 const bg = computed(() => sectionBackground(props.background));
 const rootClass = computed(() => (props.background?.mode && props.background.mode !== "default" ? bg.value.className : "bg-white/60"));
 

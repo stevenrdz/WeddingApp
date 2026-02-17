@@ -1,9 +1,15 @@
 <template>
   <section :id="anchorId ?? 'cuenta-regresiva'" class="section countdown-section" :class="rootClass" :style="bg.style">
-    <div class="container-safe text-center">
-      <p class="section-title">CUENTA REGRESIVA</p>
-      <div class="ornament mx-auto mt-2"></div>
-      <p class="mt-4 text-black/70">Nos vemos en</p>
+    <div class="container-safe">
+      <SectionHeader
+        title="CUENTA REGRESIVA"
+        :tagline="header?.taglineText ?? 'Nos vemos en'"
+        :align="header?.align ?? 'center'"
+        :ornament="header?.ornament"
+        :title-style="header?.titleStyle"
+        :heading-style="header?.headingStyle"
+        :tagline-style="header?.taglineStyle"
+      />
       <div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
         <div class="card">
           <p class="font-heading text-3xl font-semibold">{{ countdown.days }}</p>
@@ -31,9 +37,10 @@
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { getCountdown } from "../utils/countdown";
 import { sectionBackground } from "../utils/sectionBackground";
-import type { SectionBackgroundConfig } from "../types/tenant";
+import type { PageSection, SectionBackgroundConfig } from "../types/tenant";
+import SectionHeader from "./SectionHeader.vue";
 
-const props = defineProps<{ dateIso: string; anchorId?: string; background?: SectionBackgroundConfig }>();
+const props = defineProps<{ dateIso: string; anchorId?: string; background?: SectionBackgroundConfig; header?: PageSection["header"] }>();
 const bg = computed(() => sectionBackground(props.background));
 const rootClass = computed(() => (props.background?.mode && props.background.mode !== "default" ? bg.value.className : "bg-white/60"));
 const countdown = ref(getCountdown(props.dateIso));

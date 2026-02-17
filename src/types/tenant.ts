@@ -14,6 +14,20 @@ export type ButtonVariant = "outline" | "solid";
 export type BackgroundMode = "default" | "preset" | "color" | "image";
 export type BackgroundPreset = "surface" | "texture" | "ink";
 export type LocationsMapMode = "button" | "iframe";
+export type TextAlign = "left" | "center" | "right";
+export type FontKey = "heading" | "subheading" | "body" | "script";
+export type TextSize = "xs" | "sm" | "base" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl";
+export type TextWeight = "normal" | "medium" | "semibold" | "bold";
+export type TextTracking = "normal" | "wide" | "widest";
+export type OrnamentVariant = "none" | "line" | "flourish" | "knot" | "laurel" | "dots" | "arch";
+
+export interface TextStyleConfig {
+  font?: FontKey;
+  size?: TextSize;
+  align?: TextAlign;
+  weight?: TextWeight;
+  tracking?: TextTracking;
+}
 
 export type BankKey =
   | "pichincha"
@@ -49,6 +63,11 @@ export interface HeroLayoutConfig {
   backgroundColor?: string;
   backgroundImageUrl?: string;
   buttons?: ActionButton[];
+  ornament?: OrnamentVariant;
+  showPanelGlass?: boolean;
+  align?: TextAlign;
+  namesStyle?: TextStyleConfig;
+  taglineStyle?: TextStyleConfig;
 }
 
 export interface SectionBackgroundConfig {
@@ -64,6 +83,16 @@ export interface PageSection {
   label: string;
   anchorId: string;
   background?: SectionBackgroundConfig;
+  header?: {
+    titleText?: string;
+    headingText?: string;
+    taglineText?: string;
+    align?: TextAlign;
+    ornament?: OrnamentVariant;
+    titleStyle?: TextStyleConfig;
+    headingStyle?: TextStyleConfig;
+    taglineStyle?: TextStyleConfig;
+  };
 }
 
 export interface FooterConfig {

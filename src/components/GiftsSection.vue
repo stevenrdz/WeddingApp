@@ -1,9 +1,15 @@
 <template>
   <section :id="anchorId ?? 'regalos'" class="section gifts-section" :class="rootClass" :style="bg.style">
     <div class="container-safe">
-      <p class="section-title text-left">REGALOS</p>
-      <div class="ornament mt-2"></div>
-      <h2 class="mt-4 font-heading text-3xl">Gracias por ser parte</h2>
+      <SectionHeader
+        title="REGALOS"
+        :heading="header?.headingText ?? 'Gracias por ser parte'"
+        :align="header?.align ?? 'left'"
+        :ornament="header?.ornament"
+        :title-style="header?.titleStyle"
+        :heading-style="header?.headingStyle"
+        :tagline-style="header?.taglineStyle"
+      />
       <div class="mt-6 grid gap-6 md:grid-cols-2">
         <div class="card">
           <p class="text-black/70">{{ gifts.message }}</p>
@@ -56,10 +62,11 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import type { BankAccountType, BankKey, GiftsConfig } from "../types/tenant";
-import type { SectionBackgroundConfig } from "../types/tenant";
+import type { PageSection, SectionBackgroundConfig } from "../types/tenant";
 import { sectionBackground } from "../utils/sectionBackground";
+import SectionHeader from "./SectionHeader.vue";
 
-const props = defineProps<{ gifts: GiftsConfig; anchorId?: string; background?: SectionBackgroundConfig }>();
+const props = defineProps<{ gifts: GiftsConfig; anchorId?: string; background?: SectionBackgroundConfig; header?: PageSection["header"] }>();
 const bg = computed(() => sectionBackground(props.background));
 const rootClass = computed(() => bg.value.className);
 const copiedLegacy = ref(false);

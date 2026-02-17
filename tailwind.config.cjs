@@ -12,6 +12,7 @@ module.exports = {
       },
       fontFamily: {
         heading: ["var(--font-heading)", "serif"],
+        subheading: ["var(--font-subheading)", "serif"],
         body: ["var(--font-body)", "sans-serif"],
         script: ["var(--font-script)", "cursive"]
       }
