@@ -15,11 +15,13 @@ Provenza is a multi-tenant wedding site template built with Vue 3 + Vite + Tailw
 - Routes: `/` (marketing home), `/w/:slug` (wedding), `/w` redirects to `/w/demo`.
 - Premium (MVP demo): `/p/:slug/qr`, `/p/:slug/galeria`, `/p/:slug/upload`.
 - Legal: `/terminos` and `/privacidad`.
-- Admin: `/admin/login` (demo login) and `/admin/generate` (builder).
-- Admin dashboard: `/admin/drafts` (borradores) and `/admin/sites` (sitios).
+- Admin: `/admin/login` (demo login), `/admin/dashboard`, `/admin/generate` (builder).
+- Admin: `/admin/sites` (sitios) and `/admin/drafts` (borradores).
+- Admin (clientes): `/admin/clientes` (listar) y `/admin/clientes/nuevo` (agregar).
+- Admin: `/admin/settings` (ajustes globales del admin).
 - Preview: `/preview/:draftId` (requires `VITE_ADMIN_PREVIEW_KEY` or admin session).
 - `src/pages/Wedding.vue` loads tenant data by slug, applies theme and SEO, and renders sections.
-- Plan gating: `planBySlug` in `Wedding.vue` controls which sections render for basic/standard/premium.
+- Sections are driven by `tenant.page.sections` (if present); otherwise defaults are used.
 
 ## Tenant data
 - Files: `src/tenants/data/*.json`
@@ -32,6 +34,11 @@ Provenza is a multi-tenant wedding site template built with Vue 3 + Vite + Tailw
 - `GET /__admin/tenants/ping`
 - `POST /__admin/tenants/save` (writes `src/tenants/data/<slug>.json` + updates manifest)
 - `POST /__admin/tenants/delete` (deletes tenant JSON + updates manifest; demo is protected)
+- Customers (local file `src/admin/customers.json`):
+  - `GET /__admin/customers/ping`
+  - `GET /__admin/customers/list`
+  - `POST /__admin/customers/save`
+  - `POST /__admin/customers/delete`
 
 ## RSVP modes
 - WhatsApp: `rsvp.enabled = true`, `rsvp.mode = "whatsapp"`, `rsvp.whatsappNumber = "521..."`.
@@ -44,10 +51,19 @@ Provenza is a multi-tenant wedding site template built with Vue 3 + Vite + Tailw
 
 ## Admin builder
 - Views: `src/pages/admin/AdminLayout.vue`, `src/pages/admin/Generate.vue`, `src/pages/admin/Login.vue`.
+- Customers: `src/pages/admin/Customers.vue` (CRUD local en dev via endpoints `__admin/customers/*`).
 - Preview: `src/pages/admin/DraftPreview.vue` renders a shared draft from query data.
 - Draft links embed data in the URL for cross-device sharing.
 - Env: add `.env` with `VITE_ADMIN_PREVIEW_KEY` to enable preview links.
 - Limitation: very large drafts can create long URLs; consider backend persistence later.
+
+## Premium (Drive + Apps Script)
+- Prototype flow:
+  - QR: `/p/:slug/qr` points guests to the upload page.
+  - Upload: `/p/:slug/upload` (fallback demo) or Apps Script upload page.
+  - Gallery: `/p/:slug/galeria` can show an embedded public Drive folder.
+- Docs: `docs/premium-drive-apps-script.md`
+- Apps Script: `apps-script/premium-drive-upload/`
 
 ## Home hero (Unsplash, opcional)
 - Env: `VITE_UNSPLASH_ACCESS_KEY` (solo acceso publico).

@@ -27,7 +27,7 @@ npm run test:e2e
 - Bibliotecas de imagenes libres dentro del builder.
 - Control de secciones por plan (basic/standard/premium) desde el dashboard.
 - (Opcional) Crear una libreria de ornamentos barrocos (SVG/PNG) para titulos y secciones.
-- (Opcional / Premium) Galeria en vivo por QR (invitados suben fotos) con almacenamiento en Google Drive del cliente (Apps Script) y actualizacion por polling/tiempo real.
+- (Opcional / Premium) Galería en vivo por QR (invitados suben fotos) con almacenamiento en Google Drive del cliente (Apps Script) y actualizacion por polling/tiempo real.
 
 ## Crear un nuevo tenant
 1) Agrega un nuevo archivo JSON en `src/tenants/data/tu-slug.json` siguiendo `TenantConfig`.
@@ -36,23 +36,29 @@ npm run test:e2e
 
 ## Admin builder (MVP)
 - Login: `/admin/login` (modo demo, cualquier clave).
+- Dashboard: `/admin/dashboard` (estadísticas y próximos eventos).
 - Builder: `/admin/generate` (formulario + preview en vivo).
 - Borradores: `/admin/drafts` (crear/duplicar/eliminar).
 - Sitios: `/admin/sites` (ver/editar/eliminar).
+- Clientes: `/admin/clientes` (registro de clientes para autogenerar slug y prellenar datos base).
+- Configuración: `/admin/settings` (ajustes globales en el admin).
 - Guardar borrador: genera un link compartible a `/preview/:draftId`.
 
 ## Premium (MVP - demo)
 Este flujo es un prototipo para el paquete Premium:
 - QR: `/p/:slug/qr` (genera un QR hacia la pagina de carga).
-- Galeria: `/p/:slug/galeria` (muestra fotos subidas).
+- Galería: `/p/:slug/galeria` (muestra fotos subidas).
 - Upload (invitados): `/p/:slug/upload` (abre camara/galeria y sube una foto).
 
-Por ahora las fotos se guardan en `localStorage` (demo). La version real sugerida es que el cliente sea dueno del almacenamiento (ej. Google Drive via Apps Script).
+Por defecto las fotos se guardan en `localStorage` (demo). Si configuras Google Drive + Apps Script, el QR abre una pagina de subida (Apps Script) y la galeria se muestra embebiendo una carpeta publica de Drive.
+
+Config: `docs/premium-drive-apps-script.md`
 
 ### Guardar/eliminar "en proyecto" (solo local)
 En modo local (`npm run dev`), el admin puede:
 - Guardar un sitio en `src/tenants/data/<slug>.json` y actualizar `src/tenants/tenants.manifest.json`.
 - Eliminar un sitio (borra el JSON y lo saca del manifest).
+- Guardar/listar/eliminar clientes en `src/admin/customers.json` (para prellenar el builder).
 
 Esto funciona con un middleware de Vite (solo `dev server`). En deploy no aplica porque no hay backend.
 
@@ -110,4 +116,4 @@ docker compose up --build
 
 ## Paginas legales
 - Terminos y condiciones: `/terminos`
-- Politicas de privacidad: `/privacidad`
+- Políticas de privacidad: `/privacidad`
