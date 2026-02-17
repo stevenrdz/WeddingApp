@@ -1,0 +1,80 @@
+{
+  "coupleNames": "Steven Rodríguez & Jennifer Vasquéz",
+  "dateISO": "2026-08-01",
+  "hero": {
+    "tagline": "Nuestro sí, para siempre",
+    "ctaPrimaryText": "RSVP",
+    "ctaSecondaryText": "Ubicaciones",
+    "ctaPrimaryTarget": "#rsvp",
+    "ctaSecondaryTarget": "#ubicaciones"
+  },
+  "ceremony": {
+    "name": "Iglesia Católica Santo Tomás Moro",
+    "time": "17:00",
+    "address": "Villa España Etapa Madrid",
+    "mapUrl": "https://maps.app.goo.gl/3HvsFubbFmEkifCv6"
+  },
+  "reception": {
+    "name": "Eventos Candilejas",
+    "time": "19:00",
+    "address": "Villa España Etapa Madrid",
+    "mapUrl": "https://maps.app.goo.gl/zAjeApnQVHh6hBAB8"
+  },
+  "schedule": [
+    {
+      "time": "17:00",
+      "title": "Ceremonia",
+      "description": "Iglesia Católica Santo Tomás Moro"
+    },
+    {
+      "time": "19:00",
+      "title": "Recepción",
+      "description": "Eventos Candilejas"
+    }
+  ],
+  "dressCode": {
+    "title": "Formal",
+    "description": ""
+  },
+  "gifts": {
+    "message": "",
+    "giftListUrl": "",
+    "accounts": []
+  },
+  "rsvp": {
+    "mode": "whatsapp",
+    "enabled": true,
+    "deadlineISO": "",
+    "whatsappNumber": "0995163059",
+    "netlifyFormNameOptional": ""
+  },
+  "gallery": [],
+  "theme": {
+    "primary": "#7b4f62",
+    "secondary": "#1f2437",
+    "background": "#fbf6f1",
+    "text": "#2a2a2a",
+    "fontHeading": "Boska",
+    "fontSubheading": "Cormorant Garamond",
+    "fontBody": "Inter"
+  },
+  "seo": {
+    "title": "Steven Rodríguez & Jennifer Vasquéz | Boda",
+    "description": "Acompáñanos en nuestro gran día.",
+    "url": "",
+    "ogImage": "/og-default.svg"
+  },
+  "story": {
+    "title": "Nuestra historia",
+    "message": ""
+  },
+  "faq": [],
+  "contactEmail": "stevenrodriguezm97@gmail.com",
+  "page": {
+    "locations": {
+      "showCeremony": true,
+      "showReception": true,
+      "mapMode": "button"
+    }
+  }
+}

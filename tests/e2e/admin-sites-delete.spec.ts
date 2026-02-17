@@ -7,7 +7,7 @@ function repoPath(...parts: string[]) {
 }
 
 test("sites page can delete a site (and we restore it)", async ({ page, request }) => {
-  const slug = "mi-boda";
+  const slug = "steven-jennifer";
   const tenantPath = repoPath("src", "tenants", "data", `${slug}.json`);
   const originalTenant = JSON.parse(fs.readFileSync(tenantPath, "utf8")) as unknown;
 
