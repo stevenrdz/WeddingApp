@@ -1,9 +1,9 @@
-<template>
+﻿<template>
   <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <h1 class="text-lg font-semibold">GalerÃ­a</h1>
-        <p class="mt-1 text-sm text-slate-600">Las fotos se actualizan automÃ¡ticamente.</p>
+        <h1 class="text-lg font-semibold">Galer?a</h1>
+        <p class="mt-1 text-sm text-slate-600">Las fotos se actualizan autom?ticamente.</p>
       </div>
       <div class="flex flex-wrap items-center gap-2">
         <a
@@ -21,12 +21,12 @@
     </div>
 
     <div v-if="driveConfig" class="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
-      <iframe class="h-[70vh] w-full" :src="driveEmbedUrl" title="GalerÃ­a (Google Drive)" loading="lazy" />
+      <iframe class="h-[70vh] w-full" :src="driveEmbedUrl" title="Galer?a (Google Drive)" loading="lazy" />
     </div>
 
     <div v-else class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <div v-if="!items.length" class="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm text-slate-600 sm:col-span-2 lg:col-span-3">
-        AÃºn no hay fotos. Comparte el QR para que tus invitados empiecen a subirlas.
+        A?n no hay fotos. Comparte el QR para que tus invitados empiecen a subirlas.
       </div>
 
       <div v-for="item in items" :key="item.id" class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
@@ -72,7 +72,7 @@ function refresh() {
 }
 
 function remove(id: string) {
-  const ok = window.confirm("Â¿Ocultar esta foto de la galerÃ­a?");
+  const ok = window.confirm("?Ocultar esta foto de la galer?a?");
   if (!ok) return;
   removePremiumPhoto(slug.value, id);
   refresh();
@@ -95,4 +95,7 @@ onUnmounted(() => {
   if (pollTimer) window.clearInterval(pollTimer);
 });
 </script>
+
+
+
 

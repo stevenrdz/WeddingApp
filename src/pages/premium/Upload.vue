@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <main class="min-h-screen bg-slate-100 text-slate-900">
     <div class="mx-auto flex min-h-screen max-w-xl flex-col justify-center px-6 py-10">
       <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
@@ -6,7 +6,7 @@
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Invitados</p>
           <h1 class="mt-2 font-heading text-3xl">Sube tu foto</h1>
           <p class="mt-3 text-sm text-slate-600">
-            Para evitar costos, la subida se hace en una pÃ¡gina externa (Google Apps Script) y la galerÃ­a se muestra desde una carpeta pÃºblica de Google Drive.
+            Para evitar costos, la subida se hace en una p?gina externa (Google Apps Script) y la galer?a se muestra desde una carpeta p?blica de Google Drive.
           </p>
 
           <a
@@ -15,11 +15,11 @@
             target="_blank"
             rel="noreferrer"
           >
-            Abrir pÃ¡gina de subida
+            Abrir p?gina de subida
           </a>
 
           <p class="text-xs text-slate-500">
-            Si ya subiste una foto, puedes cerrar esa pestaÃ±a y regresar. La galerÃ­a se actualiza sola.
+            Si ya subiste una foto, puedes cerrar esa pesta?a y regresar. La galer?a se actualiza sola.
           </p>
         </div>
 
@@ -27,7 +27,7 @@
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Invitados</p>
           <h1 class="mt-2 font-heading text-3xl">Sube tu foto</h1>
           <p class="mt-3 text-sm text-slate-600">
-            Gracias por acompaÃ±arnos. Toma una foto o selecciona una desde tu galerÃ­a y sÃºbela para que aparezca en la galerÃ­a del evento.
+            Gracias por acompa?arnos. Toma una foto o selecciona una desde tu galer?a y s?bela para que aparezca en la galer?a del evento.
           </p>
 
           <div class="mt-6 space-y-3">
@@ -41,11 +41,11 @@
             />
 
             <button class="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white" type="button" @click="pick">
-              Abrir cÃ¡mara / galerÃ­a
+              Abrir c?mara / galer?a
             </button>
 
             <div v-if="previewUrl" class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
-              <img class="h-64 w-full object-cover" :src="previewUrl" alt="PrevisualizaciÃ³n" />
+              <img class="h-64 w-full object-cover" :src="previewUrl" alt="Previsualizaci?n" />
             </div>
 
             <button
@@ -63,7 +63,7 @@
           </div>
 
           <div class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900">
-            Nota: en esta demo las fotos se guardan localmente en tu navegador. Para producciÃ³n lo conectamos a un almacenamiento externo.
+            Nota: en esta demo las fotos se guardan localmente en tu navegador. Para producci?n lo conectamos a un almacenamiento externo.
           </div>
         </template>
       </div>
@@ -117,7 +117,7 @@ async function upload() {
     const dataUrl = await fileToJpegDataUrl(selectedFile.value);
     if (!dataUrl) throw new Error("No se pudo procesar la foto.");
     addPremiumPhoto(slug.value, { id: `p_${Date.now()}`, createdAt: new Date().toISOString(), dataUrl });
-    status.value = "Â¡Listo! Tu foto ya aparece en la galerÃ­a.";
+    status.value = "?Listo! Tu foto ya aparece en la galer?a.";
     selectedFile.value = null;
     if (previewUrl.value) URL.revokeObjectURL(previewUrl.value);
     previewUrl.value = "";
@@ -134,4 +134,7 @@ onBeforeUnmount(() => {
   if (previewUrl.value) URL.revokeObjectURL(previewUrl.value);
 });
 </script>
+
+
+
 

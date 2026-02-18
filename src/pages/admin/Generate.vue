@@ -59,9 +59,12 @@
           </button>
           <button
             class="rounded-xl px-3 py-2 text-xs font-semibold"
-            :class="activeTab === 'contenido' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:bg-white/60'"
+            :class="[
+              activeTab === 'contenido' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:bg-white/60',
+              !draft.page.sections?.length ? 'opacity-60' : ''
+            ]"
             type="button"
-            @click="activeTab = 'contenido'"
+            @click="openContentTab"
           >
             Contenido
           </button>
@@ -768,7 +771,16 @@
       </details>
 
       <div v-if="activeTab === 'contenido' && !draft.page.sections?.length" class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-        Agrega secciones en la pestaña <strong>Estructura</strong> para habilitar el editor de contenido.
+        <p class="font-semibold text-slate-700">Aún no hay secciones.</p>
+        <p class="mt-1">Agrega secciones en <strong>Estructura</strong> para habilitar el editor de contenido.</p>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <button class="rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700" type="button" @click="activeTab = 'estructura'">
+            Ir a Estructura
+          </button>
+          <button class="rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700" type="button" @click="addSections">
+            Crear lista de secciones
+          </button>
+        </div>
       </div>
 
       <details v-if="activeTab === 'estructura' && draft.page.footer" class="rounded-xl border border-slate-200 px-4 py-3">
@@ -1155,6 +1167,13 @@ async function loadCustomers() {
     customers.value = Array.isArray(json?.customers) ? (json.customers as CustomerRecord[]) : [];
   } catch {
     customers.value = [];
+  }
+}
+
+function openContentTab() {
+  activeTab.value = "contenido";
+  if (!draft.page.sections?.length) {
+    pushToast("info", "Agrega secciones en Estructura para editar el contenido.");
   }
 }
 

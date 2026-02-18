@@ -9,99 +9,136 @@
       </div>
     </div>
 
-    <div v-if="showNew" class="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div v-if="showNew" class="mt-6 space-y-6">
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div class="flex flex-wrap items-center justify-between gap-3">
-          <p class="text-sm font-semibold text-slate-800">Nuevo cliente</p>
-        <p v-if="!canWriteToProject" class="text-xs text-slate-400">Guardado no disponible en este entorno.</p>
-      </div>
-
-      <div class="mt-4 grid gap-4 md:grid-cols-2">
-        <label class="block text-sm text-slate-700">
-          Nombre del novio
-          <input v-model="form.groomName" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Steven" />
-        </label>
-        <label class="block text-sm text-slate-700">
-          Nombre de la novia
-          <input v-model="form.brideName" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Jenniffer" />
-        </label>
-
-        <label class="block text-sm text-slate-700">
-          Fecha del casamiento
-          <input v-model="form.dateISO" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" type="date" />
-        </label>
-
-        <label class="block text-sm text-slate-700">
-          Plan
-          <select v-model="form.plan" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm">
-            <option value="basic">Basic</option>
-            <option value="standard">Standard</option>
-            <option value="premium">Premium</option>
-          </select>
-        </label>
-
-        <label class="block text-sm text-slate-700">
-          Lugar ceremonia
-          <input v-model="form.ceremonyName" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Capilla San Miguel" />
-        </label>
-        <label class="block text-sm text-slate-700">
-          Dirección ceremonia
-          <input v-model="form.ceremonyAddress" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Av. Central 450" />
-        </label>
-        <label class="block text-sm text-slate-700">
-          URL mapa ceremonia
-          <input v-model="form.ceremonyMapUrl" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm" placeholder="https://maps.app.goo.gl/..." />
-        </label>
-
-        <label class="block text-sm text-slate-700">
-          Lugar recepción
-          <input v-model="form.receptionName" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Hacienda Los Laureles" />
-        </label>
-        <label class="block text-sm text-slate-700">
-          Dirección recepción
-          <input v-model="form.receptionAddress" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Camino Antiguo 95" />
-        </label>
-        <label class="block text-sm text-slate-700">
-          URL mapa recepción
-          <input v-model="form.receptionMapUrl" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm" placeholder="https://maps.app.goo.gl/..." />
-        </label>
-
-        <label class="block text-sm text-slate-700">
-          WhatsApp (RSVP)
-          <input v-model="form.rsvpWhatsappNumber" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm" placeholder="5215512341111" />
-        </label>
-        <label class="block text-sm text-slate-700">
-          Email contacto
-          <input v-model="form.contactEmail" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="contacto@..." />
-        </label>
-      </div>
-
-      <div class="mt-4 grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-        <label class="block text-sm text-slate-700">
-          Slug (autogenerado)
-          <input
-            v-model="form.slug"
-            class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm"
-            placeholder="steven-jenniffer"
-            @input="slugMode = 'manual'"
-          />
-          <p class="mt-1 text-xs text-slate-500">Tip: se genera desde nombres. Puedes ajustarlo.</p>
-        </label>
-        <div class="flex gap-2">
-          <button class="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700" type="button" @click="generateSlug">
-            Regenerar
-          </button>
-          <button
-            class="h-10 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white disabled:opacity-60"
-            type="button"
-            :disabled="!canWriteToProject || saving"
-            @click="save"
-          >
-            {{ saving ? "Guardando..." : "Guardar" }}
-          </button>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Nuevo cliente</p>
+            <p class="mt-2 text-sm text-slate-600">Completa los datos base y genera el slug automáticamente.</p>
+          </div>
+          <p v-if="!canWriteToProject" class="text-xs text-slate-400">Guardado no disponible en este entorno.</p>
         </div>
       </div>
-    </div>
 
+      <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div class="space-y-6">
+          <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="text-sm font-semibold text-slate-800">Datos base</h3>
+            <div class="mt-4 grid gap-4 md:grid-cols-2">
+              <label class="block text-sm text-slate-700">
+                Nombre del novio
+                <input v-model="form.groomName" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Steven" />
+              </label>
+              <label class="block text-sm text-slate-700">
+                Nombre de la novia
+                <input v-model="form.brideName" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Jenniffer" />
+              </label>
+              <label class="block text-sm text-slate-700">
+                Fecha del casamiento
+                <input v-model="form.dateISO" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" type="date" />
+              </label>
+              <label class="block text-sm text-slate-700">
+                Plan
+                <select v-model="form.plan" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm">
+                  <option value="basic">Basic</option>
+                  <option value="standard">Standard</option>
+                  <option value="premium">Premium</option>
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="text-sm font-semibold text-slate-800">Ceremonia y recepción</h3>
+            <div class="mt-4 grid gap-4 md:grid-cols-2">
+              <label class="block text-sm text-slate-700">
+                Lugar ceremonia
+                <input v-model="form.ceremonyName" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Capilla San Miguel" />
+              </label>
+              <label class="block text-sm text-slate-700">
+                Dirección ceremonia
+                <input v-model="form.ceremonyAddress" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Av. Central 450" />
+              </label>
+              <label class="block text-sm text-slate-700">
+                URL mapa ceremonia
+                <input v-model="form.ceremonyMapUrl" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm" placeholder="https://maps.app.goo.gl/..." />
+              </label>
+
+              <label class="block text-sm text-slate-700">
+                Lugar recepción
+                <input v-model="form.receptionName" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Hacienda Los Laureles" />
+              </label>
+              <label class="block text-sm text-slate-700">
+                Dirección recepción
+                <input v-model="form.receptionAddress" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Camino Antiguo 95" />
+              </label>
+              <label class="block text-sm text-slate-700">
+                URL mapa recepción
+                <input v-model="form.receptionMapUrl" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm" placeholder="https://maps.app.goo.gl/..." />
+              </label>
+            </div>
+          </section>
+
+          <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="text-sm font-semibold text-slate-800">Contacto y RSVP</h3>
+            <div class="mt-4 grid gap-4 md:grid-cols-2">
+              <label class="block text-sm text-slate-700">
+                WhatsApp (RSVP)
+                <input
+                  v-model="form.rsvpWhatsappNumber"
+                  class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm"
+                  placeholder="099 123 4567"
+                  inputmode="tel"
+                />
+                <p class="mt-1 text-xs text-slate-500">Formato Ecuador: 0991234567 o +593991234567.</p>
+              </label>
+              <label class="block text-sm text-slate-700">
+                Email contacto
+                <input v-model="form.contactEmail" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="contacto@..." type="email" />
+              </label>
+            </div>
+          </section>
+        </div>
+
+        <aside class="space-y-4">
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Resumen</p>
+            <p class="mt-2 text-lg font-semibold text-slate-900">
+              {{ form.groomName || "Nombre del novio" }} & {{ form.brideName || "Nombre de la novia" }}
+            </p>
+            <p class="mt-1 text-sm text-slate-600">
+              {{ form.dateISO || "Fecha pendiente" }} · {{ form.plan.toUpperCase() }}
+            </p>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <label class="block text-sm text-slate-700">
+              Slug (autogenerado)
+              <input
+                v-model="form.slug"
+                class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm"
+                placeholder="steven-jenniffer"
+                @input="slugMode = \"manual\""
+              />
+              <p class="mt-1 text-xs text-slate-500">Tip: se genera desde nombres. Puedes ajustarlo.</p>
+            </label>
+            <div class="mt-4 flex flex-col gap-2">
+              <button class="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700" type="button" @click="generateSlug">
+                Regenerar slug
+              </button>
+              <button
+                class="h-10 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white disabled:opacity-60"
+                type="button"
+                :disabled="!canWriteToProject || saving"
+                @click="save"
+              >
+                {{ saving ? "Guardando..." : "Guardar cliente" }}
+              </button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
     <div v-if="showList" class="mt-6 flex flex-wrap items-center gap-3">
       <input v-model="query" class="h-10 w-full max-w-md rounded-xl border border-slate-200 bg-white px-4 text-sm" placeholder="Buscar por slug o nombres..." type="search" />
       <button class="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm" type="button" @click="load">
