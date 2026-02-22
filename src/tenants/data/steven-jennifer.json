@@ -68,7 +68,12 @@
     "title": "Nuestra historia",
     "message": ""
   },
-  "faq": [],
+  "faq": [
+    {
+      "question": "¿Puedes hacer esto?",
+      "answer": "No."
+    }
+  ],
   "contactEmail": "syrodriguezm@outlook.com",
   "page": {
     "navbar": {
@@ -87,9 +92,11 @@
         {
           "label": "RSVP",
           "target": "#rsvp",
-          "variant": "outline"
+          "variant": "outline",
+          "borderColor": "#b4556b"
         }
-      ]
+      ],
+      "backgroundColor": "#ffffff"
     },
     "hero": {
       "backgroundMode": "image",
@@ -110,9 +117,68 @@
       ],
       "backgroundImageUrl": "https://images.unsplash.com/photo-1612883650183-05b5e67246c2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NzA3MzB8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzE3Mzk4NTd8&ixlib=rb-4.1.0&q=80&w=1080"
     },
+    "sections": [
+      {
+        "type": "countdown",
+        "label": "Cuenta regresiva",
+        "anchorId": "cuenta-regresiva",
+        "background": {
+          "mode": "preset",
+          "parallax": false,
+          "preset": "texture",
+          "color": "#ffffff"
+        }
+      },
+      {
+        "type": "story",
+        "label": "Historia",
+        "anchorId": "historia",
+        "background": {
+          "mode": "image",
+          "parallax": false,
+          "imageUrl": "https://images.unsplash.com/photo-1766113483062-e174a2f4cfc9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NzA3MzB8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzE3Mzk4NjF8&ixlib=rb-4.1.0&q=80&w=1080"
+        }
+      },
+      {
+        "type": "locations",
+        "label": "Ubicaciones",
+        "anchorId": "ubicaciones"
+      },
+      {
+        "type": "timeline",
+        "label": "Itinerario",
+        "anchorId": "itinerario"
+      },
+      {
+        "type": "dressCode",
+        "label": "Dress code",
+        "anchorId": "dress-code"
+      },
+      {
+        "type": "gifts",
+        "label": "Regalos",
+        "anchorId": "regalos"
+      },
+      {
+        "type": "rsvp",
+        "label": "RSVP",
+        "anchorId": "rsvp"
+      },
+      {
+        "type": "gallery",
+        "label": "Galería",
+        "anchorId": "galeria"
+      },
+      {
+        "type": "faq",
+        "label": "FAQ",
+        "anchorId": "faq"
+      }
+    ],
     "footer": {
       "message": "Gracias por acompañarnos",
-      "anchorId": "footer"
+      "anchorId": "footer",
+      "backgroundColor": "#4c4141"
     }
   }
 }

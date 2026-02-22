@@ -1,11 +1,11 @@
-<template>
+﻿<template>
   <footer :id="anchorId ?? 'footer'" class="border-t py-10" :style="footerStyle">
     <div class="container-safe flex flex-col items-center justify-between gap-4 text-center text-sm md:flex-row md:text-left">
       <div>
         <div class="font-heading text-xl" :style="{ color: footerTextColor }">{{ message || 'Gracias por acompanarnos' }}</div>
         <div v-if="contactEmail" class="mt-1" :style="{ color: footerSubtleColor }">Contacto: {{ contactEmail }}</div>
       </div>
-      <div :style="{ color: footerSubtleColor }">� 2026 Provenza</div>
+      <div :style="{ color: footerSubtleColor }">© 2026 Provenza</div>
     </div>
   </footer>
 </template>

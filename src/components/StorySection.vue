@@ -1,5 +1,5 @@
 <template>
-  <section :id="anchorId ?? 'historia'" class="section story-section" :class="rootClass" :style="bg.style">
+  <section :id="anchorId ?? 'historia'" class="section story-section" :class="[rootClass, sectionSizeClass]" :style="bg.style">
     <div class="container-safe max-w-3xl">
       <SectionHeader
         title="HISTORIA"
@@ -17,11 +17,16 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { PageSection, SectionBackgroundConfig } from "../types/tenant";
+import type { PageSection, SectionBackgroundConfig, SectionDisplaySize } from "../types/tenant";
 import { sectionBackground } from "../utils/sectionBackground";
 import SectionHeader from "./SectionHeader.vue";
 
-const props = defineProps<{ story: { title: string; message: string }; anchorId?: string; background?: SectionBackgroundConfig; header?: PageSection["header"] }>();
+const props = defineProps<{ story: { title: string; message: string }; anchorId?: string; background?: SectionBackgroundConfig; header?: PageSection["header"]; size?: SectionDisplaySize }>();
 const bg = computed(() => sectionBackground(props.background));
 const rootClass = computed(() => bg.value.className);
+const sectionSizeClass = computed(() => {
+  if (props.size === "compact") return "py-10 md:py-14";
+  if (props.size === "large") return "py-20 md:py-28";
+  return "";
+});
 </script>

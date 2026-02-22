@@ -1,5 +1,5 @@
 <template>
-  <section :id="anchorId ?? 'ubicaciones'" class="section locations-section" :class="rootClass" :style="bg.style">
+  <section :id="anchorId ?? 'ubicaciones'" class="section locations-section" :class="[rootClass, sectionSizeClass]" :style="bg.style">
     <div class="container-safe">
       <SectionHeader
         title="UBICACIONES"
@@ -49,13 +49,18 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { LocationsMapMode, PageSection, SectionBackgroundConfig, TenantConfig } from "../types/tenant";
+import type { LocationsMapMode, PageSection, SectionBackgroundConfig, SectionDisplaySize, TenantConfig } from "../types/tenant";
 import { sectionBackground } from "../utils/sectionBackground";
 import SectionHeader from "./SectionHeader.vue";
 
-const props = defineProps<{ tenant: TenantConfig; anchorId?: string; background?: SectionBackgroundConfig; header?: PageSection["header"] }>();
+const props = defineProps<{ tenant: TenantConfig; anchorId?: string; background?: SectionBackgroundConfig; header?: PageSection["header"]; size?: SectionDisplaySize }>();
 const bg = computed(() => sectionBackground(props.background));
 const rootClass = computed(() => (props.background?.mode && props.background.mode !== "default" ? bg.value.className : "bg-white/60"));
+const sectionSizeClass = computed(() => {
+  if (props.size === "compact") return "py-10 md:py-14";
+  if (props.size === "large") return "py-20 md:py-28";
+  return "";
+});
 
 const mapMode = computed<LocationsMapMode>(() => props.tenant.page?.locations?.mapMode || "button");
 

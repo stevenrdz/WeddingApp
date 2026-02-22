@@ -778,112 +778,145 @@
             </button>
           </div>
           <p v-if="!draft.page.sections.length" class="text-xs text-slate-500">Agrega secciones para construir tu sitio.</p>
-        <div
-          v-for="(section, index) in draft.page.sections"
-          :key="`${section.type}-${index}`"
-          class="rounded-xl border border-slate-200 p-3"
-          draggable="true"
-          @dragstart="onDragStart(index)"
-          @dragover.prevent
-          @drop="onDrop(index)"
-        >
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="cursor-move text-xs text-slate-400">↕</span>
-              <p class="text-xs font-semibold text-slate-700">{{ section.label }} ({{ section.type }})</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <button class="rounded-lg border border-slate-200 p-1 text-slate-500" type="button" aria-label="Subir seccion" title="Subir" @click="moveSection(index, -1)">
-                <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M8 12V4M8 4L5 7M8 4l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              </button>
-              <button class="rounded-lg border border-slate-200 p-1 text-slate-500" type="button" aria-label="Bajar seccion" title="Bajar" @click="moveSection(index, 1)">
-                <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M8 4v8M8 12l-3-3m3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              </button>
-              <button class="rounded-lg border border-red-200 p-1 text-red-500" type="button" aria-label="Eliminar seccion" title="Eliminar" @click="removeSection(index)">
-                <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3.5 4.5h9M6.5 4.5V3.4c0-.5.4-.9.9-.9h1.2c.5 0 .9.4.9.9v1.1m-5.2 0 .5 7.1c0 .5.4.9.9.9h4.6c.5 0 .9-.4.9-.9l.5-7.1M6.7 7.2v3.5m2.6-3.5v3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
-                </svg>
-              </button>
-            </div>
-          </div>
-          <div class="mt-3 grid gap-3 md:grid-cols-2">
-            <label class="text-xs text-slate-500">
-              Nombre (aparece en el menú)
-              <input v-model="section.label" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
-            </label>
-            <label class="text-xs text-slate-500">
-              Ancla (para links, ejemplo: `#rsvp`)
-              <input
-                v-model="section.anchorId"
-                class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
-                placeholder="rsvp"
-                @blur="sanitizeAnchor(section)"
-              />
-            </label>
-          </div>
+          <details
+            v-for="(section, index) in draft.page.sections"
+            :key="`${section.type}-${index}`"
+            class="rounded-xl border border-slate-200 bg-white"
+            :open="index === 0"
+            draggable="true"
+            @dragstart="onDragStart(index)"
+            @dragover.prevent
+            @drop="onDrop(index)"
+          >
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-3">
+              <div class="min-w-0">
+                <p class="truncate text-sm font-semibold text-slate-800">{{ section.label || `Seccion ${index + 1}` }}</p>
+                <p class="truncate text-xs text-slate-500">#{{ section.anchorId || "seccion" }} · {{ section.type }}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="cursor-move text-xs text-slate-400" title="Arrastrar">↕</span>
+                <button class="rounded-lg border border-slate-200 p-1 text-slate-500" type="button" aria-label="Subir seccion" title="Subir" @click.stop="moveSection(index, -1)">
+                  <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M8 12V4M8 4L5 7M8 4l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+                <button class="rounded-lg border border-slate-200 p-1 text-slate-500" type="button" aria-label="Bajar seccion" title="Bajar" @click.stop="moveSection(index, 1)">
+                  <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M8 4v8M8 12l-3-3m3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+                <button class="rounded-lg border border-red-200 p-1 text-red-500" type="button" aria-label="Eliminar seccion" title="Eliminar" @click.stop="removeSection(index)">
+                  <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3.5 4.5h9M6.5 4.5V3.4c0-.5.4-.9.9-.9h1.2c.5 0 .9.4.9.9v1.1m-5.2 0 .5 7.1c0 .5.4.9.9.9h4.6c.5 0 .9-.4.9-.9l.5-7.1M6.7 7.2v3.5m2.6-3.5v3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+                  </svg>
+                </button>
+              </div>
+            </summary>
 
-          <div class="mt-4 rounded-xl border border-slate-200 bg-white p-3">
-            <p class="text-xs font-semibold text-slate-700">Fondo de sección</p>
-            <div class="mt-3 grid gap-3 md:grid-cols-2">
-              <label class="block text-xs text-slate-500">
-                Modo
-                <select
-                  :value="section.background?.mode ?? 'default'"
-                  class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
-                  @change="onSectionBackgroundModeChange(section, ($event.target as HTMLSelectElement).value)"
-                >
-                  <option value="default">Default</option>
-                  <option value="preset">Predefinido</option>
-                  <option value="color">Color</option>
-                  <option value="image">Imagen (URL)</option>
-                </select>
-              </label>
-
-              <label v-if="section.background?.mode === 'preset'" class="block text-xs text-slate-500">
-                Estilo
-                <select v-model="section.background.preset" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
-                  <option value="surface">Claro (surface)</option>
-                  <option value="texture">Textura</option>
-                  <option value="ink">Oscuro (ink)</option>
-                </select>
-              </label>
-
-              <label v-else-if="section.background?.mode === 'color'" class="block text-xs text-slate-500">
-                Color
-                <div class="mt-1 flex items-center gap-3">
-                  <input
-                    v-model="section.background.color"
-                    class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0"
-                    type="color"
-                    @blur="section.background.color = normalizeHexColor(section.background.color || '')"
-                  />
-                  <input
-                    v-model="section.background.color"
-                    class="h-10 w-full rounded-lg border border-slate-200 px-3 font-mono text-sm"
-                    placeholder="#ffffff"
-                    spellcheck="false"
-                    @blur="section.background.color = normalizeHexColor(section.background.color || '')"
-                  />
-                </div>
-              </label>
-
-              <div v-else-if="section.background?.mode === 'image'" class="space-y-2">
-                <label class="block text-xs text-slate-500">
-                  URL de imagen
-                  <input v-model="section.background.imageUrl" class="mt-1 h-10 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="https://..." />
+            <div class="space-y-3 border-t border-slate-200 px-3 pb-3 pt-3">
+              <div class="grid gap-3 md:grid-cols-3">
+                <label class="text-xs text-slate-500">
+                  Nombre (aparece en el menú)
+                  <input v-model="section.label" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
                 </label>
-                <label class="flex items-center gap-2 text-xs text-slate-600">
-                  <input v-model="section.background.parallax" type="checkbox" />
-                  Parallax (recomendado solo en escritorio)
+                <label class="text-xs text-slate-500">
+                  Ancla (para links, ejemplo: `#rsvp`)
+                  <input
+                    v-model="section.anchorId"
+                    class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                    placeholder="rsvp"
+                    @blur="sanitizeAnchor(section)"
+                  />
+                </label>
+                <label class="text-xs text-slate-500">
+                  Tamano en pantalla
+                  <select v-model="section.size" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                    <option value="compact">Compacto</option>
+                    <option value="normal">Normal</option>
+                    <option value="large">Amplio</option>
+                  </select>
                 </label>
               </div>
+
+              <div class="space-y-3 rounded-xl border border-slate-200 bg-white p-3">
+                <label class="block text-sm text-slate-600">
+                  Fondo de seccion
+                  <select
+                    :value="section.background?.mode ?? 'preset'"
+                    class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm"
+                    @change="onSectionBackgroundModeChange(section, ($event.target as HTMLSelectElement).value)"
+                  >
+                    <option value="preset">Predefinido</option>
+                    <option value="color">Color</option>
+                    <option value="image">Imagen</option>
+                  </select>
+                </label>
+
+                <label v-if="section.background?.mode === 'preset'" class="block text-sm text-slate-600">
+                  Estilo
+                  <select v-model="section.background.preset" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm">
+                    <option value="surface">Claro (surface)</option>
+                    <option value="texture">Textura</option>
+                    <option value="ink">Oscuro (ink)</option>
+                  </select>
+                </label>
+
+                <label v-else-if="section.background?.mode === 'color'" class="block text-sm text-slate-600">
+                  Color
+                  <div class="mt-2 flex items-center gap-3">
+                    <input
+                      v-model="section.background.color"
+                      class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0"
+                      type="color"
+                      @blur="section.background.color = normalizeHexColor(section.background.color || '')"
+                    />
+                    <input
+                      v-model="section.background.color"
+                      class="h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm"
+                      placeholder="#ffffff"
+                      spellcheck="false"
+                      @blur="section.background.color = normalizeHexColor(section.background.color || '')"
+                    />
+                  </div>
+                </label>
+
+                <div v-else-if="section.background?.mode === 'image'" class="space-y-3">
+                  <label class="block text-sm text-slate-600">
+                    Imagen de fondo (URL)
+                    <input
+                      v-model="section.background.imageUrl"
+                      class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm"
+                      placeholder="https://..."
+                      @input="onSectionBackgroundUrlInput(section)"
+                    />
+                  </label>
+                  <label class="block text-sm text-slate-600">
+                    Subir imagen de fondo
+                    <input class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="file" accept="image/*" @change="onSectionBackgroundUpload(section, $event)" />
+                  </label>
+                  <p v-if="sectionBackgroundUploadError" class="text-xs text-red-600">{{ sectionBackgroundUploadError }}</p>
+                  <div class="space-y-2">
+                    <p class="text-xs font-semibold text-slate-600">Escoger fondo de galeria Unsplash</p>
+                    <div class="grid max-h-44 gap-2 overflow-y-auto rounded-xl border border-slate-200 bg-white p-2 sm:grid-cols-2">
+                      <button
+                        v-for="photo in unsplashLibrary"
+                        :key="`section-bg-${section.anchorId}-${photo.src}`"
+                        class="overflow-hidden rounded-lg border border-slate-200 bg-white text-left transition hover:border-slate-300"
+                        type="button"
+                        @click="setSectionBackgroundFromLibrary(section, photo.src)"
+                      >
+                        <img class="h-20 w-full object-cover" :src="photo.src" :alt="photo.alt || 'Fondo de seccion'" loading="lazy" />
+                      </button>
+                    </div>
+                  </div>
+                  <label class="flex items-center gap-2 text-xs text-slate-600">
+                    <input v-model="section.background.parallax" type="checkbox" />
+                    Parallax (recomendado solo en escritorio)
+                  </label>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </details>
         </div>
       </details>
 
@@ -1446,6 +1479,7 @@ const activeTab = ref<"general" | "apariencia" | "estructura" | "contenido" | "t
 const customers = ref<CustomerRecord[]>([]);
 const selectedCustomerSlug = ref<string>("__manual");
 const heroBackgroundUploadError = ref("");
+const sectionBackgroundUploadError = ref("");
 const heroBackgroundInputMode = ref<"url" | "upload" | "library">("url");
 const unsplashLibrary = computed(() => unsplashGallery);
 const heroTextColorSwatches = ["#ffffff", "#0f172a", "#1e293b", "#f8fafc", "#cbd5e1", "#f59e0b"];
@@ -1701,11 +1735,11 @@ async function checkWriter() {
 }
 
 function normalizeTenantForSave(input: TenantConfig): TenantConfig {
-  // Remove default-only noise so saving doesn't accidentally "change" unrelated section backgrounds.
+  // Remove empty background noise so saving doesn't accidentally "change" unrelated section backgrounds.
   const cloned = JSON.parse(JSON.stringify(input)) as TenantConfig;
   if (cloned.page?.sections?.length) {
     cloned.page.sections = cloned.page.sections.map((s) => {
-      if (!s.background || s.background.mode === "default") {
+      if (!s.background || !s.background.mode) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { background, ...rest } = s as typeof s & { background?: unknown };
         return rest as typeof s;
@@ -2002,7 +2036,7 @@ function applyDraft(data: TenantConfig, slug?: string) {
         ? data.page.sections.map((s) => {
             const base = resolveSectionDefaults(s.type);
             const background =
-              s.background?.mode && s.background.mode !== "default"
+              s.background?.mode
                 ? {
                     ...s.background,
                     ...(s.background.mode === "preset" && !s.background.preset ? { preset: "surface" } : {}),
@@ -2013,6 +2047,7 @@ function applyDraft(data: TenantConfig, slug?: string) {
             return {
               ...base,
               ...s,
+              size: s.size || "normal",
               ...(background ? { background } : {})
             };
           })
@@ -2122,7 +2157,7 @@ function applyPreset(name: "clasico" | "moderno" | "minimal") {
         resolveSectionDefaults("timeline"),
         resolveSectionDefaults("rsvp"),
         resolveSectionDefaults("gallery")
-      ],
+      ].map((s) => ({ ...s, size: "normal" })),
       footer: { message: "Gracias por acompañarnos", anchorId: "footer", backgroundColor: "#2b241f" }
     };
   }
@@ -2151,7 +2186,7 @@ function applyPreset(name: "clasico" | "moderno" | "minimal") {
         resolveSectionDefaults("locations"),
         resolveSectionDefaults("rsvp"),
         resolveSectionDefaults("faq")
-      ],
+      ].map((s) => ({ ...s, size: "normal" })),
       footer: { message: "Nos vemos pronto", anchorId: "footer", backgroundColor: "#2b241f" }
     };
   }
@@ -2174,7 +2209,7 @@ function applyPreset(name: "clasico" | "moderno" | "minimal") {
       sections: [
         resolveSectionDefaults("locations"),
         resolveSectionDefaults("rsvp")
-      ],
+      ].map((s) => ({ ...s, size: "normal" })),
       footer: { message: "Gracias por acompañarnos", anchorId: "footer", backgroundColor: "#2b241f" }
     };
   }
@@ -2237,6 +2272,7 @@ function removeSections() {
 function addSection() {
   if (!draft.page.sections) draft.page.sections = [];
   const next = resolveSectionDefaults(sectionToAdd.value);
+  next.size = "normal";
   draft.page.sections.push(next);
 }
 
@@ -2249,11 +2285,6 @@ function sanitizeAnchor(section: PageSection) {
 }
 
 function onSectionBackgroundModeChange(section: PageSection, mode: string) {
-  if (mode === "default") {
-    section.background = undefined;
-    return;
-  }
-
   if (!section.background) section.background = { mode: mode as "preset" | "color" | "image" };
   section.background.mode = mode as "preset" | "color" | "image";
   ensureSectionBackgroundDefaults(section);
@@ -2264,6 +2295,40 @@ function ensureSectionBackgroundDefaults(section: PageSection) {
   if (section.background.mode === "preset" && !section.background.preset) section.background.preset = "surface";
   if (section.background.mode === "color" && !section.background.color) section.background.color = "#ffffff";
   if (section.background.mode === "image" && section.background.parallax === undefined) section.background.parallax = false;
+}
+
+function onSectionBackgroundUrlInput(section: PageSection) {
+  if (!section.background) section.background = { mode: "image" };
+  section.background.mode = "image";
+  ensureSectionBackgroundDefaults(section);
+}
+
+function setSectionBackgroundFromLibrary(section: PageSection, src: string) {
+  const imageUrl = String(src || "").trim();
+  if (!imageUrl) return;
+  if (!section.background) section.background = { mode: "image" };
+  section.background.mode = "image";
+  section.background.imageUrl = imageUrl;
+  ensureSectionBackgroundDefaults(section);
+}
+
+function onSectionBackgroundUpload(section: PageSection, event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+
+  sectionBackgroundUploadError.value = "";
+  const reader = new FileReader();
+  reader.onload = () => {
+    if (!section.background) section.background = { mode: "image" };
+    section.background.mode = "image";
+    section.background.imageUrl = String(reader.result || "");
+    ensureSectionBackgroundDefaults(section);
+  };
+  reader.onerror = () => {
+    sectionBackgroundUploadError.value = "No se pudo cargar la imagen de fondo de la seccion.";
+  };
+  reader.readAsDataURL(file);
 }
 
 function addFooter() {

@@ -55,9 +55,15 @@ npm run test:e2e
   - Selector de color de fondo en builder.
   - Preview visual en vivo dentro del panel de estructura.
   - Acciones de ordenar/eliminar con iconos (con `aria-label`).
+- Secciones:
+  - Tarjetas por seccion en acordeon (mismo patron visual del hero).
+  - Fondo de seccion sin opcion `default` (solo `predefinido`, `color`, `imagen`).
+  - En fondo por imagen: URL, upload y seleccion desde galeria Unsplash.
+  - Control de tamano por seccion: `compacto`, `normal`, `amplio`.
 - Clientes:
   - Desde listado, `Editar` abre formulario en `/admin/clientes/nuevo?edit=<slug>`.
   - Precarga automatica del cliente en formulario de edicion.
+
 ## Premium (MVP - demo)
 Este flujo es un prototipo para el paquete Premium:
 - QR: `/p/:slug/qr` (genera un QR hacia la pagina de carga).

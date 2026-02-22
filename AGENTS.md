@@ -69,6 +69,11 @@ Provenza is a multi-tenant wedding site template built with Vue 3 + Vite + Tailw
   - From `/admin/clientes` (list), `Editar` opens `/admin/clientes/nuevo?edit=<slug>`.
   - New view auto-hydrates form from query `edit`.
   - Added “Volver a lista” while editing.
+- Sections controls:
+  - Section cards in builder use accordion UI (same pattern as hero buttons).
+  - Section background mode has no `default`; supports `preset`, `color`, `image`.
+  - Image mode supports URL, upload, and Unsplash library selection.
+  - Each section has display size control: `compact`, `normal`, `large`.
 
 ## Premium (Drive + Apps Script)
 - Prototype flow:

@@ -1,5 +1,5 @@
 <template>
-  <section :id="anchorId ?? 'cuenta-regresiva'" class="section countdown-section" :class="rootClass" :style="bg.style">
+  <section :id="anchorId ?? 'cuenta-regresiva'" class="section countdown-section" :class="[rootClass, sectionSizeClass]" :style="bg.style">
     <div class="container-safe">
       <SectionHeader
         title="CUENTA REGRESIVA"
@@ -37,12 +37,17 @@
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { getCountdown } from "../utils/countdown";
 import { sectionBackground } from "../utils/sectionBackground";
-import type { PageSection, SectionBackgroundConfig } from "../types/tenant";
+import type { PageSection, SectionBackgroundConfig, SectionDisplaySize } from "../types/tenant";
 import SectionHeader from "./SectionHeader.vue";
 
-const props = defineProps<{ dateIso: string; anchorId?: string; background?: SectionBackgroundConfig; header?: PageSection["header"] }>();
+const props = defineProps<{ dateIso: string; anchorId?: string; background?: SectionBackgroundConfig; header?: PageSection["header"]; size?: SectionDisplaySize }>();
 const bg = computed(() => sectionBackground(props.background));
 const rootClass = computed(() => (props.background?.mode && props.background.mode !== "default" ? bg.value.className : "bg-white/60"));
+const sectionSizeClass = computed(() => {
+  if (props.size === "compact") return "py-10 md:py-14";
+  if (props.size === "large") return "py-20 md:py-28";
+  return "";
+});
 const countdown = ref(getCountdown(props.dateIso));
 let timer: number | undefined;
 

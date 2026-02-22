@@ -20,6 +20,7 @@ export type TextSize = "xs" | "sm" | "base" | "lg" | "xl" | "2xl" | "3xl" | "4xl
 export type TextWeight = "normal" | "medium" | "semibold" | "bold";
 export type TextTracking = "normal" | "wide" | "widest";
 export type OrnamentVariant = "none" | "line" | "flourish" | "knot" | "laurel" | "dots" | "arch";
+export type SectionDisplaySize = "compact" | "normal" | "large";
 
 export interface TextStyleConfig {
   font?: FontKey;
@@ -83,6 +84,7 @@ export interface PageSection {
   type: SectionType;
   label: string;
   anchorId: string;
+  size?: SectionDisplaySize;
   background?: SectionBackgroundConfig;
   header?: {
     titleText?: string;

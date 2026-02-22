@@ -1,5 +1,5 @@
 <template>
-  <section :id="anchorId ?? 'dress-code'" class="section dresscode-section" :class="rootClass" :style="bg.style">
+  <section :id="anchorId ?? 'dress-code'" class="section dresscode-section" :class="[rootClass, sectionSizeClass]" :style="bg.style">
     <div class="container-safe">
       <div class="space-y-2 text-center">
         <p class="section-title">DRESS CODE</p>
@@ -17,10 +17,15 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { SectionBackgroundConfig } from "../types/tenant";
+import type { SectionBackgroundConfig, SectionDisplaySize } from "../types/tenant";
 import { sectionBackground } from "../utils/sectionBackground";
 
-const props = defineProps<{ dressCode: { title: string; description: string }; anchorId?: string; background?: SectionBackgroundConfig }>();
+const props = defineProps<{ dressCode: { title: string; description: string }; anchorId?: string; background?: SectionBackgroundConfig; size?: SectionDisplaySize }>();
 const bg = computed(() => sectionBackground(props.background));
 const rootClass = computed(() => (props.background?.mode && props.background.mode !== "default" ? bg.value.className : "bg-white/60"));
+const sectionSizeClass = computed(() => {
+  if (props.size === "compact") return "py-10 md:py-14";
+  if (props.size === "large") return "py-20 md:py-28";
+  return "";
+});
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <section :id="anchorId ?? 'galeria'" class="section gallery-section" :class="rootClass" :style="bg.style">
+  <section :id="anchorId ?? 'galeria'" class="section gallery-section" :class="[rootClass, sectionSizeClass]" :style="bg.style">
     <div class="container-safe">
       <p class="section-title">GALERIA</p>
       <div class="ornament mx-auto mt-2"></div>
@@ -31,16 +31,22 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import Lightbox from "./Lightbox.vue";
-import type { SectionBackgroundConfig } from "../types/tenant";
+import type { SectionBackgroundConfig, SectionDisplaySize } from "../types/tenant";
 import { sectionBackground } from "../utils/sectionBackground";
 
 const props = defineProps<{
   gallery: Array<{ src: string; alt: string; authorName?: string; authorUrl?: string; sourceUrl?: string }>;
   anchorId?: string;
   background?: SectionBackgroundConfig;
+  size?: SectionDisplaySize;
 }>();
 const bg = computed(() => sectionBackground(props.background));
 const rootClass = computed(() => bg.value.className);
+const sectionSizeClass = computed(() => {
+  if (props.size === "compact") return "py-10 md:py-14";
+  if (props.size === "large") return "py-20 md:py-28";
+  return "";
+});
 const hasCredits = computed(() => props.gallery.some((img) => Boolean(img.authorName || img.sourceUrl)));
 const isOpen = ref(false);
 const current = ref(0);
