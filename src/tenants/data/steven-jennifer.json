@@ -1,0 +1,118 @@
+{
+  "coupleNames": "Steven & Jenniffer",
+  "dateISO": "2026-09-01",
+  "hero": {
+    "tagline": "Nuestro si, para siempre",
+    "ctaPrimaryText": "RSVP",
+    "ctaSecondaryText": "Ubicaciones",
+    "ctaPrimaryTarget": "#rsvp",
+    "ctaSecondaryTarget": "#ubicaciones"
+  },
+  "ceremony": {
+    "name": "Iglesia Católica Santo Tomás Moro",
+    "time": "17:00",
+    "address": "W38M+Q5R, 3 Pje 25A NO, Guayaquil",
+    "mapUrl": "https://maps.app.goo.gl/89jZHhjysRoZBjpTA"
+  },
+  "reception": {
+    "name": "Candilejas",
+    "time": "19:00",
+    "address": "W39M+X83, Guayaquil 090112",
+    "mapUrl": "https://maps.app.goo.gl/PLP1yFqm2VB1NtQq6"
+  },
+  "schedule": [
+    {
+      "time": "17:00",
+      "title": "Ceremonia",
+      "description": "Iglesia Católica Santo Tomás Moro"
+    },
+    {
+      "time": "19:00",
+      "title": "Recepcion",
+      "description": "Candilejas"
+    }
+  ],
+  "dressCode": {
+    "title": "Formal",
+    "description": ""
+  },
+  "gifts": {
+    "message": "",
+    "giftListUrl": "",
+    "accounts": []
+  },
+  "rsvp": {
+    "mode": "whatsapp",
+    "enabled": true,
+    "deadlineISO": "",
+    "whatsappNumber": "0995163059",
+    "netlifyFormNameOptional": ""
+  },
+  "gallery": [],
+  "theme": {
+    "primary": "#7b4f62",
+    "secondary": "#1f2437",
+    "background": "#fbf6f1",
+    "text": "#2a2a2a",
+    "fontHeading": "Boska",
+    "fontSubheading": "Cormorant Garamond",
+    "fontBody": "Inter"
+  },
+  "seo": {
+    "title": "Steven & Jenniffer | Boda",
+    "description": "Acompananos en nuestro gran dia.",
+    "url": "",
+    "ogImage": "/og-default.svg"
+  },
+  "story": {
+    "title": "Nuestra historia",
+    "message": ""
+  },
+  "faq": [],
+  "contactEmail": "syrodriguezm@outlook.com",
+  "page": {
+    "navbar": {
+      "icon": "♥",
+      "links": [
+        {
+          "label": "Inicio",
+          "target": "#hero"
+        },
+        {
+          "label": "Ubicaciones",
+          "target": "#ubicaciones"
+        }
+      ],
+      "buttons": [
+        {
+          "label": "RSVP",
+          "target": "#rsvp",
+          "variant": "outline"
+        }
+      ]
+    },
+    "hero": {
+      "backgroundMode": "image",
+      "backgroundColor": "#1f2437",
+      "showPanelGlass": true,
+      "align": "right",
+      "buttons": [
+        {
+          "label": "RSVP",
+          "target": "#rsvp",
+          "variant": "solid"
+        },
+        {
+          "label": "Ubicaciones",
+          "target": "#ubicaciones",
+          "variant": "solid"
+        }
+      ],
+      "backgroundImageUrl": "https://images.unsplash.com/photo-1612883650183-05b5e67246c2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NzA3MzB8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzE3Mzk4NTd8&ixlib=rb-4.1.0&q=80&w=1080"
+    },
+    "footer": {
+      "message": "Gracias por acompañarnos",
+      "anchorId": "footer"
+    }
+  }
+}

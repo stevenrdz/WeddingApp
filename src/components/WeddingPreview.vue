@@ -23,6 +23,7 @@
       :contact-email="tenant.contactEmail"
       :message="footerConfig?.message"
       :anchor-id="footerConfig?.anchorId"
+      :background-color="footerConfig?.backgroundColor"
     />
   </main>
 </template>
@@ -49,14 +50,27 @@ const props = defineProps<{
   slug: string;
 }>();
 
-const hasPageConfig = computed(() => Boolean(props.tenant.page));
+function hasMeaningfulPageConfig(value: TenantConfig) {
+  const page = value.page;
+  if (!page) return false;
+  if (page.navbar || page.hero || page.footer) return true;
+  if (Array.isArray(page.sections) && page.sections.length > 0) return true;
+  const loc = page.locations;
+  if (!loc) return false;
+  const showCeremony = loc.showCeremony ?? true;
+  const showReception = loc.showReception ?? true;
+  const mapMode = loc.mapMode ?? "button";
+  return !(showCeremony === true && showReception === true && mapMode === "button");
+}
+
+const hasPageConfig = computed(() => hasMeaningfulPageConfig(props.tenant));
 const navbarConfig = computed(() => props.tenant.page?.navbar);
 const heroConfig = computed(() => props.tenant.page?.hero);
 const footerConfig = computed(() => props.tenant.page?.footer);
 
 const orderedSections = computed<PageSection[]>(() => {
   if (props.tenant.page?.sections?.length) return props.tenant.page.sections;
-  if (!props.tenant.page) return defaultSections();
+  if (!hasMeaningfulPageConfig(props.tenant)) return defaultSections();
   return [];
 });
 </script>

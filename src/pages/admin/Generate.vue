@@ -264,75 +264,248 @@
             Icono
             <input v-model="draft.page.navbar.icon" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
           </label>
+          <div class="space-y-3 rounded-xl border border-slate-200 bg-white p-3">
+            <p class="text-sm text-slate-600">Fondo del navbar</p>
+            <div class="flex items-center gap-3">
+              <input
+                v-model="draft.page.navbar.backgroundColor"
+                class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0"
+                type="color"
+                @blur="draft.page.navbar.backgroundColor = normalizeHexColor(draft.page.navbar.backgroundColor || '#ffffff')"
+              />
+              <input
+                v-model="draft.page.navbar.backgroundColor"
+                class="h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm"
+                placeholder="#ffffff"
+                spellcheck="false"
+                @blur="draft.page.navbar.backgroundColor = normalizeHexColor(draft.page.navbar.backgroundColor || '#ffffff')"
+              />
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="swatch in navbarBgSwatches"
+                :key="`nav-bg-${swatch}`"
+                class="h-6 w-6 rounded-full border border-slate-200"
+                type="button"
+                :style="{ backgroundColor: swatch }"
+                :title="`Navbar ${swatch}`"
+                @click="draft.page.navbar.backgroundColor = swatch"
+              ></button>
+            </div>
+            <div class="rounded-xl border px-3 py-2" :style="navbarPreviewStyle(draft.page.navbar.backgroundColor)">
+              <div class="flex items-center justify-between">
+                <p class="truncate text-sm font-semibold">{{ draft.page.navbar.icon || "♥" }} {{ draft.coupleNames || "Nombre & Nombre" }}</p>
+                <p class="rounded-full border px-2 py-1 text-[11px]" :style="navbarPreviewChipStyle(draft.page.navbar.backgroundColor)">Menu</p>
+              </div>
+            </div>
+          </div>
 
         <div class="space-y-3">
           <div class="flex items-center justify-between">
-            <h4 class="text-xs font-semibold text-slate-700">Links</h4>
+            <h4 class="text-xs font-semibold text-slate-700">Links ({{ draft.page.navbar.links.length }})</h4>
             <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addNavbarLink">
               Agregar link
             </button>
           </div>
-          <div v-for="(link, index) in draft.page.navbar.links" :key="`navlink-${index}`" class="grid gap-3 md:grid-cols-3">
-            <input v-model="link.label" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Texto" />
-            <input
-              v-model="link.target"
-              class="rounded-lg border border-slate-200 px-3 py-2 text-sm"
-              placeholder="#rsvp"
-              list="anchor-options"
-            />
-            <button class="text-xs text-red-500" type="button" @click="removeNavbarLink(index)">Quitar</button>
-          </div>
+          <details
+            v-for="(link, index) in draft.page.navbar.links"
+            :key="`navlink-${index}`"
+            class="rounded-xl border border-slate-200 bg-white"
+            :open="index === 0"
+          >
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-3">
+              <div class="min-w-0">
+                <p class="truncate text-sm font-semibold text-slate-800">{{ link.label || `Link ${index + 1}` }}</p>
+                <p class="truncate text-xs text-slate-500">{{ link.target || "#hero" }}</p>
+              </div>
+            </summary>
+            <div class="space-y-3 border-t border-slate-200 px-3 pb-3 pt-3">
+              <div class="grid gap-3 md:grid-cols-2">
+                <input v-model="link.label" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Texto del link" />
+                <input
+                  v-model="link.target"
+                  class="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                  placeholder="#rsvp"
+                  list="anchor-options"
+                />
+              </div>
+              <div class="flex flex-wrap items-end justify-end gap-2">
+                <button
+                  class="rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-600 disabled:opacity-50"
+                  type="button"
+                  :disabled="index === 0"
+                  aria-label="Subir link"
+                  title="Subir"
+                  @click="moveNavbarLink(index, -1)"
+                >
+                  <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M8 12V4M8 4L5 7M8 4l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+                <button
+                  class="rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-600 disabled:opacity-50"
+                  type="button"
+                  :disabled="index === draft.page.navbar.links.length - 1"
+                  @click="moveNavbarLink(index, 1)"
+                  aria-label="Bajar link"
+                  title="Bajar"
+                >
+                  <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M8 4v8M8 12l-3-3m3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+                <button
+                  class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600"
+                  type="button"
+                  aria-label="Eliminar link"
+                  title="Eliminar"
+                  @click="removeNavbarLink(index)"
+                >
+                  <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3.5 4.5h9M6.5 4.5V3.4c0-.5.4-.9.9-.9h1.2c.5 0 .9.4.9.9v1.1m-5.2 0 .5 7.1c0 .5.4.9.9.9h4.6c.5 0 .9-.4.9-.9l.5-7.1M6.7 7.2v3.5m2.6-3.5v3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </details>
         </div>
 
         <div class="space-y-3">
           <div class="flex items-center justify-between">
-            <h4 class="text-xs font-semibold text-slate-700">Botones</h4>
+            <h4 class="text-xs font-semibold text-slate-700">Botones ({{ draft.page.navbar.buttons.length }})</h4>
             <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addNavbarButton">
               Agregar boton
             </button>
           </div>
-          <div v-for="(btn, index) in draft.page.navbar.buttons" :key="`navbtn-${index}`" class="rounded-xl border border-slate-200 p-3">
-            <div class="grid gap-3 md:grid-cols-2">
-              <input v-model="btn.label" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Texto" />
-              <input v-model="btn.target" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="#rsvp" list="anchor-options" />
+          <details
+            v-for="(btn, index) in draft.page.navbar.buttons"
+            :key="`navbtn-${index}`"
+            class="rounded-xl border border-slate-200 bg-white"
+            :open="index === 0"
+          >
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-3">
+              <div class="min-w-0">
+                <p class="truncate text-sm font-semibold text-slate-800">{{ btn.label || `Boton ${index + 1}` }}</p>
+                <p class="truncate text-xs text-slate-500">{{ btn.target || "#hero" }}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button class="inline-flex cursor-default rounded-full border px-3 py-1 text-[11px] font-semibold" :style="heroButtonPreviewStyle(btn)" type="button" disabled>
+                  {{ btn.label || `Boton ${index + 1}` }}
+                </button>
+              </div>
+            </summary>
+            <div class="space-y-3 border-t border-slate-200 px-3 pb-3 pt-3">
+              <div class="grid gap-3 md:grid-cols-2">
+                <input v-model="btn.label" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Texto" />
+                <input v-model="btn.target" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="#rsvp" list="anchor-options" />
+              </div>
+              <div class="grid gap-3 md:grid-cols-[150px_minmax(0,1fr)]">
+                <label class="text-xs text-slate-500">
+                  Variante
+                  <select v-model="btn.variant" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                    <option value="solid">Fondo</option>
+                    <option value="outline">Borde</option>
+                  </select>
+                </label>
+                <div class="flex flex-wrap items-end justify-end gap-2">
+                  <button
+                    class="rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-600 disabled:opacity-50"
+                    type="button"
+                    :disabled="index === 0"
+                    aria-label="Subir boton"
+                    title="Subir"
+                    @click="moveNavbarButton(index, -1)"
+                  >
+                    <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M8 12V4M8 4L5 7M8 4l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </button>
+                  <button
+                    class="rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-600 disabled:opacity-50"
+                    type="button"
+                    :disabled="index === draft.page.navbar.buttons.length - 1"
+                    @click="moveNavbarButton(index, 1)"
+                    aria-label="Bajar boton"
+                    title="Bajar"
+                  >
+                    <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M8 4v8M8 12l-3-3m3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </button>
+                  <button
+                    class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600"
+                    type="button"
+                    aria-label="Eliminar boton"
+                    title="Eliminar"
+                    @click="removeNavbarButton(index)"
+                  >
+                    <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M3.5 4.5h9M6.5 4.5V3.4c0-.5.4-.9.9-.9h1.2c.5 0 .9.4.9.9v1.1m-5.2 0 .5 7.1c0 .5.4.9.9.9h4.6c.5 0 .9-.4.9-.9l.5-7.1M6.7 7.2v3.5m2.6-3.5v3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="grid gap-3 md:grid-cols-2">
+                <label class="text-xs text-slate-500">
+                  Color texto
+                  <div class="mt-1 flex items-center gap-3">
+                    <input v-model="btn.textColor" class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0" type="color" />
+                    <input
+                      v-model="btn.textColor"
+                      class="h-10 w-full rounded-lg border border-slate-200 px-3 font-mono text-sm"
+                      placeholder="#ffffff"
+                      spellcheck="false"
+                      @blur="btn.textColor = normalizeHexColor(btn.textColor || '')"
+                    />
+                  </div>
+                  <div class="mt-2 flex flex-wrap gap-2">
+                    <button
+                      v-for="swatch in heroTextColorSwatches"
+                      :key="`nav-text-${swatch}`"
+                      class="h-6 w-6 rounded-full border border-slate-200"
+                      type="button"
+                      :style="{ backgroundColor: swatch }"
+                      :title="`Texto ${swatch}`"
+                      @click="setHeroButtonTextColor(btn, swatch)"
+                    ></button>
+                  </div>
+                </label>
+
+                <label class="text-xs text-slate-500">
+                  <span v-if="btn.variant === 'outline'">Color borde</span>
+                  <span v-else>Color fondo</span>
+                  <div class="mt-1 flex items-center gap-3">
+                    <input
+                      :value="btn.variant === 'outline' ? btn.borderColor || '#c79a5b' : btn.backgroundColor || '#b4556b'"
+                      class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0"
+                      type="color"
+                      @input="updateButtonColor(btn, $event)"
+                    />
+                    <input
+                      :value="btn.variant === 'outline' ? btn.borderColor || '#c79a5b' : btn.backgroundColor || '#b4556b'"
+                      class="h-10 w-full rounded-lg border border-slate-200 px-3 font-mono text-sm"
+                      placeholder="#c79a5b"
+                      spellcheck="false"
+                      @input="updateButtonColor(btn, $event)"
+                      @blur="onHeroButtonSurfaceColorBlur(btn, $event)"
+                    />
+                  </div>
+                  <div class="mt-2 flex flex-wrap gap-2">
+                    <button
+                      v-for="swatch in heroSurfaceColorSwatches"
+                      :key="`nav-surface-${swatch}`"
+                      class="h-6 w-6 rounded-full border border-slate-200"
+                      type="button"
+                      :style="{ backgroundColor: swatch }"
+                      :title="`${btn.variant === 'outline' ? 'Borde' : 'Fondo'} ${swatch}`"
+                      @click="setHeroButtonSurfaceColor(btn, swatch)"
+                    ></button>
+                  </div>
+                </label>
+              </div>
             </div>
-            <div class="mt-3 grid gap-3 md:grid-cols-3">
-              <label class="text-xs text-slate-500">
-                Variante
-                <select v-model="btn.variant" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
-                  <option value="outline">Borde</option>
-                  <option value="solid">Fondo</option>
-                </select>
-              </label>
-              <label class="text-xs text-slate-500">
-                Color texto
-              <div class="mt-1 flex items-center gap-3">
-                <input v-model="btn.textColor" class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0" type="color" />
-                <input v-model="btn.textColor" class="h-10 w-full rounded-lg border border-slate-200 px-3 font-mono text-sm" placeholder="#ffffff" spellcheck="false" />
-              </div>
-            </label>
-            <label class="text-xs text-slate-500">
-              <span v-if="btn.variant === 'outline'">Color borde</span>
-              <span v-else>Color fondo</span>
-              <div class="mt-1 flex items-center gap-3">
-                <input
-                  :value="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
-                  class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0"
-                  type="color"
-                  @input="updateButtonColor(btn, $event)"
-                />
-                <input
-                  :value="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
-                  class="h-10 w-full rounded-lg border border-slate-200 px-3 font-mono text-sm"
-                  placeholder="#c79a5b"
-                  spellcheck="false"
-                  @input="updateButtonColor(btn, $event)"
-                />
-              </div>
-            </label>
-          </div>
-            <button class="mt-2 text-xs text-red-500" type="button" @click="removeNavbarButton(index)">Quitar</button>
-          </div>
+          </details>
         </div>
         </div>
       </details>
@@ -347,22 +520,99 @@
             Tagline
             <input v-model="draft.hero.tagline" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
           </label>
-          <label class="block text-sm text-slate-600">
-            Fondo
-            <select v-model="draft.page.hero.backgroundMode" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm">
-              <option value="default">Default</option>
-              <option value="color">Color</option>
-              <option value="image">Imagen</option>
-            </select>
+          <label class="flex items-center gap-2 text-sm text-slate-600">
+            <input v-model="draft.page.hero.showPanelGlass" type="checkbox" />
+            Mostrar panel de detalles
           </label>
-          <label v-if="draft.page.hero.backgroundMode === 'color'" class="block text-sm text-slate-600">
-            Color de fondo
-            <input v-model="draft.page.hero.backgroundColor" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="color" />
-          </label>
-          <label v-if="draft.page.hero.backgroundMode === 'image'" class="block text-sm text-slate-600">
-            Imagen de fondo (URL)
-            <input v-model="draft.page.hero.backgroundImageUrl" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
-          </label>
+          <div class="space-y-2">
+            <p class="text-sm text-slate-600">Alineacion del contenido</p>
+            <div class="inline-flex rounded-xl border border-slate-200 bg-white p-1">
+              <button
+                type="button"
+                class="rounded-lg px-3 py-2 text-slate-600 transition"
+                :class="draft.page.hero.align === 'left' ? 'bg-slate-900 text-white shadow-sm' : 'hover:bg-slate-100'"
+                aria-label="Alinear a la izquierda"
+                title="Izquierda"
+                @click="draft.page.hero.align = 'left'"
+              >
+                <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <rect x="2" y="3" width="9" height="1.5" rx="0.75" fill="currentColor" />
+                  <rect x="2" y="6.5" width="12" height="1.5" rx="0.75" fill="currentColor" />
+                  <rect x="2" y="10" width="8" height="1.5" rx="0.75" fill="currentColor" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="rounded-lg px-3 py-2 text-slate-600 transition"
+                :class="draft.page.hero.align === 'center' ? 'bg-slate-900 text-white shadow-sm' : 'hover:bg-slate-100'"
+                aria-label="Alinear al centro"
+                title="Centro"
+                @click="draft.page.hero.align = 'center'"
+              >
+                <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <rect x="3.5" y="3" width="9" height="1.5" rx="0.75" fill="currentColor" />
+                  <rect x="2" y="6.5" width="12" height="1.5" rx="0.75" fill="currentColor" />
+                  <rect x="4" y="10" width="8" height="1.5" rx="0.75" fill="currentColor" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="rounded-lg px-3 py-2 text-slate-600 transition"
+                :class="draft.page.hero.align === 'right' ? 'bg-slate-900 text-white shadow-sm' : 'hover:bg-slate-100'"
+                aria-label="Alinear a la derecha"
+                title="Derecha"
+                @click="draft.page.hero.align = 'right'"
+              >
+                <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <rect x="5" y="3" width="9" height="1.5" rx="0.75" fill="currentColor" />
+                  <rect x="2" y="6.5" width="12" height="1.5" rx="0.75" fill="currentColor" />
+                  <rect x="6" y="10" width="8" height="1.5" rx="0.75" fill="currentColor" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <label class="block text-sm text-slate-600">
+              Fondo del hero
+              <select v-model="heroBackgroundInputMode" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm">
+                <option value="url">Imagen por URL</option>
+                <option value="upload">Subir imagen</option>
+                <option value="library">Galeria Unsplash</option>
+              </select>
+            </label>
+
+            <label v-if="heroBackgroundInputMode === 'url'" class="block text-sm text-slate-600">
+              Imagen de fondo (URL)
+              <input
+                v-model="draft.page.hero.backgroundImageUrl"
+                class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm"
+                placeholder="https://..."
+                @input="onHeroBackgroundUrlInput"
+              />
+            </label>
+
+            <label v-else-if="heroBackgroundInputMode === 'upload'" class="block text-sm text-slate-600">
+              Subir imagen de fondo
+              <input class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm" type="file" accept="image/*" @change="onHeroBackgroundUpload" />
+            </label>
+
+            <div v-else class="space-y-2">
+              <p class="text-xs font-semibold text-slate-600">Escoger fondo de galeria Unsplash</p>
+              <div class="grid max-h-44 gap-2 overflow-y-auto rounded-xl border border-slate-200 bg-white p-2 sm:grid-cols-2">
+                <button
+                  v-for="photo in unsplashLibrary"
+                  :key="`hero-lib-${photo.src}`"
+                  class="overflow-hidden rounded-lg border border-slate-200 bg-white text-left transition hover:border-slate-300"
+                  type="button"
+                  @click="setHeroBackgroundFromLibrary(photo.src)"
+                >
+                  <img class="h-20 w-full object-cover" :src="photo.src" :alt="photo.alt || 'Fondo'" loading="lazy" />
+                </button>
+              </div>
+            </div>
+
+            <p v-if="heroBackgroundUploadError" class="text-xs text-red-600">{{ heroBackgroundUploadError }}</p>
+          </div>
 
           <div class="space-y-3">
             <div class="flex items-center justify-between">
@@ -371,48 +621,142 @@
                 Agregar boton
               </button>
             </div>
-            <div v-for="(btn, index) in draft.page.hero.buttons" :key="`herobtn-${index}`" class="rounded-xl border border-slate-200 p-3">
-              <div class="grid gap-3 md:grid-cols-2">
-                <input v-model="btn.label" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Texto" />
-                <input v-model="btn.target" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="#rsvp" list="anchor-options" />
-              </div>
-              <div class="mt-3 grid gap-3 md:grid-cols-3">
-                <label class="text-xs text-slate-500">
-                  Variante
-                  <select v-model="btn.variant" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
-                    <option value="solid">Fondo</option>
-                    <option value="outline">Borde</option>
-                  </select>
-                </label>
-                <label class="text-xs text-slate-500">
-                  Color texto
-                  <div class="mt-1 flex items-center gap-3">
-                    <input v-model="btn.textColor" class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0" type="color" />
-                    <input v-model="btn.textColor" class="h-10 w-full rounded-lg border border-slate-200 px-3 font-mono text-sm" placeholder="#ffffff" spellcheck="false" />
+            <details
+              v-for="(btn, index) in draft.page.hero.buttons"
+              :key="`herobtn-${index}`"
+              class="rounded-xl border border-slate-200 bg-white"
+              :open="index === 0"
+            >
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-3">
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-semibold text-slate-800">{{ btn.label || `Boton ${index + 1}` }}</p>
+                  <p class="truncate text-xs text-slate-500">{{ btn.target || "#hero" }}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button
+                    class="inline-flex cursor-default rounded-full border px-3 py-1 text-[11px] font-semibold"
+                    :style="heroButtonPreviewStyle(btn)"
+                    type="button"
+                    disabled
+                  >
+                    {{ btn.label || `Boton ${index + 1}` }}
+                  </button>
+                </div>
+              </summary>
+
+              <div class="space-y-3 border-t border-slate-200 px-3 pb-3 pt-3">
+                <div class="grid gap-3 md:grid-cols-2">
+                  <input v-model="btn.label" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Texto" />
+                  <input v-model="btn.target" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="#rsvp" list="anchor-options" />
+                </div>
+
+                <div class="grid gap-3 md:grid-cols-[150px_minmax(0,1fr)]">
+                  <label class="text-xs text-slate-500">
+                    Variante
+                    <select v-model="btn.variant" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                      <option value="solid">Fondo</option>
+                      <option value="outline">Borde</option>
+                    </select>
+                  </label>
+                  <div class="flex flex-wrap items-end justify-end gap-2">
+                    <button
+                      class="rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-600 disabled:opacity-50"
+                      type="button"
+                      :disabled="index === 0"
+                      aria-label="Subir boton"
+                      title="Subir"
+                      @click="moveHeroButton(index, -1)"
+                    >
+                      <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M8 12V4M8 4L5 7M8 4l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </button>
+                    <button
+                      class="rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-600 disabled:opacity-50"
+                      type="button"
+                      :disabled="index === draft.page.hero.buttons.length - 1"
+                      @click="moveHeroButton(index, 1)"
+                      aria-label="Bajar boton"
+                      title="Bajar"
+                    >
+                      <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M8 4v8M8 12l-3-3m3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </button>
+                    <button
+                      class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600"
+                      type="button"
+                      aria-label="Eliminar boton"
+                      title="Eliminar"
+                      @click="removeHeroButton(index)"
+                    >
+                      <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M3.5 4.5h9M6.5 4.5V3.4c0-.5.4-.9.9-.9h1.2c.5 0 .9.4.9.9v1.1m-5.2 0 .5 7.1c0 .5.4.9.9.9h4.6c.5 0 .9-.4.9-.9l.5-7.1M6.7 7.2v3.5m2.6-3.5v3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+                      </svg>
+                    </button>
                   </div>
-                </label>
-                <label class="text-xs text-slate-500">
-                  <span v-if="btn.variant === 'outline'">Color borde</span>
-                  <span v-else>Color fondo</span>
-                  <div class="mt-1 flex items-center gap-3">
-                    <input
-                      :value="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
-                      class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0"
-                      type="color"
-                      @input="updateButtonColor(btn, $event)"
-                    />
-                    <input
-                      :value="btn.variant === 'outline' ? btn.borderColor : btn.backgroundColor"
-                      class="h-10 w-full rounded-lg border border-slate-200 px-3 font-mono text-sm"
-                      placeholder="#c79a5b"
-                      spellcheck="false"
-                      @input="updateButtonColor(btn, $event)"
-                    />
-                  </div>
-                </label>
+                </div>
+
+                <div class="grid gap-3 md:grid-cols-2">
+                  <label class="text-xs text-slate-500">
+                    Color texto
+                    <div class="mt-1 flex items-center gap-3">
+                      <input v-model="btn.textColor" class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0" type="color" />
+                      <input
+                        v-model="btn.textColor"
+                        class="h-10 w-full rounded-lg border border-slate-200 px-3 font-mono text-sm"
+                        placeholder="#ffffff"
+                        spellcheck="false"
+                        @blur="btn.textColor = normalizeHexColor(btn.textColor || '')"
+                      />
+                    </div>
+                    <div class="mt-2 flex flex-wrap gap-2">
+                      <button
+                        v-for="swatch in heroTextColorSwatches"
+                        :key="`hero-text-${swatch}`"
+                        class="h-6 w-6 rounded-full border border-slate-200"
+                        type="button"
+                        :style="{ backgroundColor: swatch }"
+                        :title="`Texto ${swatch}`"
+                        @click="setHeroButtonTextColor(btn, swatch)"
+                      ></button>
+                    </div>
+                  </label>
+
+                  <label class="text-xs text-slate-500">
+                    <span v-if="btn.variant === 'outline'">Color borde</span>
+                    <span v-else>Color fondo</span>
+                    <div class="mt-1 flex items-center gap-3">
+                      <input
+                        :value="btn.variant === 'outline' ? btn.borderColor || '#c79a5b' : btn.backgroundColor || '#b4556b'"
+                        class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0"
+                        type="color"
+                        @input="updateButtonColor(btn, $event)"
+                      />
+                      <input
+                        :value="btn.variant === 'outline' ? btn.borderColor || '#c79a5b' : btn.backgroundColor || '#b4556b'"
+                        class="h-10 w-full rounded-lg border border-slate-200 px-3 font-mono text-sm"
+                        placeholder="#c79a5b"
+                        spellcheck="false"
+                        @input="updateButtonColor(btn, $event)"
+                        @blur="onHeroButtonSurfaceColorBlur(btn, $event)"
+                      />
+                    </div>
+                    <div class="mt-2 flex flex-wrap gap-2">
+                      <button
+                        v-for="swatch in heroSurfaceColorSwatches"
+                        :key="`hero-surface-${swatch}`"
+                        class="h-6 w-6 rounded-full border border-slate-200"
+                        type="button"
+                        :style="{ backgroundColor: swatch }"
+                        :title="`${btn.variant === 'outline' ? 'Borde' : 'Fondo'} ${swatch}`"
+                        @click="setHeroButtonSurfaceColor(btn, swatch)"
+                      ></button>
+                    </div>
+                  </label>
+                </div>
               </div>
-              <button class="mt-2 text-xs text-red-500" type="button" @click="removeHeroButton(index)">Quitar</button>
-            </div>
+            </details>
           </div>
         </div>
       </details>
@@ -449,9 +793,21 @@
               <p class="text-xs font-semibold text-slate-700">{{ section.label }} ({{ section.type }})</p>
             </div>
             <div class="flex items-center gap-2">
-              <button class="text-xs text-slate-500" type="button" @click="moveSection(index, -1)">Subir</button>
-              <button class="text-xs text-slate-500" type="button" @click="moveSection(index, 1)">Bajar</button>
-              <button class="text-xs text-red-500" type="button" @click="removeSection(index)">Quitar</button>
+              <button class="rounded-lg border border-slate-200 p-1 text-slate-500" type="button" aria-label="Subir seccion" title="Subir" @click="moveSection(index, -1)">
+                <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M8 12V4M8 4L5 7M8 4l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+              <button class="rounded-lg border border-slate-200 p-1 text-slate-500" type="button" aria-label="Bajar seccion" title="Bajar" @click="moveSection(index, 1)">
+                <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M8 4v8M8 12l-3-3m3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+              <button class="rounded-lg border border-red-200 p-1 text-red-500" type="button" aria-label="Eliminar seccion" title="Eliminar" @click="removeSection(index)">
+                <svg class="h-4 w-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3.5 4.5h9M6.5 4.5V3.4c0-.5.4-.9.9-.9h1.2c.5 0 .9.4.9.9v1.1m-5.2 0 .5 7.1c0 .5.4.9.9.9h4.6c.5 0 .9-.4.9-.9l.5-7.1M6.7 7.2v3.5m2.6-3.5v3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+                </svg>
+              </button>
             </div>
           </div>
           <div class="mt-3 grid gap-3 md:grid-cols-2">
@@ -741,14 +1097,52 @@
         <div v-if="enabledSections.has('gallery')" class="space-y-3">
           <div class="flex items-center justify-between">
             <h5 class="text-xs font-semibold text-slate-700">Galería</h5>
-            <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addGalleryItem">
-              Agregar
-            </button>
+            <div class="flex items-center gap-2">
+              <button class="rounded-lg border border-slate-200 px-3 py-1 text-xs" type="button" @click="addGalleryItem">
+                Agregar manual
+              </button>
+            </div>
           </div>
-          <div v-for="(img, index) in draft.gallery" :key="`gallery-${index}`" class="grid gap-3 md:grid-cols-3">
-            <input v-model="img.src" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="/tenants/slug/img.jpg" />
-            <input v-model="img.alt" class="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Alt" />
-            <button class="text-xs text-red-500" type="button" @click="removeGalleryItem(index)">Quitar</button>
+
+          <div class="rounded-xl border border-slate-200 bg-white p-3">
+            <p class="text-xs font-semibold text-slate-700">Elegir desde galeria Unsplash</p>
+            <div class="mt-2 grid max-h-52 gap-2 overflow-y-auto sm:grid-cols-2">
+              <button
+                v-for="photo in unsplashLibrary"
+                :key="`gallery-lib-${photo.src}`"
+                class="overflow-hidden rounded-lg border border-slate-200 bg-white text-left"
+                type="button"
+                @click="addGalleryFromLibrary(photo)"
+              >
+                <img class="h-20 w-full object-cover" :src="photo.src" :alt="photo.alt || 'Foto'" loading="lazy" />
+              </button>
+            </div>
+          </div>
+
+          <div
+            v-for="(img, index) in draft.gallery"
+            :key="`gallery-${img.src || 'empty'}-${index}`"
+            class="rounded-xl border border-slate-200 bg-white p-3"
+          >
+            <div class="grid gap-3 md:grid-cols-2">
+              <label class="text-xs text-slate-500">
+                URL imagen
+                <input v-model="img.src" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="/tenants/slug/img.jpg" />
+              </label>
+              <label class="text-xs text-slate-500">
+                Texto alternativo
+                <input v-model="img.alt" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Alt" />
+              </label>
+              <label class="text-xs text-slate-500">
+                Autor (creditos)
+                <input v-model="img.authorName" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Nombre del autor" />
+              </label>
+              <label class="text-xs text-slate-500">
+                URL autor / fuente
+                <input v-model="img.sourceUrl" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="https://unsplash.com/..." />
+              </label>
+            </div>
+            <button class="mt-2 text-xs text-red-500" type="button" @click="removeGalleryItem(index)">Quitar</button>
           </div>
         </div>
 
@@ -788,14 +1182,47 @@
           Footer
           <button class="text-xs text-red-500" type="button" @click.stop="removeFooter">Quitar</button>
         </summary>
-        <div class="mt-4 space-y-3">
+        <div class="mt-4 space-y-4">
+          <div class="space-y-3 rounded-xl border border-slate-200 bg-white p-3">
+            <p class="text-sm text-slate-600">Fondo del footer</p>
+            <div class="flex items-center gap-3">
+              <input
+                v-model="draft.page.footer.backgroundColor"
+                class="h-10 w-14 rounded-lg border border-slate-200 bg-white p-0"
+                type="color"
+                @blur="draft.page.footer.backgroundColor = normalizeHexColor(draft.page.footer.backgroundColor || '#2b241f')"
+              />
+              <input
+                v-model="draft.page.footer.backgroundColor"
+                class="h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm"
+                placeholder="#2b241f"
+                spellcheck="false"
+                @blur="draft.page.footer.backgroundColor = normalizeHexColor(draft.page.footer.backgroundColor || '#2b241f')"
+              />
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="swatch in footerBgSwatches"
+                :key="`footer-bg-${swatch}`"
+                class="h-6 w-6 rounded-full border border-slate-200"
+                type="button"
+                :style="{ backgroundColor: swatch }"
+                :title="`Footer ${swatch}`"
+                @click="draft.page.footer.backgroundColor = swatch"
+              ></button>
+            </div>
+            <div class="rounded-xl border px-3 py-3" :style="footerPreviewStyle(draft.page.footer.backgroundColor)">
+              <p class="text-sm font-semibold">{{ draft.page.footer.message || "Gracias por acompanarnos" }}</p>
+              <p class="mt-1 text-xs opacity-80">{{ draft.contactEmail || "contacto@email.com" }}</p>
+            </div>
+          </div>
           <label class="block text-sm text-slate-600">
             Mensaje
-            <input v-model="draft.page.footer.message" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" />
+            <input v-model="draft.page.footer.message" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm" />
           </label>
           <label class="block text-sm text-slate-600">
             Email de contacto
-            <input v-model="draft.contactEmail" class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-2 text-sm" type="email" />
+            <input v-model="draft.contactEmail" class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm" type="email" />
           </label>
         </div>
       </details>
@@ -910,8 +1337,13 @@
           </p>
           <p class="mt-1 break-words text-sm text-slate-900">{{ toast.message }}</p>
         </div>
-        <button class="shrink-0 rounded-lg border border-slate-200 px-2 py-1 text-xs text-slate-600" type="button" @click="dismissToast(toast.id)">
-          Cerrar
+        <button
+          class="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-slate-200 text-sm text-slate-600"
+          type="button"
+          aria-label="Cerrar notificacion"
+          @click="dismissToast(toast.id)"
+        >
+          ✕
         </button>
       </div>
     </div>
@@ -932,6 +1364,7 @@ import manifest from "../../tenants/tenants.manifest.json";
 import { LocalJsonAdapter } from "../../tenants/LocalJsonAdapter";
 import { useRoute, useRouter } from "vue-router";
 import { canUseLocalAdminApi } from "../../utils/adminCapabilities";
+import { unsplashGallery } from "../../data/unsplash-gallery";
 
 type DraftConfig = TenantConfig & { slug: string };
 
@@ -1012,6 +1445,13 @@ const isSavingProject = ref(false);
 const activeTab = ref<"general" | "apariencia" | "estructura" | "contenido" | "tools">("general");
 const customers = ref<CustomerRecord[]>([]);
 const selectedCustomerSlug = ref<string>("__manual");
+const heroBackgroundUploadError = ref("");
+const heroBackgroundInputMode = ref<"url" | "upload" | "library">("url");
+const unsplashLibrary = computed(() => unsplashGallery);
+const heroTextColorSwatches = ["#ffffff", "#0f172a", "#1e293b", "#f8fafc", "#cbd5e1", "#f59e0b"];
+const heroSurfaceColorSwatches = ["#b4556b", "#1f2437", "#c79a5b", "#0f172a", "#ffffff", "#475569"];
+const navbarBgSwatches = ["#ffffff", "#f8fafc", "#e2e8f0", "#1f2437", "#0f172a", "#b4556b"];
+const footerBgSwatches = ["#2b241f", "#1f2437", "#0f172a", "#b4556b", "#475569", "#ffffff"];
 
 type ToastKind = "success" | "error" | "info";
 type Toast = { id: number; kind: ToastKind; message: string };
@@ -1207,6 +1647,10 @@ function applyCustomerBaseToDraft(customer: CustomerRecord) {
     draft.rsvp.whatsappNumber = customer.rsvpWhatsappNumber;
   }
   if (customer.contactEmail) draft.contactEmail = customer.contactEmail;
+  if (draft.schedule?.length) {
+    if (draft.schedule[0]) draft.schedule[0].description = draft.ceremony.name || draft.schedule[0].description;
+    if (draft.schedule[1]) draft.schedule[1].description = draft.reception.name || draft.schedule[1].description;
+  }
   draft.seo.title = `${draft.coupleNames} | Boda`;
   draft.seo.url = `${window.location.origin}/w/${customer.slug}`;
 }
@@ -1214,15 +1658,19 @@ function applyCustomerBaseToDraft(customer: CustomerRecord) {
 async function onSelectCustomerSlug(slug: string) {
   if (!slug || slug === "__manual") return;
 
-  // If the tenant already exists, load it via the existing flow (query ?tenant=...).
-  const existsInManifest = Array.isArray(manifest) && manifest.includes(slug);
-  if (existsInManifest) {
-    await router.replace({ name: "admin-generate", query: { tenant: slug } });
-    return;
-  }
-
   const found = customers.value.find((c) => c.slug === slug);
   if (!found) return;
+
+  // If tenant already exists, hydrate builder from tenant first and then apply customer base fields.
+  const existsInManifest = Array.isArray(manifest) && manifest.includes(slug);
+  if (existsInManifest) {
+    const tenant = await adapter.getTenant(slug);
+    if (tenant) {
+      applyDraft(tenant, slug);
+      loadedTenantSlug.value = slug;
+      loadedDraftId.value = "";
+    }
+  }
 
   const mightOverwrite = draft.slug.trim() !== "nueva-boda" || draft.coupleNames.trim() !== "Nombre & Nombre";
   if (mightOverwrite) {
@@ -1264,6 +1712,25 @@ function normalizeTenantForSave(input: TenantConfig): TenantConfig {
       }
       return s;
     });
+  }
+  if (cloned.page) {
+    const page = cloned.page as Record<string, unknown>;
+    const locations = cloned.page.locations;
+    if (locations) {
+      const showCeremony = locations.showCeremony ?? true;
+      const showReception = locations.showReception ?? true;
+      const mapMode = locations.mapMode ?? "button";
+      if (showCeremony === true && showReception === true && mapMode === "button") {
+        delete page.locations;
+      }
+    }
+    if (!cloned.page.sections?.length) delete page.sections;
+    if (!cloned.page.navbar) delete page.navbar;
+    if (!cloned.page.hero) delete page.hero;
+    if (!cloned.page.footer) delete page.footer;
+    if (Object.keys(page).length === 0) {
+      delete (cloned as TenantConfig & { page?: TenantConfig["page"] }).page;
+    }
   }
   return cloned;
 }
@@ -1556,6 +2023,20 @@ function applyDraft(data: TenantConfig, slug?: string) {
       }
     }
   };
+  if (normalized.page?.hero) {
+    if (normalized.page.hero.backgroundMode === "default" || normalized.page.hero.backgroundMode === "color") {
+      normalized.page.hero.backgroundMode = "image";
+    }
+    if (!normalized.page.hero.backgroundImageUrl) {
+      normalized.page.hero.backgroundImageUrl = "/hero-fallback.jpg";
+    }
+  }
+  if (normalized.page?.navbar && !normalized.page.navbar.backgroundColor) {
+    normalized.page.navbar.backgroundColor = "#ffffff";
+  }
+  if (normalized.page?.footer && !normalized.page.footer.backgroundColor) {
+    normalized.page.footer.backgroundColor = "#2b241f";
+  }
   Object.assign(draft, normalized);
   if (slug) draft.slug = slug;
 }
@@ -1565,6 +2046,7 @@ function addNavbar() {
   if (!draft.page.navbar) {
     draft.page.navbar = {
       icon: "♥",
+      backgroundColor: "#ffffff",
       links: [
         { label: "Inicio", target: "#hero" },
         { label: "Ubicaciones", target: "#ubicaciones" }
@@ -1588,6 +2070,14 @@ function removeNavbarLink(index: number) {
   draft.page.navbar?.links.splice(index, 1);
 }
 
+function moveNavbarLink(index: number, direction: -1 | 1) {
+  if (!draft.page.navbar?.links?.length) return;
+  const next = index + direction;
+  if (next < 0 || next >= draft.page.navbar.links.length) return;
+  const list = draft.page.navbar.links;
+  [list[index], list[next]] = [list[next], list[index]];
+}
+
 function addNavbarButton() {
   if (!draft.page.navbar) return;
   const target = anchorOptions.value[0]?.value || "#hero";
@@ -1598,11 +2088,20 @@ function removeNavbarButton(index: number) {
   draft.page.navbar?.buttons.splice(index, 1);
 }
 
+function moveNavbarButton(index: number, direction: -1 | 1) {
+  if (!draft.page.navbar?.buttons?.length) return;
+  const next = index + direction;
+  if (next < 0 || next >= draft.page.navbar.buttons.length) return;
+  const list = draft.page.navbar.buttons;
+  [list[index], list[next]] = [list[next], list[index]];
+}
+
 function applyPreset(name: "clasico" | "moderno" | "minimal") {
   if (name === "clasico") {
     draft.page = {
       navbar: {
         icon: "♥",
+        backgroundColor: "#ffffff",
         links: [
           { label: "Inicio", target: "#hero" },
           { label: "Ubicaciones", target: "#ubicaciones" },
@@ -1611,11 +2110,11 @@ function applyPreset(name: "clasico" | "moderno" | "minimal") {
         buttons: [{ label: "RSVP", target: "#rsvp", variant: "outline" }]
       },
       hero: {
-        backgroundMode: "default",
-        buttons: [
-          { label: "RSVP", target: "#rsvp", variant: "solid" },
-          { label: "Ubicaciones", target: "#ubicaciones", variant: "outline" }
-        ]
+        backgroundMode: "image",
+        backgroundImageUrl: "/hero-fallback.jpg",
+        showPanelGlass: true,
+        align: "left",
+        buttons: []
       },
       sections: [
         resolveSectionDefaults("countdown"),
@@ -1624,7 +2123,7 @@ function applyPreset(name: "clasico" | "moderno" | "minimal") {
         resolveSectionDefaults("rsvp"),
         resolveSectionDefaults("gallery")
       ],
-      footer: { message: "Gracias por acompañarnos", anchorId: "footer" }
+      footer: { message: "Gracias por acompañarnos", anchorId: "footer", backgroundColor: "#2b241f" }
     };
   }
 
@@ -1632,6 +2131,7 @@ function applyPreset(name: "clasico" | "moderno" | "minimal") {
     draft.page = {
       navbar: {
         icon: "✦",
+        backgroundColor: "#ffffff",
         links: [
           { label: "Inicio", target: "#hero" },
           { label: "Historia", target: "#historia" },
@@ -1640,9 +2140,11 @@ function applyPreset(name: "clasico" | "moderno" | "minimal") {
         buttons: [{ label: "Confirmar", target: "#rsvp", variant: "solid" }]
       },
       hero: {
-        backgroundMode: "color",
-        backgroundColor: "#1f2437",
-        buttons: [{ label: "Confirmar", target: "#rsvp", variant: "solid" }]
+        backgroundMode: "image",
+        backgroundImageUrl: "/hero-fallback.jpg",
+        showPanelGlass: true,
+        align: "left",
+        buttons: []
       },
       sections: [
         resolveSectionDefaults("story"),
@@ -1650,7 +2152,7 @@ function applyPreset(name: "clasico" | "moderno" | "minimal") {
         resolveSectionDefaults("rsvp"),
         resolveSectionDefaults("faq")
       ],
-      footer: { message: "Nos vemos pronto", anchorId: "footer" }
+      footer: { message: "Nos vemos pronto", anchorId: "footer", backgroundColor: "#2b241f" }
     };
   }
 
@@ -1658,19 +2160,22 @@ function applyPreset(name: "clasico" | "moderno" | "minimal") {
     draft.page = {
       navbar: {
         icon: "•",
+        backgroundColor: "#ffffff",
         links: [{ label: "Inicio", target: "#hero" }],
         buttons: []
       },
       hero: {
         backgroundMode: "image",
         backgroundImageUrl: "/tenants/demo/hero.jpg",
+        showPanelGlass: true,
+        align: "left",
         buttons: []
       },
       sections: [
         resolveSectionDefaults("locations"),
         resolveSectionDefaults("rsvp")
       ],
-      footer: { message: "Gracias por acompañarnos", anchorId: "footer" }
+      footer: { message: "Gracias por acompañarnos", anchorId: "footer", backgroundColor: "#2b241f" }
     };
   }
 }
@@ -1690,11 +2195,11 @@ function updateButtonColor(
 function addHero() {
   if (!draft.page.hero) {
     draft.page.hero = {
-      backgroundMode: "default",
-      buttons: [
-        { label: draft.hero.ctaPrimaryText, target: draft.hero.ctaPrimaryTarget || "#rsvp", variant: "solid" },
-        { label: draft.hero.ctaSecondaryText, target: draft.hero.ctaSecondaryTarget || "#ubicaciones", variant: "outline" }
-      ]
+      backgroundMode: "image",
+      backgroundImageUrl: "/hero-fallback.jpg",
+      showPanelGlass: true,
+      align: "left",
+      buttons: []
     };
   }
 }
@@ -1711,6 +2216,14 @@ function addHeroButton() {
 
 function removeHeroButton(index: number) {
   draft.page.hero?.buttons.splice(index, 1);
+}
+
+function moveHeroButton(index: number, direction: -1 | 1) {
+  if (!draft.page.hero?.buttons?.length) return;
+  const next = index + direction;
+  if (next < 0 || next >= draft.page.hero.buttons.length) return;
+  const list = draft.page.hero.buttons;
+  [list[index], list[next]] = [list[next], list[index]];
 }
 
 function addSections() {
@@ -1755,8 +2268,105 @@ function ensureSectionBackgroundDefaults(section: PageSection) {
 
 function addFooter() {
   if (!draft.page.footer) {
-    draft.page.footer = { message: "Gracias por acompañarnos", anchorId: "footer" };
+    draft.page.footer = { message: "Gracias por acompañarnos", anchorId: "footer", backgroundColor: "#2b241f" };
   }
+}
+
+function heroButtonPreviewStyle(
+  btn: { variant: "outline" | "solid"; borderColor?: string; backgroundColor?: string; textColor?: string }
+) {
+  const textColor = btn.textColor || (btn.variant === "solid" ? "#ffffff" : "#c79a5b");
+  if (btn.variant === "solid") {
+    return {
+      color: textColor,
+      backgroundColor: btn.backgroundColor || "#b4556b",
+      borderColor: btn.borderColor || "transparent"
+    };
+  }
+  return {
+    color: textColor,
+    backgroundColor: "transparent",
+    borderColor: btn.borderColor || "#c79a5b"
+  };
+}
+
+function setHeroButtonTextColor(btn: { textColor?: string }, color: string) {
+  btn.textColor = color;
+}
+
+function setHeroButtonSurfaceColor(
+  btn: { variant: "outline" | "solid"; borderColor?: string; backgroundColor?: string },
+  color: string
+) {
+  if (btn.variant === "outline") {
+    btn.borderColor = color;
+  } else {
+    btn.backgroundColor = color;
+  }
+}
+
+function onHeroButtonSurfaceColorBlur(
+  btn: { variant: "outline" | "solid"; borderColor?: string; backgroundColor?: string },
+  event: Event
+) {
+  const value = normalizeHexColor((event.target as HTMLInputElement).value || "");
+  setHeroButtonSurfaceColor(btn, value);
+}
+
+function normalizeHexPreview(input: string | undefined, fallback: string) {
+  const raw = String(input || "").trim();
+  if (!raw) return fallback;
+  const withHash = raw.startsWith("#") ? raw : `#${raw}`;
+  const hex = withHash.toLowerCase();
+  if (/^#[0-9a-f]{6}$/.test(hex)) return hex;
+  if (/^#[0-9a-f]{3}$/.test(hex)) return `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}`;
+  return fallback;
+}
+
+function textColorByBackground(input: string, fallback = "#ffffff") {
+  const bg = normalizeHexPreview(input, fallback);
+  const r = parseInt(bg.slice(1, 3), 16);
+  const g = parseInt(bg.slice(3, 5), 16);
+  const b = parseInt(bg.slice(5, 7), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.58 ? "#0f172a" : "#f8fafc";
+}
+
+function alphaTextColor(hex: string, alpha: number) {
+  const normalized = normalizeHexPreview(hex, "#0f172a");
+  const r = parseInt(normalized.slice(1, 3), 16);
+  const g = parseInt(normalized.slice(3, 5), 16);
+  const b = parseInt(normalized.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function navbarPreviewStyle(backgroundColor?: string) {
+  const bg = normalizeHexPreview(backgroundColor, "#ffffff");
+  const text = textColorByBackground(bg, "#ffffff");
+  return {
+    backgroundColor: bg,
+    color: text,
+    borderColor: alphaTextColor(text, 0.18)
+  };
+}
+
+function navbarPreviewChipStyle(backgroundColor?: string) {
+  const bg = normalizeHexPreview(backgroundColor, "#ffffff");
+  const text = textColorByBackground(bg, "#ffffff");
+  return {
+    borderColor: alphaTextColor(text, 0.25),
+    color: text
+  };
+}
+
+function footerPreviewStyle(backgroundColor?: string) {
+  const bg = normalizeHexPreview(backgroundColor, "#2b241f");
+  const text = textColorByBackground(bg, "#2b241f");
+  return {
+    backgroundColor: bg,
+    color: text,
+    borderColor: alphaTextColor(text, 0.2)
+  };
 }
 
 function removeFooter() {
@@ -1789,11 +2399,59 @@ function removeSchedule(index: number) {
 }
 
 function addGalleryItem() {
-  draft.gallery.push({ src: "", alt: "" });
+  draft.gallery.push({ src: "", alt: "", authorName: "", sourceUrl: "" });
 }
 
 function removeGalleryItem(index: number) {
   draft.gallery.splice(index, 1);
+}
+
+function addGalleryFromLibrary(photo: { src: string; alt?: string; authorName?: string; authorUrl?: string; sourceUrl?: string }) {
+  const src = String(photo.src || "").trim();
+  if (!src) return;
+  if (draft.gallery.some((item) => item.src === src)) return;
+  draft.gallery.push({
+    src,
+    alt: String(photo.alt || "Foto de galeria"),
+    authorName: photo.authorName || "",
+    authorUrl: photo.authorUrl || "",
+    sourceUrl: photo.sourceUrl || ""
+  });
+}
+
+function setHeroBackgroundFromLibrary(src: string) {
+  if (!draft.page.hero) addHero();
+  if (!draft.page.hero) return;
+  heroBackgroundInputMode.value = "library";
+  draft.page.hero.backgroundMode = "image";
+  draft.page.hero.backgroundImageUrl = src;
+}
+
+function onHeroBackgroundUrlInput() {
+  if (!draft.page.hero) addHero();
+  if (!draft.page.hero) return;
+  heroBackgroundInputMode.value = "url";
+  draft.page.hero.backgroundMode = "image";
+}
+
+function onHeroBackgroundUpload(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+
+  heroBackgroundUploadError.value = "";
+  heroBackgroundInputMode.value = "upload";
+  const reader = new FileReader();
+  reader.onload = () => {
+    if (!draft.page.hero) addHero();
+    if (!draft.page.hero) return;
+    draft.page.hero.backgroundMode = "image";
+    draft.page.hero.backgroundImageUrl = String(reader.result || "");
+  };
+  reader.onerror = () => {
+    heroBackgroundUploadError.value = "No se pudo cargar la imagen.";
+  };
+  reader.readAsDataURL(file);
 }
 
 function addFaq() {

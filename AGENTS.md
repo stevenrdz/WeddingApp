@@ -56,6 +56,19 @@ Provenza is a multi-tenant wedding site template built with Vue 3 + Vite + Tailw
 - Draft links embed data in the URL for cross-device sharing.
 - Env: add `.env` with `VITE_ADMIN_PREVIEW_KEY` to enable preview links.
 - Limitation: very large drafts can create long URLs; consider backend persistence later.
+- Hero controls:
+  - Optional details panel (`showPanelGlass`).
+  - Text alignment control (`left/center/right`) with segmented UI.
+  - Background is image-only in builder: URL, upload, or Unsplash library picker.
+  - Hero buttons are manual (not auto-created) and edited in accordion cards.
+- Navbar/Footer controls:
+  - Background color is configurable in builder (`page.navbar.backgroundColor`, `page.footer.backgroundColor`).
+  - Live preview cards are included for navbar/footer in the structure tab.
+  - Reorder/delete actions in lists use icon-only controls with `aria-label`.
+- Customers flow:
+  - From `/admin/clientes` (list), `Editar` opens `/admin/clientes/nuevo?edit=<slug>`.
+  - New view auto-hydrates form from query `edit`.
+  - Added “Volver a lista” while editing.
 
 ## Premium (Drive + Apps Script)
 - Prototype flow:

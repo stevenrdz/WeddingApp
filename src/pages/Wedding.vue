@@ -29,6 +29,7 @@
         :contact-email="tenant.contactEmail"
         :message="footerConfig?.message"
         :anchor-id="footerConfig?.anchorId"
+        :background-color="footerConfig?.backgroundColor"
       />
     </div>
   </main>
@@ -60,14 +61,28 @@ const adapter = new LocalJsonAdapter();
 const tenant = ref<TenantConfig | null>(null);
 const loading = ref(true);
 const slug = ref(String(route.params.slug || ""));
-const hasPageConfig = computed(() => Boolean(tenant.value?.page));
+
+function hasMeaningfulPageConfig(value: TenantConfig | null) {
+  const page = value?.page;
+  if (!page) return false;
+  if (page.navbar || page.hero || page.footer) return true;
+  if (Array.isArray(page.sections) && page.sections.length > 0) return true;
+  const loc = page.locations;
+  if (!loc) return false;
+  const showCeremony = loc.showCeremony ?? true;
+  const showReception = loc.showReception ?? true;
+  const mapMode = loc.mapMode ?? "button";
+  return !(showCeremony === true && showReception === true && mapMode === "button");
+}
+
+const hasPageConfig = computed(() => hasMeaningfulPageConfig(tenant.value));
 const navbarConfig = computed(() => tenant.value?.page?.navbar);
 const heroConfig = computed(() => tenant.value?.page?.hero);
 const footerConfig = computed(() => tenant.value?.page?.footer);
 const orderedSections = computed<PageSection[]>(() => {
   if (!tenant.value) return [];
   if (tenant.value.page?.sections?.length) return tenant.value.page.sections;
-  if (!tenant.value.page) return defaultSections();
+  if (!hasMeaningfulPageConfig(tenant.value)) return defaultSections();
   return [];
 });
 

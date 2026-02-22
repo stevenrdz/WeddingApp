@@ -64,6 +64,14 @@
               <span>Listar clientes</span>
             </RouterLink>
 
+            <div class="mt-6 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Galería</div>
+            <RouterLink :class="navSubItemClass('admin-gallery-add')" to="/admin/galeria/agregar" @click="closeSidebarIfMobile">
+              <span class="grid h-8 w-8 place-items-center rounded-lg bg-fuchsia-50 text-fuchsia-700">
+                <PhotoIcon class="h-5 w-5" aria-hidden="true" />
+              </span>
+              <span>Agregar fotos</span>
+            </RouterLink>
+
             <div class="mt-6 mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Configuración</div>
             <RouterLink :class="navItemClass('admin-settings')" to="/admin/settings" @click="closeSidebarIfMobile">
               <span class="grid h-9 w-9 place-items-center rounded-lg bg-slate-100 text-slate-700">
@@ -117,7 +125,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter, RouterView, RouterLink } from "vue-router";
-import { ArrowRightOnRectangleIcon, ChartBarIcon, Cog6ToothIcon, DocumentTextIcon, GlobeAltIcon, UserPlusIcon, UsersIcon } from "@heroicons/vue/24/outline";
+import { ArrowRightOnRectangleIcon, ChartBarIcon, Cog6ToothIcon, DocumentTextIcon, GlobeAltIcon, PhotoIcon, UserPlusIcon, UsersIcon } from "@heroicons/vue/24/outline";
 
 const router = useRouter();
 const route = useRoute();

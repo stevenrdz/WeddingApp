@@ -4,6 +4,8 @@ export type CustomerRecord = {
   slug: string;
   plan: CustomerPlan;
 
+  groomFullName?: string;
+  brideFullName?: string;
   groomName: string;
   brideName: string;
   coupleNames: string;

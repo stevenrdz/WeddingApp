@@ -37,9 +37,9 @@
               EN
             </button>
           </div>
-          <a class="btn-primary text-sm" :href="whatsAppLink" target="_blank" rel="noreferrer">
-            {{ t.ctaWhatsapp }}
-          </a>
+          <RouterLink class="btn-primary text-sm" to="/admin/login">
+            {{ t.ctaLogin }}
+          </RouterLink>
         </div>
         <button
           :class="[
@@ -83,9 +83,9 @@
               EN
             </button>
           </div>
-          <a class="btn-primary text-sm" :href="whatsAppLink" target="_blank" rel="noreferrer" @click="isMobileMenuOpen = false">
-            {{ t.ctaWhatsapp }}
-          </a>
+          <RouterLink class="btn-primary text-sm" to="/admin/login" @click="isMobileMenuOpen = false">
+            {{ t.ctaLogin }}
+          </RouterLink>
         </nav>
       </div>
     </header>
@@ -172,7 +172,7 @@
 
           <div class="mt-6 flex flex-wrap gap-3">
             <RouterLink class="btn-primary" to="/w/demo">{{ t.demoCtaPrimary }}</RouterLink>
-            <a class="rounded-full border border-black/10 bg-white px-5 py-2 text-sm font-semibold text-black/70" :href="whatsAppLink" target="_blank" rel="noreferrer">{{ t.ctaWhatsapp }}</a>
+            <a class="btn-outline text-sm" :href="whatsAppLink" target="_blank" rel="noreferrer">{{ t.ctaWhatsapp }}</a>
           </div>
         </div>
 
@@ -395,6 +395,7 @@ const messages = {
     navDemo: "Demo",
     navPackages: "Paquetes",
     navFaq: "FAQ",
+    ctaLogin: "Iniciar sesión",
     ctaWhatsapp: "Escríbenos por WhatsApp",
     heroTitle: "Tu boda, tan única como ustedes",
     heroSubtitle: "Comparte cada detalle con tus invitados y crea un recuerdo hermoso desde el primer día.",
@@ -453,6 +454,7 @@ const messages = {
     navDemo: "Demo",
     navPackages: "Packages",
     navFaq: "FAQ",
+    ctaLogin: "Sign in",
     ctaWhatsapp: "Chat on WhatsApp",
     heroTitle: "Your wedding, as unique as your love",
     heroSubtitle: "Share every detail with your guests and keep a beautiful memory from day one.",

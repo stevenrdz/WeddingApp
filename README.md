@@ -44,6 +44,20 @@ npm run test:e2e
 - Configuración: `/admin/settings` (ajustes globales en el admin).
 - Guardar borrador: genera un link compartible a `/preview/:draftId`.
 
+### Mejoras recientes en builder
+- Hero:
+  - Panel de detalles opcional.
+  - Alineacion de contenido (izquierda, centro, derecha) con UI segmentada.
+  - Fondo solo por imagen (URL, upload o libreria Unsplash).
+  - Botones del hero se crean manualmente (no auto-generados).
+  - Editor de botones con acordeon, preview en vivo, paletas y orden.
+- Navbar y Footer:
+  - Selector de color de fondo en builder.
+  - Preview visual en vivo dentro del panel de estructura.
+  - Acciones de ordenar/eliminar con iconos (con `aria-label`).
+- Clientes:
+  - Desde listado, `Editar` abre formulario en `/admin/clientes/nuevo?edit=<slug>`.
+  - Precarga automatica del cliente en formulario de edicion.
 ## Premium (MVP - demo)
 Este flujo es un prototipo para el paquete Premium:
 - QR: `/p/:slug/qr` (genera un QR hacia la pagina de carga).

@@ -80,8 +80,13 @@
             </p>
             <p class="mt-1 break-words text-sm text-slate-900">{{ toast.message }}</p>
           </div>
-          <button class="shrink-0 rounded-lg border border-slate-200 px-2 py-1 text-xs text-slate-600" type="button" @click="dismissToast(toast.id)">
-            Cerrar
+          <button
+            class="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-slate-200 text-sm text-slate-600"
+            type="button"
+            aria-label="Cerrar notificacion"
+            @click="dismissToast(toast.id)"
+          >
+            ✕
           </button>
         </div>
       </div>

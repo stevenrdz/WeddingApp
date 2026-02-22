@@ -1,21 +1,23 @@
 [
   {
-    "slug": "steven-jenniffer",
+    "slug": "steven-jennifer",
     "plan": "premium",
+    "groomFullName": "Steven Yamil Rodríguez Murillo",
+    "brideFullName": "Jenniffer Stephanie Vásquez Maita",
     "groomName": "Steven",
     "brideName": "Jenniffer",
     "coupleNames": "Steven & Jenniffer",
     "dateISO": "2026-09-01",
-    "ceremonyName": "test",
-    "ceremonyAddress": "test",
-    "ceremonyMapUrl": "test",
-    "receptionName": "test",
-    "receptionAddress": "test",
-    "receptionMapUrl": "test",
+    "ceremonyName": "Iglesia Católica Santo Tomás Moro",
+    "ceremonyAddress": "W38M+Q5R, 3 Pje 25A NO, Guayaquil",
+    "ceremonyMapUrl": "https://maps.app.goo.gl/89jZHhjysRoZBjpTA",
+    "receptionName": "Candilejas",
+    "receptionAddress": "W39M+X83, Guayaquil 090112",
+    "receptionMapUrl": "https://maps.app.goo.gl/PLP1yFqm2VB1NtQq6",
     "rsvpWhatsappNumber": "0995163059",
     "contactEmail": "syrodriguezm@outlook.com",
     "notes": "",
     "createdAt": "2026-02-17T23:46:56.201Z",
-    "updatedAt": "2026-02-17T23:48:58.008Z"
+    "updatedAt": "2026-02-22T06:34:57.513Z"
   }
 ]

@@ -10,11 +10,24 @@
     </div>
 
     <div v-if="showNew" class="mt-6 space-y-6">
+      <div v-if="view === 'new' && editingSlug" class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">
+        <p class="text-sm text-slate-600">
+          Editando cliente: <span class="font-mono font-semibold text-slate-900">{{ editingSlug }}</span>
+        </p>
+        <button
+          class="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700"
+          type="button"
+          @click="goToList"
+        >
+          Volver a lista
+        </button>
+      </div>
+
       <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Nuevo cliente</p>
-            <p class="mt-2 text-sm text-slate-600">Completa los datos base y genera el slug automáticamente.</p>
+            <p class="mt-2 text-sm text-slate-600">Completa los datos base y genera el slug automaticamente.</p>
           </div>
           <p v-if="!canWriteToProject" class="text-xs text-slate-400">Guardado no disponible en este entorno.</p>
         </div>
@@ -26,11 +39,19 @@
             <h3 class="text-sm font-semibold text-slate-800">Datos base</h3>
             <div class="mt-4 grid gap-4 md:grid-cols-2">
               <label class="block text-sm text-slate-700">
-                Nombre del novio
+                Nombre completo del novio
+                <input v-model="form.groomFullName" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Steven Rodrigo Rodriguez" />
+              </label>
+              <label class="block text-sm text-slate-700">
+                Nombre completo de la novia
+                <input v-model="form.brideFullName" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Jenniffer Maria Perez" />
+              </label>
+              <label class="block text-sm text-slate-700">
+                Nombre del novio (primer nombre)
                 <input v-model="form.groomName" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Steven" />
               </label>
               <label class="block text-sm text-slate-700">
-                Nombre de la novia
+                Nombre de la novia (primer nombre)
                 <input v-model="form.brideName" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Jenniffer" />
               </label>
               <label class="block text-sm text-slate-700">
@@ -49,32 +70,31 @@
           </section>
 
           <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 class="text-sm font-semibold text-slate-800">Ceremonia y recepción</h3>
+            <h3 class="text-sm font-semibold text-slate-800">Ceremonia y recepcion</h3>
             <div class="mt-4 grid gap-4 md:grid-cols-2">
               <label class="block text-sm text-slate-700">
                 Lugar ceremonia
                 <input v-model="form.ceremonyName" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Capilla San Miguel" />
               </label>
               <label class="block text-sm text-slate-700">
-                Dirección ceremonia
-                <input v-model="form.ceremonyAddress" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Av. Central 450" />
+                Lugar recepcion
+                <input v-model="form.receptionName" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Hacienda Los Laureles" />
               </label>
               <label class="block text-sm text-slate-700">
                 URL mapa ceremonia
                 <input v-model="form.ceremonyMapUrl" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm" placeholder="https://maps.app.goo.gl/..." />
               </label>
-
               <label class="block text-sm text-slate-700">
-                Lugar recepción
-                <input v-model="form.receptionName" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Hacienda Los Laureles" />
-              </label>
-              <label class="block text-sm text-slate-700">
-                Dirección recepción
-                <input v-model="form.receptionAddress" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Camino Antiguo 95" />
-              </label>
-              <label class="block text-sm text-slate-700">
-                URL mapa recepción
+                URL mapa recepcion
                 <input v-model="form.receptionMapUrl" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm" placeholder="https://maps.app.goo.gl/..." />
+              </label>
+              <label class="block text-sm text-slate-700">
+                Direccion ceremonia
+                <input v-model="form.ceremonyAddress" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Av. Central 450" />
+              </label>
+              <label class="block text-sm text-slate-700">
+                Direccion recepcion
+                <input v-model="form.receptionAddress" class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 text-sm" placeholder="Ej: Camino Antiguo 95" />
               </label>
             </div>
           </section>
@@ -107,7 +127,7 @@
               {{ form.groomName || "Nombre del novio" }} & {{ form.brideName || "Nombre de la novia" }}
             </p>
             <p class="mt-1 text-sm text-slate-600">
-              {{ form.dateISO || "Fecha pendiente" }} · {{ form.plan.toUpperCase() }}
+              {{ form.dateISO || "Fecha pendiente" }} - {{ form.plan.toUpperCase() }}
             </p>
           </div>
 
@@ -118,7 +138,7 @@
                 v-model="form.slug"
                 class="mt-2 h-10 w-full rounded-xl border border-slate-200 px-4 font-mono text-sm"
                 placeholder="steven-jenniffer"
-                @input="slugMode = \"manual\""
+                @input="slugMode = 'manual'"
               />
               <p class="mt-1 text-xs text-slate-500">Tip: se genera desde nombres. Puedes ajustarlo.</p>
             </label>
@@ -150,7 +170,7 @@
     <div v-if="showList" class="mt-6 grid gap-4">
       <div v-if="loading" class="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600">Cargando...</div>
       <div v-if="!loading && !filtered.length" class="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600">
-        No hay clientes aún.
+        No hay clientes aun.
       </div>
 
       <div v-for="c in filtered" :key="c.slug" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -203,8 +223,13 @@
             </p>
             <p class="mt-1 break-words text-sm text-slate-900">{{ toast.message }}</p>
           </div>
-          <button class="shrink-0 rounded-lg border border-slate-200 px-2 py-1 text-xs text-slate-600" type="button" @click="dismissToast(toast.id)">
-            Cerrar
+          <button
+            class="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-slate-200 text-sm text-slate-600"
+            type="button"
+            aria-label="Cerrar notificacion"
+            @click="dismissToast(toast.id)"
+          >
+            ✕
           </button>
         </div>
       </div>
@@ -214,7 +239,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import type { CustomerPlan, CustomerRecord } from "../../types/customer";
 import { makeCoupleSlug } from "../../utils/slugify";
 import type { TenantConfig } from "../../types/tenant";
@@ -224,7 +249,9 @@ const props = defineProps<{ view?: "new" | "list" | "all" }>();
 const view = computed(() => props.view || "all");
 const showNew = computed(() => view.value === "new" || view.value === "all");
 const showList = computed(() => view.value === "list" || view.value === "all");
+const editingSlug = computed(() => (typeof route.query.edit === "string" ? route.query.edit.trim() : ""));
 
+const route = useRoute();
 const router = useRouter();
 const loading = ref(false);
 const saving = ref(false);
@@ -237,6 +264,7 @@ type ToastKind = "success" | "error" | "info";
 type Toast = { id: number; kind: ToastKind; message: string };
 const toasts = ref<Toast[]>([]);
 let toastSeq = 0;
+const hydratedEditSlug = ref("");
 
 function pushToast(kind: ToastKind, message: string) {
   const id = (toastSeq += 1);
@@ -251,6 +279,8 @@ function dismissToast(id: number) {
 const form = reactive<CustomerRecord>({
   slug: "",
   plan: "standard",
+  groomFullName: "",
+  brideFullName: "",
   groomName: "",
   brideName: "",
   coupleNames: "",
@@ -271,6 +301,8 @@ const form = reactive<CustomerRecord>({
 function resetForm() {
   form.slug = "";
   form.plan = "standard";
+  form.groomFullName = "";
+  form.brideFullName = "";
   form.groomName = "";
   form.brideName = "";
   form.coupleNames = "";
@@ -306,11 +338,15 @@ function computeCoupleNames(groomName: string, brideName: string) {
   return [String(groomName || "").trim(), String(brideName || "").trim()].filter(Boolean).join(" & ");
 }
 
+function firstNameFromFullName(fullName: string) {
+  return String(fullName || "").trim().split(/\s+/).filter(Boolean)[0] || "";
+}
+
 function displayCoupleNames(c: CustomerRecord) {
   const fromRecord = String(c.coupleNames || "").trim();
   if (fromRecord.length >= 3) return fromRecord;
   const joined = computeCoupleNames(c.groomName, c.brideName);
-  return joined || fromRecord || "—";
+  return joined || fromRecord || "-";
 }
 
 function looksLikeUrl(value: string) {
@@ -342,6 +378,14 @@ function getReceptionAddress(c: CustomerRecord) {
 }
 
 watch(
+  () => [form.groomFullName, form.brideFullName],
+  () => {
+    form.groomName = firstNameFromFullName(form.groomFullName || "");
+    form.brideName = firstNameFromFullName(form.brideFullName || "");
+  }
+);
+
+watch(
   () => [form.groomName, form.brideName],
   () => {
     if (slugMode.value === "auto") generateSlug();
@@ -370,10 +414,33 @@ async function load() {
 }
 
 function edit(slug: string) {
+  if (view.value === "list") {
+    router.push({ name: "admin-customers-new", query: { edit: slug } });
+    return;
+  }
   const found = items.value.find((c) => c.slug === slug);
   if (!found) return;
   Object.assign(form, found);
+  if (!String(form.groomFullName || "").trim()) form.groomFullName = form.groomName;
+  if (!String(form.brideFullName || "").trim()) form.brideFullName = form.brideName;
   slugMode.value = "manual";
+  pushToast("info", `Editando: ${slug}`);
+}
+
+function goToList() {
+  router.push({ name: "admin-customers-list" });
+}
+
+function hydrateEditFromQuery() {
+  const slug = typeof route.query.edit === "string" ? route.query.edit.trim() : "";
+  if (!slug || slug === hydratedEditSlug.value) return;
+  const found = items.value.find((c) => c.slug === slug);
+  if (!found) return;
+  Object.assign(form, found);
+  if (!String(form.groomFullName || "").trim()) form.groomFullName = form.groomName;
+  if (!String(form.brideFullName || "").trim()) form.brideFullName = form.brideName;
+  slugMode.value = "manual";
+  hydratedEditSlug.value = slug;
   pushToast("info", `Editando: ${slug}`);
 }
 
@@ -383,8 +450,8 @@ async function save() {
     pushToast("error", "No se puede guardar en este modo.");
     return;
   }
-  if (!form.groomName.trim() || !form.brideName.trim()) {
-    pushToast("error", "Ingresa los nombres del novio y la novia.");
+  if (!String(form.groomFullName || "").trim() || !String(form.brideFullName || "").trim()) {
+    pushToast("error", "Ingresa los nombres completos del novio y de la novia.");
     return;
   }
   if (!form.dateISO) {
@@ -392,7 +459,7 @@ async function save() {
     return;
   }
   if (!form.ceremonyName.trim() || !form.receptionName.trim()) {
-    pushToast("error", "Completa el lugar de ceremonia y recepción.");
+    pushToast("error", "Completa el lugar de ceremonia y recepcion.");
     return;
   }
   if (!form.slug.trim()) {
@@ -430,17 +497,17 @@ function buildTenantFromCustomer(c: CustomerRecord): TenantConfig {
     coupleNames: coupleNames || "Nombre & Nombre",
     dateISO: c.dateISO || new Date().toISOString().slice(0, 10),
     hero: {
-      tagline: "Nuestro sí, para siempre",
+      tagline: "Nuestro si, para siempre",
       ctaPrimaryText: "RSVP",
       ctaSecondaryText: "Ubicaciones",
       ctaPrimaryTarget: "#rsvp",
       ctaSecondaryTarget: "#ubicaciones"
     },
     ceremony: { name: c.ceremonyName || "Ceremonia", time: "17:00", address: getCeremonyAddress(c), mapUrl: getCeremonyMapUrl(c) },
-    reception: { name: c.receptionName || "Recepción", time: "19:00", address: getReceptionAddress(c), mapUrl: getReceptionMapUrl(c) },
+    reception: { name: c.receptionName || "Recepcion", time: "19:00", address: getReceptionAddress(c), mapUrl: getReceptionMapUrl(c) },
     schedule: [
       { time: "17:00", title: "Ceremonia", description: c.ceremonyName || "Ceremonia" },
-      { time: "19:00", title: "Recepción", description: c.receptionName || "Recepción" }
+      { time: "19:00", title: "Recepcion", description: c.receptionName || "Recepcion" }
     ],
     dressCode: { title: "Formal", description: "" },
     gifts: { message: "", giftListUrl: "", accounts: [] },
@@ -463,14 +530,16 @@ function buildTenantFromCustomer(c: CustomerRecord): TenantConfig {
     },
     seo: {
       title: `${coupleNames || "Boda"} | Boda`,
-      description: "Acompáñanos en nuestro gran día.",
+      description: "Acompananos en nuestro gran dia.",
       url: "",
       ogImage: "/og-default.svg"
     },
     story: { title: "Nuestra historia", message: "" },
     faq: [],
     contactEmail: c.contactEmail || "",
-    page: { navbar: undefined, hero: undefined, sections: undefined, footer: undefined, locations: { showCeremony: true, showReception: true, mapMode: "button" } }
+    // Keep page undefined so Wedding.vue uses the main default flow:
+    // default navbar + hero + sections, matching the principal experience.
+    page: undefined
   };
 }
 
@@ -497,7 +566,7 @@ async function openInBuilder(slug: string) {
 
 async function remove(slug: string) {
   if (!canWriteToProject.value) return;
-  const ok = window.confirm(`¿Eliminar el cliente "${slug}"?`);
+  const ok = window.confirm(`Eliminar el cliente "${slug}"?`);
   if (!ok) return;
   try {
     const res = await fetch("/__admin/customers/delete", {
@@ -521,7 +590,7 @@ const filtered = computed(() => {
   const q = query.value.trim().toLowerCase();
   if (!q) return items.value;
   return items.value.filter((c) => {
-    const hay = `${c.slug} ${c.groomName} ${c.brideName} ${c.coupleNames}`.toLowerCase();
+    const hay = `${c.slug} ${c.groomFullName || ""} ${c.brideFullName || ""} ${c.groomName} ${c.brideName} ${c.coupleNames}`.toLowerCase();
     return hay.includes(q);
   });
 });
@@ -530,5 +599,15 @@ onMounted(async () => {
   await checkWriter();
   await load();
   resetForm();
+  hydrateEditFromQuery();
 });
+
+watch(
+  () => [route.query.edit, items.value.length, view.value],
+  () => {
+    if (view.value !== "new" && view.value !== "all") return;
+    hydrateEditFromQuery();
+  }
+);
 </script>
+

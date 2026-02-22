@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <p class="text-black/70">Confirmanos por WhatsApp para coordinar detalles.</p>
-    <a class="btn-primary mt-4" :href="waUrl" target="_blank" rel="noreferrer">Abrir WhatsApp</a>
+    <a class="btn-outline mt-4 text-sm" :href="waUrl" target="_blank" rel="noreferrer">Escribenos por WhatsApp</a>
   </div>
 </template>
 

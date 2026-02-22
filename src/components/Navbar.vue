@@ -1,6 +1,6 @@
 <template>
-  <header class="sticky top-0 z-40 border-b border-black/5 bg-white/90 backdrop-blur">
-    <div class="container-safe flex items-center justify-between py-4">
+  <header class="sticky top-0 z-40 border-b backdrop-blur" :style="navbarStyle">
+    <div class="container-safe flex items-center justify-between py-4" :style="{ color: navbarTextColor }">
       <div class="flex items-center gap-3">
         <span class="font-script text-2xl text-primary">{{ icon }}</span>
         <div class="font-heading text-lg tracking-widest">{{ coupleNames }}</div>
@@ -31,22 +31,26 @@ import type { ActionButton, NavbarConfig, PageLink } from "../types/tenant";
 
 const props = defineProps<{ coupleNames: string; config?: NavbarConfig }>();
 
-const icon = computed(() => props.config?.icon || "♥");
+const icon = computed(() => props.config?.icon || "?");
+const navbarBgColor = computed(() => props.config?.backgroundColor || "#ffffff");
+const navbarTextColor = computed(() => getReadableTextColor(navbarBgColor.value));
+const navbarStyle = computed(() => ({
+  backgroundColor: navbarBgColor.value,
+  borderColor: withAlpha(navbarTextColor.value, 0.12)
+}));
 
 const links = computed<PageLink[]>(() => {
-  // If links are explicitly configured (even empty), respect that (allows hiding links).
   if (props.config && "links" in props.config) return props.config.links ?? [];
   return [
     { label: "Inicio", target: "#hero" },
     { label: "Ubicaciones", target: "#ubicaciones" },
     { label: "Itinerario", target: "#itinerario" },
     { label: "RSVP", target: "#rsvp" },
-    { label: "Galería", target: "#galeria" }
+    { label: "Galeria", target: "#galeria" }
   ];
 });
 
 const buttons = computed<ActionButton[]>(() => {
-  // If buttons are explicitly configured (even empty), respect that (allows hiding buttons).
   if (props.config && "buttons" in props.config) return props.config.buttons ?? [];
   return [
     {
@@ -70,5 +74,31 @@ function buttonStyle(btn: ActionButton) {
     borderColor: btn.borderColor || "var(--color-accent)",
     color: btn.textColor || "var(--color-accent)"
   };
+}
+
+function getReadableTextColor(input: string) {
+  const hex = normalizeHex(input);
+  if (!hex) return "#0f172a";
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.58 ? "#0f172a" : "#f8fafc";
+}
+
+function normalizeHex(value: string) {
+  const raw = String(value || "").trim();
+  if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(raw)) return "";
+  if (raw.length === 7) return raw;
+  return `#${raw[1]}${raw[1]}${raw[2]}${raw[2]}${raw[3]}${raw[3]}`;
+}
+
+function withAlpha(hexColor: string, alpha: number) {
+  const hex = normalizeHex(hexColor);
+  if (!hex) return `rgba(15, 23, 42, ${alpha})`;
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 </script>

@@ -2,18 +2,20 @@
   <section
     id="hero"
     :class="[
-      'section hero-section',
-      heroSurfaceClass
+      'section hero-section relative overflow-hidden',
+      heroSurfaceClass,
+      !isEnchanted ? 'bg-cover bg-center bg-no-repeat' : ''
     ]"
     :style="heroStyle"
   >
-    <div class="container-safe grid gap-10 lg:grid-cols-2 lg:items-center">
-      <div>
+    <div v-if="!isEnchanted" class="pointer-events-none absolute inset-0 bg-black/25"></div>
+    <div :class="heroGridClass">
+      <div :class="heroContentClass">
         <p :class="['badge', isEnchanted ? 'enchanted-badge' : 'bg-white/10 text-white']">
           {{ formattedDate }}
         </p>
         <div class="mt-6 space-y-4">
-          <div class="ornament" :class="isEnchanted ? 'opacity-60' : ''"></div>
+          <div :class="['ornament', isEnchanted ? 'opacity-60' : '', heroAlignClass === 'center' ? 'mx-auto' : heroAlignClass === 'right' ? 'ml-auto' : '']"></div>
           <h1 :class="[isEnchanted ? 'font-heading text-5xl md:text-7xl' : 'font-script text-5xl md:text-7xl']">
             {{ tenant.coupleNames }}
           </h1>
@@ -21,7 +23,7 @@
         <p :class="['mt-4 text-lg', isEnchanted ? 'text-black/70' : 'text-white/80']">
           {{ tenant.hero.tagline }}
         </p>
-        <div v-if="heroButtons.length" class="mt-6 flex flex-wrap gap-4">
+        <div v-if="heroButtons.length" :class="['mt-6 flex flex-wrap gap-4', heroButtonsJustifyClass]">
           <a
             v-for="(btn, index) in heroButtons"
             :key="`${btn.label}-${index}`"
@@ -68,7 +70,7 @@
           <p class="mt-2 text-sm text-black/60">Te esperamos para celebrar este momento.</p>
         </div>
       </div>
-      <div v-else class="panel-glass space-y-4">
+      <div v-else-if="showDetailPanel" class="panel-glass space-y-4">
         <h3 class="font-heading text-2xl">Detalles</h3>
         <div>
           <p class="text-sm uppercase tracking-widest text-white/60">Ceremonia</p>
@@ -93,6 +95,26 @@ import { parseDateOnlyLocal } from "../utils/dateOnly";
 const props = defineProps<{ tenant: TenantConfig; variant?: "default" | "enchanted"; heroConfig?: HeroLayoutConfig }>();
 const isEnchanted = computed(() => props.variant === "enchanted");
 const heroImages = computed(() => props.tenant.gallery?.slice(0, 2) ?? []);
+const heroAlignClass = computed(() => props.heroConfig?.align || "left");
+const showDetailPanel = computed(() => (props.heroConfig?.showPanelGlass ?? true) && !isEnchanted.value);
+
+const heroGridClass = computed(() => {
+  if (isEnchanted.value) return "container-safe relative z-10 grid gap-10 lg:grid-cols-2 lg:items-center";
+  if (!showDetailPanel.value) return "container-safe relative z-10 grid min-h-[calc(100vh-5rem)] content-center gap-10";
+  return "container-safe relative z-10 grid min-h-[calc(100vh-5rem)] content-center gap-10 lg:grid-cols-2 lg:items-center";
+});
+
+const heroContentClass = computed(() => {
+  if (heroAlignClass.value === "center") return "text-center";
+  if (heroAlignClass.value === "right") return "text-right";
+  return "text-left";
+});
+
+const heroButtonsJustifyClass = computed(() => {
+  if (heroAlignClass.value === "center") return "justify-center";
+  if (heroAlignClass.value === "right") return "justify-end";
+  return "justify-start";
+});
 
 const heroButtons = computed(() => {
   // If buttons are explicitly configured (even empty), respect that (allows hiding buttons).
@@ -123,13 +145,19 @@ const heroSurfaceClass = computed(() => {
 const heroStyle = computed(() => {
   const mode = props.heroConfig?.backgroundMode;
   if (mode === "color") {
-    return { backgroundColor: props.heroConfig?.backgroundColor || "var(--color-ink)" };
+    const bg = props.heroConfig?.backgroundColor || "var(--color-ink)";
+    return {
+      backgroundColor: bg,
+      backgroundImage: "radial-gradient(circle at top, rgba(255, 255, 255, 0.12), transparent 58%)"
+    };
   }
   if (mode === "image" && props.heroConfig?.backgroundImageUrl) {
+    // Keep the same cinematic mood as the default flow while allowing custom images.
     return {
-      backgroundImage: `url('${props.heroConfig.backgroundImageUrl}')`,
+      backgroundImage: `linear-gradient(to bottom, rgba(11, 16, 28, 0.62), rgba(11, 16, 28, 0.45)), url('${props.heroConfig.backgroundImageUrl}')`,
       backgroundSize: "cover",
-      backgroundPosition: "center"
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat"
     };
   }
   return {};

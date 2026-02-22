@@ -12,6 +12,7 @@ const AdminGenerate = () => import("../pages/admin/Generate.vue");
 const AdminDrafts = () => import("../pages/admin/Drafts.vue");
 const AdminSites = () => import("../pages/admin/Sites.vue");
 const AdminCustomers = () => import("../pages/admin/Customers.vue");
+const AdminGallery = () => import("../pages/admin/Gallery.vue");
 const AdminSettings = () => import("../pages/admin/Settings.vue");
 const DraftPreview = () => import("../pages/admin/DraftPreview.vue");
 const PremiumLayout = () => import("../pages/premium/PremiumLayout.vue");
@@ -56,6 +57,8 @@ const router = createRouter({
         // Spanish URLs / sidebar flow
         { path: "clientes", name: "admin-customers-list", component: AdminCustomers, props: { view: "list" } },
         { path: "clientes/nuevo", name: "admin-customers-new", component: AdminCustomers, props: { view: "new" } },
+        { path: "galeria", redirect: { name: "admin-gallery-add" } },
+        { path: "galeria/agregar", name: "admin-gallery-add", component: AdminGallery },
 
         { path: "settings", name: "admin-settings", component: AdminSettings }
       ]

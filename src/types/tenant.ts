@@ -54,6 +54,7 @@ export interface ActionButton extends PageLink {
 
 export interface NavbarConfig {
   icon?: string;
+  backgroundColor?: string;
   links?: PageLink[];
   buttons?: ActionButton[];
 }
@@ -98,6 +99,7 @@ export interface PageSection {
 export interface FooterConfig {
   message?: string;
   anchorId?: string;
+  backgroundColor?: string;
 }
 
 export interface LocationsLayoutConfig {
@@ -162,7 +164,13 @@ export interface TenantConfig {
     whatsappNumber: string;
     netlifyFormNameOptional?: string;
   };
-  gallery: Array<{ src: string; alt: string }>;
+  gallery: Array<{
+    src: string;
+    alt: string;
+    authorName?: string;
+    authorUrl?: string;
+    sourceUrl?: string;
+  }>;
   theme: {
     primary: string;
     secondary: string;
